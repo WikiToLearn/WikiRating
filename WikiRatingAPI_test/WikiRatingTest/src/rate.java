@@ -5,26 +5,36 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wikidata.wdtk.wikibaseapi.ApiConnection;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import javax.net.ssl.HttpsURLConnection;
 import com.orientechnologies.orient.jdbc.OrientJdbcConnection;
+import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
+
 import net.sourceforge.jwbf.mediawiki.ApiRequestBuilder;
 import net.sourceforge.jwbf.mediawiki.bots.MediaWikiBot;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
- 
 
 @Path("/rate")
 public class rate {
@@ -33,12 +43,9 @@ public class rate {
 	  @Produces("application/json")
 	  public Response welcome() {
  		String result = "You reached the homepage please add 'allpages' in the URL to get all the pages in https://en.wikitolearn.org";
-		return Response.status(200).entity(result).build();
-		 
+		return Response.status(200).entity(result).build();	 
 	  }
  
-	  
-	  
 	  
 	  @Path("{name}")
 	  @GET
@@ -46,123 +53,91 @@ public class rate {
 	  public Response allPages(@PathParam("name") String name) throws JSONException {
 		  
 		  
-		  //Connection to the database
+		  //Accessing MediaWiki API using Wikidata Toolkit
 		  
 		  String result = "fail";
-		  Connection conn;
-		  Statement stmt=null;
-		  Properties info = new Properties();
-		  info.put("user", "root");
-		  info.put("password", "admin123");
-
+		  
+		  ApiConnection comm=new ApiConnection("https://en.wikitolearn.org/api.php");
+		  Map<String,String> mm=new HashMap<String, String>();
+		  InputStream in = null;
+		  mm.put("action", "query");
+		  mm.put("list",name);
+		  mm.put("apfrom","a");
+		  mm.put("aplimit","max");
+		  mm.put("apnamespace","0");
+		  mm.put("format","json");
+		  
 		  try {
-			Class.forName("com.orientechnologies.orient.jdbc.OrientJdbcDriver");
-		} catch (ClassNotFoundException e1) {
-			result="Connection failed!";
+			in= comm.sendRequest("POST", mm);
+		} catch (IOException e1) {
+			
 			e1.printStackTrace();
-			return Response.status(500).entity(result).build();
 		}
 		  
-		  try {
-			   conn = (OrientJdbcConnection) DriverManager.getConnection("jdbc:orient:remote:localhost/wikirate", info);
-		} catch (SQLException e) {
-			result="Connection failed!";
-			e.printStackTrace();
-			return Response.status(500).entity(result).build();
-			
-		}
+		  // Converting InputStream object to String
 		  
-		  
+		  BufferedReader reader=null;
 		try {
-			stmt = conn.createStatement();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			result="statement creation failed! ";
-			e.printStackTrace();
-			return Response.status(500).entity(result).build();
+			reader = new BufferedReader(new InputStreamReader(in,"UTF-8"));
+		} catch (UnsupportedEncodingException e1) {
+			
+			e1.printStackTrace();
 		}
-
-		  
-		
-		/*MediaWikiBot b = new MediaWikiBot("http://en.wikitolearn.org/");
-		 b.login("", "");
-		 System.out.println(b.readData("Main Page").getText());*/	//Mediawiki bot by jwbf(Client API)
-		 
-		
-		 try{
-			String USER_AGENT = "WikiRatingAPI";
-			String url = "https://en.wikitolearn.org/api.php";
-			URL obj = new URL(url);
-			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-
-			//adding request header
-			con.setRequestMethod("POST");
-			con.setRequestProperty("User-Agent", USER_AGENT);
-			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
-			String urlParameters = "action=query&list="+name+"&apfrom=a&aplimit=max&apnamespace=0&format=json";
 			
-			// Send post request
-			con.setDoOutput(true);
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(urlParameters);
-			wr.flush();
-			wr.close();
-
-			int responseCode = con.getResponseCode();
-			System.out.println("\nSending 'POST' request to URL : " + url);
-			System.out.println("Post parameters : " + urlParameters);
-			System.out.println("Response Code : " + responseCode);
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();
-			
-			//print result
-			result=response.toString();
-			System.out.println(result);
-			
-			
-		 }catch(Exception e){			
-			 result ="fail!";
-			 e.printStackTrace();
-		 }
-		 
-		 //JSON interpretation
-		 try {  
-			 	JSONObject js=new JSONObject(result);
-			 	JSONObject js2=js.getJSONObject("query");
-			 	JSONArray arr=js2.getJSONArray("allpages");
-				result="";
-			 	JSONObject dummy;
-			 	for(int i=0;i<arr.length();i++){
-			 		dummy=arr.getJSONObject(i);
-			 		result=result+dummy.get("title")+" \n";
-			 		System.out.println(result);
-			 		
-			 		
-
-					  try {
-						ResultSet rs = stmt.executeQuery("INSERT INTO V SET name="+"'"+dummy.get("pageid")+"'");
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						result="Query failed ";
-						e.printStackTrace();
-						return Response.status(500).entity(result).build();
-					}
-			 		
-			 		
-			 	}
-			} catch (JSONException e) {
+	        StringBuilder builder = new StringBuilder();
+	        String line;
+	        try {
+				while ((line = reader.readLine()) != null) {
+				    builder.append(line);
+				}
+				result=builder.toString();
+				in.close();
+			} catch (IOException e) {
+				
 				e.printStackTrace();
 			}
-		
 		  
+		  
+		 
+		 //Connecting to database using Tinkerpop Blueprints
+		 
+		 OrientGraphFactory factory = new OrientGraphFactory("remote:localhost/wikirate","root","admin123");
+		 OrientGraph graph = factory.getTx();
+		 try {
+			 
+			//JSON interpretation
+			 try {  
+				 	JSONObject js=new JSONObject(result);
+				 	JSONObject js2=js.getJSONObject("query");
+				 	JSONArray arr=js2.getJSONArray("allpages");
+					result="";
+				 	JSONObject dummy;
+				 	for(int i=0;i<arr.length();i++){
+				 		dummy=arr.getJSONObject(i);
+				 		result=result+dummy.get("title")+" \n";
+				 					 			
+				 		//Adding pages to database
+				 		try{
+				 			  Vertex ver = graph.addVertex(null); // 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
+				 			  ver.setProperty( "name", dummy.get("title") );
+				 			  ver.setProperty("pid",dummy.get("pageid"));
+				 			   graph.commit();
+				 			} catch( Exception e ) {
+				 			  graph.rollback();
+				 			}
+				 	
+				 		
+				 	}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			 
+			 
+		 } finally {
+		   graph.shutdown();
+		 }
+		 
+		 
 		return Response.status(200).entity(result).build();
 	  }
 }
