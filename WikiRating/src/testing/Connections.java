@@ -28,53 +28,10 @@ public class Connections {
 	      return singletonConnection;
 	   }
 	
-	public  String getAllPages() throws JSONException {
-		  
-		  
-		  //Accessing MediaWiki API using Wikidata Toolkit
-		  
-		  String result = "fail";
-		  
-		  ApiConnection comm=new ApiConnection(Propaccess.getPropaccess("API_URL"));
-		  Map<String,String> mm=new HashMap<String, String>();
-		  InputStream in = null;
-		  mm.put("action", "query");
-		  mm.put("list","allpages");
-		  mm.put("apfrom","a");
-		  mm.put("aplimit","max");
-		  mm.put("apnamespace","0");
-		  mm.put("format","json");
-		  
-		  try {
-			in= comm.sendRequest("POST", mm);
-		} catch (IOException e1) {
-			
-			e1.printStackTrace();
-		}
-		  
-		  // Converting InputStream object to String
-		  
-		  BufferedReader reader=null;
-		try {
-			reader = new BufferedReader(new InputStreamReader(in,"UTF-8"));
-		} catch (UnsupportedEncodingException e1) {
-			
-			e1.printStackTrace();
-		}
-			
-	        StringBuilder builder = new StringBuilder();
-	        String line;
-	        try {
-				while ((line = reader.readLine()) != null) {
-				    builder.append(line);
-				}
-				result=builder.toString();
-				in.close();
-			} catch (IOException e) {
-				
-				e.printStackTrace();
-			}
-	        return result;
+	
+	public ApiConnection getApiConnection(){
+		ApiConnection comm=new ApiConnection(Propaccess.getPropaccess("API_URL"));
+		return comm;
 	}
 	
 	public OrientGraph getDbGraph(){

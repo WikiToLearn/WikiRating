@@ -22,9 +22,9 @@ public class Firstrun {
 	  @GET
 	  @Produces("application/json")
 	  public Response pCompute() {
-		  
-	 		String result1=Page.getAllPages();
-	 		
+		  	//String result1="Nothing to show here!";
+	 		String result1=Page.insertPages();
+	 		//result1=Dataret.printVertex();
 	 		
 			return Response.status(200).entity(result1).build();	 
 		  }
