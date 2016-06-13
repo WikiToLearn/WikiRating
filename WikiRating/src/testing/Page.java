@@ -49,11 +49,12 @@ public class Page {
 				 	for(int i=0;i<arr.length();i++){
 				 		dummy=arr.getJSONObject(i);
 				 		
-				 		if(WikiUtil.rCheck(dummy.getInt("pageid"))){
+				 		if(WikiUtil.rCheck("pid",dummy.getInt("pageid"),graph)){
 				 		result=result+dummy.get("title")+" \n";
 				 					 			
 				 		//Adding pages to database
 				 		try{
+				 			  System.out.println(dummy.getString("title"));
 				 			  Vertex ver = graph.addVertex("class:Page"); // 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
 				 			  ver.setProperty( "name", dummy.getString("title"));
 				 			  ver.setProperty("pid",dummy.getInt("pageid"));

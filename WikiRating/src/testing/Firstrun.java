@@ -22,10 +22,18 @@ public class Firstrun {
 	  @GET
 	  @Produces("application/json")
 	  public Response pCompute() {
+		  long startTime = System.currentTimeMillis();
+		// ... do something ... 
+		
 		  	//String result1="Nothing to show here!";
 	 		String result1=Page.insertPages();
+		  	//String result1=Dataret.printVertex();
 	 		//result1=Dataret.printVertex();
-	 		
+		  	//String result1=WikiUtil.testInsert("","");
+		  	 result1=Revision.getAllRevisions();
+		  	long estimatedTime = System.currentTimeMillis() - startTime;
+		  	estimatedTime=estimatedTime/1000;
+		  	result1=result1+" "+estimatedTime;
 			return Response.status(200).entity(result1).build();	 
 		  }
 	

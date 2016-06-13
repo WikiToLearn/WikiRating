@@ -11,7 +11,7 @@ public class Dataret {
 	public static String printVertex(){
 		String result="";
 	OrientGraph graph=Connections.getInstance().getDbGraph();
-			for (Vertex v : graph.getVertices()) {
+			for (Vertex v : graph.getVertices("@class","Page")) {
 			result=result+" \n"+v.getProperty("name");
 	}
 	
