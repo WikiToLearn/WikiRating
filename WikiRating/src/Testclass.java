@@ -31,7 +31,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 
 import net.sourceforge.jwbf.mediawiki.ApiRequestBuilder;
 import net.sourceforge.jwbf.mediawiki.bots.MediaWikiBot;
-import resources.Propaccess;
+import test.java.Propaccess;
 
 import org.json.JSONArray;
 import org.json.JSONException;
