@@ -72,11 +72,12 @@ public class Revision {
 					}
 			 
 				 
-			 } finally {
-			   
+			 } catch(Exception ee) {
+			   ee.printStackTrace();
 			 }
 			
 }		graph.shutdown();
+//Pagerank.pageRankCompute();
 		
 			
 		

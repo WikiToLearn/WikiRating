@@ -63,6 +63,7 @@ public class Page {
 			
 		} finally {
 			graph.shutdown();
+			//LinkPages.linkAll();
 		}
 		
 	}

@@ -64,6 +64,8 @@ public class LinkPages {
 			 }
 			 
 		}
+		graph.shutdown();
+		//Revision.getAllRevisions();
 	}
 					
 	

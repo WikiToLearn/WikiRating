@@ -25,9 +25,13 @@ public class Firstrun {
 	  public Response pCompute() {
 		  long startTime = System.currentTimeMillis();
 		  	Page.insertPages();
+		  	System.out.println("==================Page insertion over=====================");
 		  	LinkPages.linkAll();
+		  	System.out.println("==================Page linking over=====================");
 		  	Revision.getAllRevisions();
+		  	System.out.println("==================Page Revisions over=====================");
 		  	Pagerank.pageRankCompute();
+		  	System.out.println("==================Page rank over=====================");
 		  	
 		  	//String result1="Nothing to show here!";
 	 		//String result1=Page.insertPages();
@@ -38,9 +42,9 @@ public class Firstrun {
 		  	result1=result1+" "+estimatedTime;*/
 		  	//LinkPages.linkAll();
 		  	long estimatedTime = System.currentTimeMillis() - startTime;
-		  	estimatedTime=estimatedTime/1000;
+		  	estimatedTime=estimatedTime/60000;
 		  	
-			return Response.status(200).entity("Successful"+estimatedTime).build();	 
+			return Response.status(200).entity("Successful and took"+estimatedTime+"Minutes").build();	 
 		  }
 	
 }
