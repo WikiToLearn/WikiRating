@@ -82,9 +82,9 @@ public class Page {
 		  String result = "";
 		  
 		  ApiConnection con=Connections.getInstance().getApiConnection();
-		  InputStream in = null;
+		   
 		 
-			  in=WikiUtil.reqSend(con,WikiUtil.getPageParam(ns+""));
+		   InputStream in=WikiUtil.reqSend(con,WikiUtil.getPageParam(ns+""));
 			  result=WikiUtil.streamToString(in);
 		  
 	        return result;

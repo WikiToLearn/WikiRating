@@ -82,6 +82,19 @@ public class WikiUtil {
 		  return mm;
 	}
 	
+	//http://en.wikitolearn.org/api.php?action=query&list=allusers&aulimit=max&aufrom=
+	//Constructions the MAP of Parameters to attach with the MediaWiki Query
+		public static Map<String,String> getUserParam(String username){
+			 Map<String,String> mm=new HashMap<String, String>();
+			  mm.put("action", "query");
+			  mm.put("list", "allusers");
+			  mm.put("aulimit","max");
+			  mm.put("aufrom",username);
+			  mm.put("rawcontinue","");
+			  mm.put("format","json");
+			  return mm;
+		}
+	
 	//Send a POST request to MediaWiki API and then gets back an InputStream.
 	public static InputStream reqSend(ApiConnection con,Map<String,String> mm){
 		InputStream in=null;
