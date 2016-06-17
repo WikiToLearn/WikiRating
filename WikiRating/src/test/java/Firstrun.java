@@ -34,6 +34,7 @@ public class Firstrun {
 		  	System.out.println("==================Page rank over=====================");
 		  	User.insertAllUsers();
 		  	System.out.println("==================All Users inserted=====================");
+		  	Contribution.getPageEdits();
 		  	
 		  	//String result1="Nothing to show here!";
 	 		//String result1=Page.insertPages();

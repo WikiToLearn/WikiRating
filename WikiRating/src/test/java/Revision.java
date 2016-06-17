@@ -48,6 +48,7 @@ public class Revision {
 					 			  ver.setProperty("revid",dummy.getInt("revid"));
 					 			  ver.setProperty("parentid",dummy.getInt("parentid"));
 					 			  ver.setProperty("user",dummy.getString("user"));
+					 			  ver.setProperty("userid",dummy.getInt("userid"));
 					 			  ver.setProperty("size",dummy.getInt("size"));
 					 			  
 					 			  //All the versions are connected to each other like (Page)<-(Latest)<-(Latest-1)<-...<-(Last)
@@ -55,12 +56,12 @@ public class Revision {
 					 			  if(i==arr.length()-1){//The latest version will be connected to the Page itself and to the previous revision too
 					 				  
 					 				  Vertex parentPage=graph.getVertices("pid",v.getProperty("pid")).iterator().next();
-					 				  Edge isRevision = graph.addEdge("link", ver,parentPage,"Pversion");
+					 				  Edge isRevision = graph.addEdge("link", parentPage,ver,"Pversion");
 					 			  }
 					 			  
 					 			  if(i!=0){//To link the current revision to the previous versions
 					 				Vertex parent=graph.getVertices("revid",dummy.getInt("parentid")).iterator().next();
-					 				Edge isRevision = graph.addEdge("link",  ver, parent, "version");
+					 				Edge isRevision = graph.addEdge("link", ver,parent,"version");
 					 			  }
 					 			  
 					 			  

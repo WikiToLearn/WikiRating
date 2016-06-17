@@ -64,7 +64,7 @@ public class WikiUtil {
 		  mm.put("action", "query");
 		  mm.put("prop", "revisions");
 		  mm.put("pageids",pid);
-		  mm.put("rvprop","ids|timestamp|user|flags|size");
+		  mm.put("rvprop","userid|ids|timestamp|user|flags|size");
 		  mm.put("rvlimit","max");
 		  mm.put("rvdir","newer");
 		  mm.put("format","json");
