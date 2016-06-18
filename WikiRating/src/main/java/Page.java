@@ -1,4 +1,4 @@
-package test.java;
+package main.java;
 
 /** This class will populate the database with all the pages available on the WikiPlatform.
  */

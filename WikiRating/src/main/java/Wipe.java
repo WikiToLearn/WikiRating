@@ -1,4 +1,4 @@
-package test.java;
+package main.java;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -55,6 +55,12 @@ public class Wipe {
 			  }
 		  System.out.println("=============Pversion deleted=========");
 		  
+		  try{
+			  graph.dropEdgeType("Contribute");
+		  }catch(Exception e){
+			  e.printStackTrace();
+			  }
+		  System.out.println("=============Contribute deleted=========");
 		  graph.commit();
 		  graph.shutdown();
 		  

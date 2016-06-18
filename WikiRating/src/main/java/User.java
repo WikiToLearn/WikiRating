@@ -1,20 +1,13 @@
-package test.java;
-
+package main.java;
+/**This class inserts all the users available on the WikitoLearn Platform
+ */
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
-
-import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 public class User {
 
@@ -48,7 +41,7 @@ public class User {
 				
 				for(int i=0;i<arr.length();i++){
 					dummy=arr.getJSONObject(i);
-					
+					System.out.println(dummy.getString("name"));
 					if(WikiUtil.rCheck("userid",dummy.getInt("userid"),graph)){	//This is a makeshift way to avoid duplicate insertion.
 						
 						//Adding Users to database
@@ -87,6 +80,7 @@ public class User {
 		ApiConnection con=Connections.getInstance().getApiConnection();
 		InputStream in=WikiUtil.reqSend(con,WikiUtil.getUserParam(username));
 		result=WikiUtil.streamToString(in);
+		//System.out.println(result);
 		return result;
 	}
 		

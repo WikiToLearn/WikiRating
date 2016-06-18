@@ -1,4 +1,4 @@
-package test.java;
+package main.java;
 
 /**This class will deal with the procedures to links the pages which points to some other pages.
  * That is this will interconnect all the Backlinks. 

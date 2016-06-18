@@ -1,4 +1,4 @@
-package test.java;
+package main.java;
 /**This class is made to link the revisions to the corresponding pages
  * 
  */
@@ -19,7 +19,6 @@ public class Revision {
 		
 		String result="";
 		OrientGraph graph=Connections.getInstance().getDbGraph();
-		String res="==";
 		System.out.println("=====Checkpoint for Revisions==========");
 		for (Vertex v : graph.getVertices("@class","Page")) {
 			
@@ -91,22 +90,14 @@ public class Revision {
 
 	//This is the helper method to return the a JSON formatted string queried from the MediaWiki API to get all the revisions for a particular pid.
 	public static String getRevision(String pid ){
+
 		String result = "";
-		  
-		  ApiConnection con=Connections.getInstance().getApiConnection();
-		  InputStream in=WikiUtil.reqSend(con,WikiUtil.getRevisionParam(pid));
-		  result=WikiUtil.streamToString(in);
-		  return result;
-		  
-		 
-			 
+		ApiConnection con=Connections.getInstance().getApiConnection();
+		InputStream in=WikiUtil.reqSend(con,WikiUtil.getRevisionParam(pid));
+		result=WikiUtil.streamToString(in);
+		return result;
+
 	}
-	
-	
-	
-	
-	
-	
 	
 	
 	

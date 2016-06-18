@@ -1,4 +1,4 @@
-package test.java;
+package main.java;
 
 /**This class handles the resources fetch . 
  * 
@@ -14,7 +14,7 @@ public class Propaccess {
 		String value="";
 		Properties configFile = new Properties();
 		try {
-			configFile.load(Propaccess.class.getClassLoader().getResourceAsStream("test/resources/config.properties"));
+			configFile.load(Propaccess.class.getClassLoader().getResourceAsStream("main/resources/config.properties"));
 			value = configFile.getProperty(key);
 			return value;
 		} catch (IOException e) {

@@ -1,12 +1,8 @@
-package test.java;
-/** This class is responsible for the calculation of PageRanks for all the pages in the Database.
- * The final result is stored in the database.
- */
-import java.math.BigDecimal;
+package main.java;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import com.orientechnologies.orient.server.distributed.ODistributedServerLog.DIRECTION;
+
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
