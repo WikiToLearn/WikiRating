@@ -5,8 +5,10 @@ package main.java;
  */
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 
+import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
+import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
 public class Connections {
 
@@ -32,5 +34,16 @@ public class Connections {
 
 		return graph;
 	}
+	//For massive inserts to improve performance ; no transaction method
+	public OrientGraphNoTx getDbGraphNT() {
+
+		OrientGraphFactory factory = new OrientGraphFactory(Propaccess.getPropaccess("DB_URL"),
+				Propaccess.getPropaccess("USER"), Propaccess.getPropaccess("PASSWD"));
+		factory.declareIntent(new OIntentMassiveInsert());
+		OrientGraphNoTx graph =factory.getNoTx();
+
+		return graph;
+	}
+	
 
 }
