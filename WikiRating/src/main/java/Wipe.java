@@ -61,6 +61,12 @@ public class Wipe {
 			  e.printStackTrace();
 			  }
 		  System.out.println("=============Contribute deleted=========");
+		  try{
+			  graph.dropEdgeType("Review");
+		  }catch(Exception e){
+			  e.printStackTrace();
+			  }
+		  System.out.println("=============Review deleted=========");
 		  graph.commit();
 		  graph.shutdown();
 		  

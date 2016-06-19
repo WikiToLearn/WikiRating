@@ -1,5 +1,7 @@
 package main.java;
-
+/**This class will link the user to all their respective contributions on the platform
+ * 
+ */
 import java.io.InputStream;
 
 import org.json.JSONArray;
