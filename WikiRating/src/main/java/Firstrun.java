@@ -18,7 +18,7 @@ public class Firstrun {
 	// However this behaviour can be inverted tool
 	public Response pCompute() {
 		long startTime = System.currentTimeMillis();
-		/*Page.insertPages();
+		Page.insertPages();
 		System.out.println("==================Page insertion over=====================");
 		LinkPages.linkAll();
 		System.out.println("==================Page linking over=====================");
@@ -30,8 +30,11 @@ public class Firstrun {
 		System.out.println("==================Page rank over=====================");
 		LinkUserContributions.linkAll();
 		System.out.println("==================All Users Linked=====================");
-		Contribution.getPageEdits();*/
+		Contribution.getPageEdits();
 		RandomVoteGenerator.generateVotes();
+		System.out.println("==================All Versions voted=====================");
+		NormalisedVotes.calculatePageVotes();
+		System.out.println("==================All Page Votes computed=====================");
 
 		// String result1="Nothing to show here!";
 		// String result1=Page.insertPages();

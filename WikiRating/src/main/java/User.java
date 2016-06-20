@@ -50,6 +50,7 @@ public class User {
 							Vertex ver = graph.addVertex("class:User"); // 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
 							ver.setProperty( "username", dummy.getString("name"));
 							ver.setProperty("userid",dummy.getInt("userid"));
+							ver.setProperty("credibility",0.4);	//Initial credibility of the user
 							graph.commit();
 						} catch( Exception e ) {
 							e.printStackTrace();

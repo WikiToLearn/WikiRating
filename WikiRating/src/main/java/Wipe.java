@@ -6,6 +6,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
 @Path("wipe")
 public class Wipe {
@@ -15,7 +16,7 @@ public class Wipe {
 	 
 	public Response wipeDatabase() {
 		  long startTime = System.currentTimeMillis();
-		  OrientGraph graph = Connections.getInstance().getDbGraph();
+		  OrientGraphNoTx graph = Connections.getInstance().getDbGraphNT();
 		  
 		  try{
 			  graph.dropVertexType("Page");
@@ -67,7 +68,7 @@ public class Wipe {
 			  e.printStackTrace();
 			  }
 		  System.out.println("=============Review deleted=========");
-		  graph.commit();
+		  //graph.commit();
 		  graph.shutdown();
 		  
 		  long estimatedTime = System.currentTimeMillis() - startTime;

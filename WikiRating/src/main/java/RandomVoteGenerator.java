@@ -5,7 +5,6 @@ import java.util.Random;
 
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
 /**This class will generate random votes for the platform to simulate the actual review activities of the user
