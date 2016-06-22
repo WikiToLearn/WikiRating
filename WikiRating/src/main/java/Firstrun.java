@@ -1,5 +1,9 @@
 package main.java;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**This is the chief class will call all other methods
  * 
  */
@@ -18,6 +22,7 @@ public class Firstrun {
 	// However this behaviour can be inverted tool
 	public Response pCompute() {
 		long startTime = System.currentTimeMillis();
+		/*
 		Page.insertPages();
 		System.out.println("==================Page insertion over=====================");
 		LinkPages.linkAll();
@@ -34,8 +39,12 @@ public class Firstrun {
 		RandomVoteGenerator.generateVotes();
 		System.out.println("==================All Versions voted=====================");
 		NormalisedVotes.calculatePageVotes();
-		System.out.println("==================All Page Votes computed=====================");
-
+		System.out.println("==================All Page Votes computed=====================");*/
+		
+		UserCredibility.getUserCredibility();
+		
+		
+		
 		// String result1="Nothing to show here!";
 		// String result1=Page.insertPages();
 		// String result1=Dataret.printVertex();

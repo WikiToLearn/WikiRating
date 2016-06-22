@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
 /**This class will generate random votes for the platform to simulate the actual review activities of the user
@@ -24,7 +25,7 @@ public class RandomVoteGenerator {
 		return Result;
 		
 	}
-public static ArrayList<Integer> getRevisionList(OrientGraphNoTx graph){
+public static ArrayList<Integer> getRevisionList(OrientGraph graph){
 	ArrayList<Integer> revisionList=new ArrayList<Integer>();
 	for(Vertex revisionNode:graph.getVertices("@class","Revision")){
 		revisionList.add((Integer) revisionNode.getProperty("revid"));
@@ -36,7 +37,7 @@ public static ArrayList<Integer> getRevisionList(OrientGraphNoTx graph){
 		int revisionToVote=0;
 		int revid=0,currVote=0;
 		Vertex revisionNode=null;
-		OrientGraphNoTx graph = Connections.getInstance().getDbGraphNT();
+		OrientGraph graph = Connections.getInstance().getDbGraph();
 		ArrayList revisionList=getRevisionList(graph);
 
 		for (Vertex userNode : graph.getVertices("@class", "User")) {
@@ -63,7 +64,7 @@ public static ArrayList<Integer> getRevisionList(OrientGraphNoTx graph){
 							Edge review = graph.addEdge("review", userNode, revisionNode, "Review");
 							review.setProperty("vote", currVote/10.0);
 						}
-						//graph.commit();
+						graph.commit();
 					}
 				}
 			}

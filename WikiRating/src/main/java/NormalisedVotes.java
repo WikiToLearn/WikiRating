@@ -74,7 +74,7 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 		sizePrev=(int)parentNode.getProperty("size");
 		currSize=(int)revisionNode.getProperty("size");
 		newEdits=Math.abs(sizePrev-currSize);
-		
+		if(sizePrev==0)sizePrev=1;
 		phi=Math.pow(Math.E,-1*(Math.pow(newEdits/sizePrev, P)));
 		return phi;
 	}
