@@ -65,7 +65,8 @@ public class User {
 			
 			
 			
-		}graph.shutdown();
+		}//graph.commit();
+		graph.shutdown();
 	}
 	
 	

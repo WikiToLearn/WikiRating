@@ -29,6 +29,7 @@ public class UserCredibility {
 			System.out.println(userNode.getProperty("username")+" has "+credibility);
 			graph.commit();
 		}
+		//graph.commit();
 		graph.shutdown();
 		
 	}

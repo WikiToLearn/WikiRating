@@ -62,6 +62,7 @@ public class Page {
 			}
 			
 		} finally {
+			//graph.commit();
 			graph.shutdown();
 			//LinkPages.linkAll();
 		}

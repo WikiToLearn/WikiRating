@@ -69,6 +69,7 @@ public static ArrayList<Integer> getRevisionList(OrientGraph graph){
 				}
 			}
 		}
+		//graph.commit();
 		graph.shutdown();
 	}
 }

@@ -19,13 +19,14 @@ public class LinkUserContributions {
 
 		String result = "";
 		OrientGraph graph = Connections.getInstance().getDbGraph();
+		//graph.setUseLightweightEdges(false);
 		for (Vertex userNode : graph.getVertices("@class", "User")) {
 
 			// Fetching the user contribution on a particular page
 			result = getUserContribution(userNode.getProperty("username").toString());
 
 			// System.out.println(result);
-			try {
+			
 				// JSON interpretation
 				try {
 
@@ -33,7 +34,8 @@ public class LinkUserContributions {
 					JSONObject js2 = js.getJSONObject("query");
 					JSONArray arr = js2.getJSONArray("usercontribs");
 					JSONObject dummy;
-					//System.out.println("*");
+					System.out.println(userNode.getProperty("username")+"      "+arr.length());
+					System.out.println("*");
 					// System.out.println(arr.length());
 					for (int i = 0; i < arr.length(); i++) {
 
@@ -47,7 +49,7 @@ public class LinkUserContributions {
 							Vertex targetVersionNode = graph.getVertices("revid", dummy.getInt("revid")).iterator().next();
 							Edge contributes = graph.addEdge("contribute", userNode, targetVersionNode, "Contribute");
 							contributes.setProperty("consize", Math.abs(dummy.getInt("sizediff")));
-							graph.commit();
+							//graph.commit();
 							System.out.println(userNode.getProperty("username") + " Contributes to "
 									+ dummy.getString("title") + " to " + targetVersionNode.getProperty("revid")
 									+ " of size " + Math.abs(dummy.getInt("sizediff")));
@@ -61,11 +63,10 @@ public class LinkUserContributions {
 					e.printStackTrace();
 				}
 
-			} catch (Exception ee) {
-				ee.printStackTrace();
-			}
-
+			
+			graph.commit();	
 		}
+		//graph.commit();	
 		graph.shutdown();
 	}
 

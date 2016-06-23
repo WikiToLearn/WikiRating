@@ -52,7 +52,7 @@ public class LinkPages {
 				 			
 				 			System.out.println(v.getProperty("name").toString()+" is linked to "+backLink.getProperty("name").toString());
 				 			
-				 			graph.commit();														
+				 		graph.commit();														
 				 		} catch( Exception e ) {
 				 			e.printStackTrace();
 				 			graph.rollback();																	//In case the transaction fails we will rollback.
@@ -64,6 +64,7 @@ public class LinkPages {
 			 }
 			 
 		}
+		//graph.commit();	
 		graph.shutdown();
 		//Revision.getAllRevisions();
 	}

@@ -23,6 +23,7 @@ public class NormalisedVotes {
 			graph.commit();
 			}catch(Exception e){e.printStackTrace();}
 		}
+		//graph.commit();	
 		graph.shutdown();
 	}
 	

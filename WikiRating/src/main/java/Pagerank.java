@@ -81,7 +81,7 @@ public class Pagerank {
 		        System.out.println("===========Finals===========");
 		        System.out.println(pair.getKey()+"  "+pair.getValue());
 		       } 
-		    
+		    //graph.commit();
 		    graph.shutdown();
 	}
 

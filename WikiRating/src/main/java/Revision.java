@@ -81,7 +81,8 @@ public class Revision {
 			   ee.printStackTrace();
 			 }
 			
-}		graph.shutdown();
+}		//graph.commit();
+		graph.shutdown();
 //Pagerank.pageRankCompute();
 		
 			
