@@ -6,7 +6,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 /** This class will calculate the reliability of the vote given by the users
- * 
+ * The structure and the methods of this class are very similar to class NormalisedVotes.java
  */
 public class Reliability {
 

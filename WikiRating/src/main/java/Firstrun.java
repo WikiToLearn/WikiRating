@@ -40,8 +40,11 @@ public class Firstrun {
 		NormalisedVotes.calculatePageVotes();
 		System.out.println("==================All Page Votes computed=====================");
 		UserCredibility.getUserCredibility();
-		System.out.println("==================User Credibility computed=====================");*/
+		System.out.println("==================User Credibility computed=====================");
 		Reliability.calculateReliability();
+		System.out.println("==================Vote Reliability computed=====================");*/
+		PageRating.computePageRatings();
+		System.out.println("==================Page Ratings computed=====================");
 		//EdgesTest.testMe();
 		//Contribution.getPageEdits();
 		
