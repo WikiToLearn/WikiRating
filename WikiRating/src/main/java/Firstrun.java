@@ -23,7 +23,7 @@ public class Firstrun {
 	public Response pCompute() {
 		long startTime = System.currentTimeMillis();
 		
-		Page.insertPages();
+		/*Page.insertPages();
 		System.out.println("==================Page insertion over=====================");
 		LinkPages.linkAll();
 		System.out.println("==================Page linking over=====================");
@@ -40,7 +40,8 @@ public class Firstrun {
 		NormalisedVotes.calculatePageVotes();
 		System.out.println("==================All Page Votes computed=====================");
 		UserCredibility.getUserCredibility();
-		System.out.println("==================User Credibility computed=====================");
+		System.out.println("==================User Credibility computed=====================");*/
+		Reliability.calculateReliability();
 		//EdgesTest.testMe();
 		//Contribution.getPageEdits();
 		
