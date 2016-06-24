@@ -20,6 +20,7 @@ public class UserCredibility {
 		double alpha=0,a=0,b=0,credibility=0;
 		HashMap<Integer,Integer> pageEditMap=Contribution.getPageEdits();
 		//To iterate over all the Users for getting their respective Credibility
+		try{
 		for(Vertex userNode:graph.getVertices("@class", "User")){ 
 			a=geta(userNode,graph,pageEditMap);
 			b=getb(userNode,graph);
@@ -29,6 +30,7 @@ public class UserCredibility {
 			System.out.println(userNode.getProperty("username")+" has "+credibility);
 			graph.commit();
 		}
+		}catch(Exception e){e.printStackTrace();}
 		//graph.commit();
 		graph.shutdown();
 		
@@ -43,8 +45,8 @@ public class UserCredibility {
 		for(Edge contributeEdge:userNode.getEdges(Direction.OUT,"@class","Contribute")){
 			//randc++;
 			//System.out.println("================#######++++++++++++++");
-			contpid=(int)graph.getVertices("name",contributeEdge.getVertex(Direction.IN).getProperty("Page").toString()).iterator().next().getProperty("pid");
-			contributionSize=contributeEdge.getProperty("consize");
+			contpid=(int)graph.getVertices("title",contributeEdge.getVertex(Direction.IN).getProperty("Page").toString()).iterator().next().getProperty("pid");
+			contributionSize=contributeEdge.getProperty("contributionSize");
 			//System.out.println(userNode.getProperty("username")+"  ====  "+contributionSize+"");
 			if(userPageContributions.containsKey(contpid)){
 				//System.out.println("second time");
@@ -64,7 +66,7 @@ public class UserCredibility {
 			contpid=(int)pair.getKey();
 			userEdits=(int)userPageContributions.get(contpid);
 			totalEdits=(int)pageEditMap.get(contpid);
-			finalPageVote=graph.getVertices("pid",contpid).iterator().next().getProperty("finalvote");
+			finalPageVote=graph.getVertices("pid",contpid).iterator().next().getProperty("currentPageVote");
 			if(totalEdits==0)totalEdits=1;
 			/*System.out.println("======Printing the results======");
 			System.out.println("userEdits  "+userEdits);
@@ -91,7 +93,7 @@ public class UserCredibility {
 /*			System.out.println("bTemp------===="+bTemp);
 			System.out.println("bTotal------===="+bTotal);*/
 			userVote=reviewEdge.getProperty("vote");
-			versionVote=reviewEdge.getVertex(Direction.IN).getProperty("normalvote");
+			versionVote=reviewEdge.getVertex(Direction.IN).getProperty("previousVote");
 			//System.out.println("userVote===="+userVote);
 			bTemp=1-Math.abs(userVote-versionVote);
 			//System.out.println("versionVote------===="+versionVote);

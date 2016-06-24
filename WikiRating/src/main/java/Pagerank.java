@@ -18,10 +18,10 @@ public class Pagerank {
 	OrientGraph graph = Connections.getInstance().getDbGraph();
 	for (Vertex v :graph.getVertices("@class","Page")) {
 		OrientVertex vv=(OrientVertex)v;
-		long backLinks=vv.countEdges(Direction.IN, "@class","backLink");
+		long backLinks=vv.countEdges(Direction.IN, "@class","Backlink");
 		System.out.println("======= "+v.getProperty("name").toString()+"========"+backLinks);
-		for(Edge e:vv.getEdges(Direction.IN,"@class","backLink")){
-			System.out.println(e.getVertex(Direction.OUT).getProperty("name"));
+		for(Edge e:vv.getEdges(Direction.IN,"@class","Backlink")){
+			System.out.println(e.getVertex(Direction.OUT).getProperty("title"));
 		}
 		
 	}
@@ -40,7 +40,7 @@ public class Pagerank {
 		//Iterating for the calculation of number of backLinks and the maximum of them.
 		for (Vertex v :graph.getVertices("@class","Page")) {
 			OrientVertex ov=(OrientVertex)v;
-			currLink=ov.countEdges(Direction.IN, "@class","backLink");
+			currLink=ov.countEdges(Direction.IN, "@class","Backlink");
 			pageRankMap.put((Integer)ov.getProperty("pid"),(double)currLink);
 			maxLink=(maxLink<currLink)?currLink:maxLink;
 		}
@@ -63,7 +63,7 @@ public class Pagerank {
 				OrientVertex vv=(OrientVertex)v;			//Casting required to count the edges from a node.
 				tempSum=0;
 				//Summing the contributions of different backLinks
-				for(Edge e:vv.getEdges(Direction.IN,"@class","backLink")){
+				for(Edge e:vv.getEdges(Direction.IN,"@class","Backlink")){
 					tempSum+=pageRankMap.get((Integer)e.getVertex(Direction.OUT).getProperty("pid"));
 					
 				}

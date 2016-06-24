@@ -38,23 +38,23 @@ public class Wipe {
 			  }
 		  System.out.println("=============User deleted=========");
 		  try{
-			  graph.dropEdgeType("backLink");
+			  graph.dropEdgeType("Backlink");
 		  }catch(Exception e){
 			  e.printStackTrace();
 			  }
-		  System.out.println("=============backLink deleted=========");
+		  System.out.println("=============Backlink deleted=========");
 		  try{
-			  graph.dropEdgeType("version");
+			  graph.dropEdgeType("PreviousRevision");
 		  }catch(Exception e){
 			  e.printStackTrace();
 			  }
-		  System.out.println("=============version deleted=========");
+		  System.out.println("=============PreviousRevision deleted=========");
 		  try{
-			  graph.dropEdgeType("Pversion");
+			  graph.dropEdgeType("PreviousVersionOfPage");
 		  }catch(Exception e){
 			  e.printStackTrace();
 			  }
-		  System.out.println("=============Pversion deleted=========");
+		  System.out.println("=============PreviousVersionOfPage deleted=========");
 		  
 		  try{
 			  graph.dropEdgeType("Contribute");

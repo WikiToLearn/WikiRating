@@ -9,17 +9,17 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 public class NormalisedVotes {
 	
-	//This method will calculate the finalVotes of all the Pages on the plaform
+	//This method will calculate the finalVotes of all the Pages on the platform
 	public static void calculatePageVotes(){
 		
 		OrientGraph graph = Connections.getInstance().getDbGraph();
-		double finalPageVote=0;
+		double currentPageVote=0;
 		Vertex revisionNode=null;
 		for (Vertex pageNode : graph.getVertices("@class","Page")) {
 			try{
-			revisionNode = pageNode.getEdges(Direction.OUT, "@class", "Pversion").iterator().next().getVertex(Direction.IN);
-			finalPageVote=recursiveVotes(graph,(int)revisionNode.getProperty("revid"));
-			pageNode.setProperty("finalvote",finalPageVote);
+			revisionNode = pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next().getVertex(Direction.IN);
+			currentPageVote=recursiveVotes(graph,(int)revisionNode.getProperty("revid"));
+			pageNode.setProperty("currentPageVote",currentPageVote);
 			graph.commit();
 			}catch(Exception e){e.printStackTrace();}
 		}
@@ -33,7 +33,7 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 		if((int)graph.getVertices("revid", revid).iterator().next().getProperty("parentid")==0){
 			lastVote=simpleVote(graph,revid);
 			Vertex currRevision=graph.getVertices("revid", revid).iterator().next();
-			currRevision.setProperty("normalvote",lastVote);
+			currRevision.setProperty("previousVote",lastVote);
 			graph.commit();
 			System.out.println(currRevision.getProperty("revid")+" of "+currRevision.getProperty("Page")+" has--- "+lastVote);
 			return lastVote;
@@ -44,7 +44,7 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 			currVote=simpleVote(graph,revid);
 			normalVote=((simpleVote(graph,revid)+phi*recursiveVotes(graph,(int)graph.getVertices("revid", revid).iterator().next().getProperty("parentid")))/(phi+1));
 			Vertex currRevision=graph.getVertices("revid", revid).iterator().next();
-			currRevision.setProperty("normalvote",normalVote);
+			currRevision.setProperty("previousVote",normalVote);
 			graph.commit();
 			System.out.println(currRevision.getProperty("revid")+" of "+currRevision.getProperty("Page")+" has--- "+normalVote);
 			return normalVote;
@@ -57,8 +57,8 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 		Vertex userNode=null;
 		Vertex revisionNode=graph.getVertices("revid",revid).iterator().next();
 		for(Edge reviewEdge:revisionNode.getEdges(Direction.IN,"@class","Review")){
-			userNode=reviewEdge.getVertex(Direction.OUT);
-			numerator+=(double)userNode.getProperty("credibility")*(double)reviewEdge.getProperty("vote");
+			//userNode=reviewEdge.getVertex(Direction.OUT);
+			numerator+=(double)reviewEdge.getProperty("voteCredibility")*(double)reviewEdge.getProperty("vote");
 			denominator+=(double)reviewEdge.getProperty("vote");
 		}
 		if(denominator==0)denominator=1;

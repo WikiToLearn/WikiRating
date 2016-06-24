@@ -45,7 +45,7 @@ public class Page {
 							try{
 								System.out.println(dummy.getString("title"));
 								Vertex ver = graph.addVertex("class:Page"); // 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
-								ver.setProperty( "name", dummy.getString("title"));
+								ver.setProperty( "title", dummy.getString("title"));
 								ver.setProperty("pid",dummy.getInt("pageid"));
 								ver.setProperty("ns", ns);
 								graph.commit();

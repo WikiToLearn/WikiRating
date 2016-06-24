@@ -23,13 +23,13 @@ public class Contribution {
 		for (Vertex pageNode : graph.getVertices("@class", "Page")) {
 
 			// To check for any null links
-			if (pageNode.getEdges(Direction.OUT, "@class", "Pversion").iterator().hasNext() == false)
+			if (pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().hasNext() == false)
 				continue;
 			else
 				loopCounter = true;
 			try {
 				pageEdits = 0;
-				revisionNode = pageNode.getEdges(Direction.OUT, "@class", "Pversion").iterator().next()
+				revisionNode = pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next()
 						.getVertex(Direction.IN); // Getting the latest version
 													// to iterate on the
 													// revisons
@@ -37,12 +37,12 @@ public class Contribution {
 				// Finding out the total edits by traversing all the revisions
 				// for a particular page.
 				while (loopCounter) {
-					if (revisionNode.getEdges(Direction.OUT, "@class", "Version").iterator().hasNext()) {
-						nextRevisionNode = revisionNode.getEdges(Direction.OUT, "@class", "Version").iterator().next()
+					if (revisionNode.getEdges(Direction.OUT, "@class", "PreviousRevision").iterator().hasNext()) {
+						nextRevisionNode = revisionNode.getEdges(Direction.OUT, "@class", "PreviousRevision").iterator().next()
 								.getVertex(Direction.IN);
 						pageEdits += Math.abs(
 								(int) nextRevisionNode.getProperty("size") - (int) revisionNode.getProperty("size"));
-						revisionNode = revisionNode.getEdges(Direction.OUT, "@class", "Version").iterator().next()
+						revisionNode = revisionNode.getEdges(Direction.OUT, "@class", "PreviousRevision").iterator().next()
 								.getVertex(Direction.IN);
 					} else {
 						pageEdits += (int) revisionNode.getProperty("size");
@@ -62,7 +62,7 @@ public class Contribution {
 		Iterator it = totalPageEdits.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
-			System.out.println(graph.getVertices("pid", pair.getKey()).iterator().next().getProperty("name")
+			System.out.println(graph.getVertices("pid", pair.getKey()).iterator().next().getProperty("title")
 					+ " has got insertions= " + pair.getValue());
 		}
 

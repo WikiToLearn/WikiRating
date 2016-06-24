@@ -161,7 +161,7 @@ public class WikiUtil {
 		String result = "";
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		for (Vertex v : graph.getVertices("@class", "Page")) {
-			result = result + " \n" + v.getProperty("name");
+			result = result + " \n" + v.getProperty("title");
 		}
 
 		return result;

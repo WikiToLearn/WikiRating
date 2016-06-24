@@ -63,10 +63,12 @@ public static ArrayList<Integer> getRevisionList(OrientGraph graph){
 							System.out.println(userNode.getProperty("username")+" gives "+currVote+" to "+revisionNode.getProperty("Page")+" == "+revid);
 							Edge review = graph.addEdge("review", userNode, revisionNode, "Review");
 							review.setProperty("vote", currVote/10.0);
+							review.setProperty("voteCredibility",userNode.getProperty("credibility"));
 						}
-						graph.commit();
+						//graph.commit();
 					}
 				}
+				graph.commit();
 			}
 		}
 		//graph.commit();

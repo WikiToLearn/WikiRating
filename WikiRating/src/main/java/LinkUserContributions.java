@@ -48,7 +48,7 @@ public class LinkUserContributions {
 							} // Creating edges between the User and his contribution
 							Vertex targetVersionNode = graph.getVertices("revid", dummy.getInt("revid")).iterator().next();
 							Edge contributes = graph.addEdge("contribute", userNode, targetVersionNode, "Contribute");
-							contributes.setProperty("consize", Math.abs(dummy.getInt("sizediff")));
+							contributes.setProperty("contributionSize", Math.abs(dummy.getInt("sizediff")));
 							//graph.commit();
 							System.out.println(userNode.getProperty("username") + " Contributes to "
 									+ dummy.getString("title") + " to " + targetVersionNode.getProperty("revid")

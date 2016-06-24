@@ -38,7 +38,7 @@ public class LinkPages {
 				 	JSONObject dummy;							
 				 	inLinks=arr.length();
 				 	
-				 	System.out.println(v.getProperty("name").toString()+" has inLinks = "+inLinks);
+				 	System.out.println(v.getProperty("title").toString()+" has inLinks = "+inLinks);
 				 	
 				 	//Iterating to get all the backlinks of a particular node(Page)
 				 	
@@ -48,9 +48,9 @@ public class LinkPages {
 				 		try{	
 				 			
 				 			Vertex backLink=graph.getVertices("pid",dummy.getInt("pageid")).iterator().next();	//Getting the node linked to the current page.
-				 			Edge isbackLink = graph.addEdge("backLink", backLink, v, "backLink");				//Creating Edge in between the 2 vertices.
+				 			Edge isbackLink = graph.addEdge("Backlink", backLink, v, "Backlink");				//Creating Edge in between the 2 vertices.
 				 			
-				 			System.out.println(v.getProperty("name").toString()+" is linked to "+backLink.getProperty("name").toString());
+				 			System.out.println(v.getProperty("title").toString()+" is linked to "+backLink.getProperty("title").toString());
 				 			
 				 		graph.commit();														
 				 		} catch( Exception e ) {

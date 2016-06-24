@@ -36,14 +36,14 @@ public class Revision {
 					 	for(int i=0;i<arr.length();i++){
 					 		dummy=arr.getJSONObject(i);
 					 		
-					 		System.out.println(v.getProperty("name").toString()+dummy.getInt("revid"));
+					 		System.out.println(v.getProperty("title").toString()+dummy.getInt("revid"));
 					 		
 					 		//Adding pages to database without the duplicates
 					 		if(WikiUtil.rCheck("revid", dummy.getInt("revid"), graph)){
 					 			
 					 		try{
 					 			  Vertex ver = graph.addVertex("class:Revision"); // 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
-					 			  ver.setProperty( "Page", v.getProperty("name").toString());
+					 			  ver.setProperty( "Page", v.getProperty("title").toString());
 					 			  ver.setProperty("revid",dummy.getInt("revid"));
 					 			  ver.setProperty("parentid",dummy.getInt("parentid"));
 					 			  ver.setProperty("user",dummy.getString("user"));
@@ -55,12 +55,12 @@ public class Revision {
 					 			  if(i==arr.length()-1){//The latest version will be connected to the Page itself and to the previous revision too
 					 				  
 					 				  Vertex parentPage=graph.getVertices("pid",v.getProperty("pid")).iterator().next();
-					 				  Edge isRevision = graph.addEdge("link", parentPage,ver,"Pversion");
+					 				  Edge isRevision = graph.addEdge("PreviousVersionOfPage", parentPage,ver,"PreviousVersionOfPage");
 					 			  }
 					 			  
 					 			  if(i!=0){//To link the current revision to the previous versions
 					 				Vertex parent=graph.getVertices("revid",dummy.getInt("parentid")).iterator().next();
-					 				Edge isRevision = graph.addEdge("link", ver,parent,"version");
+					 				Edge isRevision = graph.addEdge("PreviousRevision", ver,parent,"PreviousRevision");
 					 			  }
 					 			  
 					 			  
