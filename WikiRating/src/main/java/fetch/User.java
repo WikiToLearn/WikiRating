@@ -44,8 +44,8 @@ public class User {
 				
 				for(int i=0;i<arr.length();i++){
 					dummy=arr.getJSONObject(i);
-					System.out.println(dummy.getString("name"));
 					if(WikiUtil.rCheck("userid",dummy.getInt("userid"),graph)){	//This is a makeshift way to avoid duplicate insertion.
+						System.out.println(dummy.getString("name"));
 						
 						//Adding Users to database
 						try{

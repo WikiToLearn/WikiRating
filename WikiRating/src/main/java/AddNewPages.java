@@ -5,18 +5,17 @@ package main.java;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.orient.OrientEdge;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
 import main.java.compute.LinkPages;
 import main.java.fetch.Page;
 import main.java.fetch.Revision;
 import main.java.utilities.Connections;
 import main.java.utilities.WikiUtil;
+
+
 
 
 
@@ -49,13 +48,13 @@ public class AddNewPages {
 						if(WikiUtil.rCheck("pid",dummy.getInt("pageid"),graph)){	//This is a makeshift way to avoid duplicate insertion.
 							
 							insertNewPage(graph,dummy,ns);
-							getNewRevisions("title",dummy.getString("title"),false);
-							LinkPages.linkAll("title",dummy.getString("title"));
+							getNewRevisions(graph,"title",dummy.getString("title"),false);
+							linkAllBacklinks(graph,"title",dummy.getString("title"));
 							
 							
 						}
 						else{
-							getNewRevisions("title",dummy.getString("title"),true);
+							getNewRevisions(graph,"title",dummy.getString("title"),true);
 							
 							
 						}
@@ -90,13 +89,118 @@ public class AddNewPages {
 		
 	}
 	
+	//This is the main method will be used to linking all the pages available in the database.
+		public static void linkAll(String key,String value){
+
+			OrientGraph graph = Connections.getInstance().getDbGraph();
+			String result="";
+			int inLinks;
+			
+			//Iterating on every vertex to check it's backlinks
+			
+			for (Vertex v : graph.getVertices(key,value)) {
+				
+				result=LinkPages.getBacklinks((int)(v.getProperty("pid")));	//Getting the JSON formatted String to process.
+				inLinks=0;
+				
+				//JSON interpretation of the fetched String
+				
+				 try {  
+					 	JSONObject js=new JSONObject(result);
+					 	JSONObject js2=js.getJSONObject("query");
+					 	JSONArray arr=js2.getJSONArray("backlinks");	//This array has all the backlinks the page has.
+					 	JSONObject dummy;							
+					 	inLinks=arr.length();
+					 	
+					 	System.out.println(v.getProperty("title").toString()+" has inLinks = "+inLinks);
+					 	
+					 	//Iterating to get all the backlinks of a particular node(Page)
+					 	
+					 	for(int i=0;i<arr.length();i++){
+					 		dummy=arr.getJSONObject(i);
+					 		
+					 		try{	
+					 			
+					 			Vertex backLink=graph.getVertices("pid",dummy.getInt("pageid")).iterator().next();	//Getting the node linked to the current page.
+					 			Edge isbackLink = graph.addEdge("Backlink", backLink, v, "Backlink");				//Creating Edge in between the 2 vertices.
+					 			
+					 			System.out.println(v.getProperty("title").toString()+" is linked to "+backLink.getProperty("title").toString());
+					 			
+					 		graph.commit();														
+					 		} catch( Exception e ) {
+					 			e.printStackTrace();
+					 			graph.rollback();																	//In case the transaction fails we will rollback.
+					 		}
+					 		
+					 	}
+				 } catch (JSONException e) { 
+					 e.printStackTrace();
+				 }
+				 
+			}
+			//graph.commit();	
+			graph.shutdown();
+			//Revision.getAllRevisions();
+		}
 	
-	public static void getNewRevisions(String key,String value,boolean update){
+		public static void linkAllBacklinks(OrientGraph graph,String key,String value){
+
+			String result="";
+			int inLinks;
+			
+			//Iterating on every vertex to check it's backlinks
+			
+			for (Vertex v : graph.getVertices(key,value)) {
+				
+				result=LinkPages.getBacklinks((int)(v.getProperty("pid")));	//Getting the JSON formatted String to process.
+				inLinks=0;
+				
+				//JSON interpretation of the fetched String
+				
+				 try {  
+					 	JSONObject js=new JSONObject(result);
+					 	JSONObject js2=js.getJSONObject("query");
+					 	JSONArray arr=js2.getJSONArray("backlinks");	//This array has all the backlinks the page has.
+					 	JSONObject dummy;							
+					 	inLinks=arr.length();
+					 	
+					 	System.out.println(v.getProperty("title").toString()+" has inLinks = "+inLinks);
+					 	
+					 	//Iterating to get all the backlinks of a particular node(Page)
+					 	
+					 	for(int i=0;i<arr.length();i++){
+					 		dummy=arr.getJSONObject(i);
+					 		
+					 		try{	
+					 			
+					 			Vertex backLink=graph.getVertices("pid",dummy.getInt("pageid")).iterator().next();	//Getting the node linked to the current page.
+					 			Edge isbackLink = graph.addEdge("Backlink", backLink, v, "Backlink");				//Creating Edge in between the 2 vertices.
+					 			
+					 			System.out.println(v.getProperty("title").toString()+" is linked to "+backLink.getProperty("title").toString());
+					 			
+					 		graph.commit();														
+					 		} catch( Exception e ) {
+					 			e.printStackTrace();
+					 			graph.rollback();																	//In case the transaction fails we will rollback.
+					 		}
+					 		
+					 	}
+				 } catch (JSONException e) { 
+					 e.printStackTrace();
+				 }
+				 
+			}
+			//graph.commit();	
+			//graph.shutdown();
+			//Revision.getAllRevisions();
+		}
+	
+	public static void getNewRevisions(OrientGraph graph,String key,String value,boolean update){
 		
 		String result="";
 		int sizeDiff=0;
 		boolean flag=true;
-		OrientGraph graph=Connections.getInstance().getDbGraph();
+		
 		System.out.println("=====Checkpoint for Revisions==========");
 		for (Vertex pageNode : graph.getVertices(key,value)) {
 			
@@ -125,12 +229,15 @@ public class AddNewPages {
 
 									graph.removeEdge(pageNode.getEdges(Direction.OUT,"@class","PreviousVersionOfPage").iterator().next());
 									//Remove old backlinks
-									 pageNode=graph.getVertices("pid",dummy.getInt("pageid")).iterator().next();
+									 
 									for(Edge backlinkEdge:pageNode.getEdges(Direction.IN,"@class","Backlink"))
 									graph.removeEdge(backlinkEdge);
-									LinkPages.linkAll("title",dummy.getString("title"));
+									
+									linkAllBacklinks(graph,"title",pageNode.getProperty("title").toString());
 								}
 					 			flag=false;
+					 			
+					 			System.out.println("Adding some new revisions");
 					 			
 					 		try{
 					 			  Vertex revisionNode = graph.addVertex("class:Revision"); // 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
@@ -163,7 +270,7 @@ public class AddNewPages {
 					 			  
 					 			  if(i==arr.length()-1){//The latest version will be connected to the Page itself and to the previous revision too
 					 				  
-					 				  Vertex parentPage=graph.getVertices("pid",pageNode.getProperty("pid")).iterator().next();
+					 				  Vertex parentPage=pageNode;
 					 				  Edge isRevision = graph.addEdge("PreviousVersionOfPage", parentPage,revisionNode,"PreviousVersionOfPage");
 					 			  }
 					 			  
