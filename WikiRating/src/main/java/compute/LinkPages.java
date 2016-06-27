@@ -1,4 +1,4 @@
-package main.java;
+package main.java.compute;
 
 /**This class will deal with the procedures to links the pages which points to some other pages.
  * That is this will interconnect all the Backlinks. 
@@ -12,11 +12,14 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
+import main.java.utilities.Connections;
+import main.java.utilities.WikiUtil;
+
 
 public class LinkPages {
 	
 	//This is the main method will be used to linking all the pages available in the database.
-	public static void linkAll(){
+	public static void linkAll(String key,String value){
 
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		String result="";
@@ -24,7 +27,7 @@ public class LinkPages {
 		
 		//Iterating on every vertex to check it's backlinks
 		
-		for (Vertex v : graph.getVertices("@class","Page")) {
+		for (Vertex v : graph.getVertices(key,value)) {
 			
 			result=getBacklinks((int)(v.getProperty("pid")));	//Getting the JSON formatted String to process.
 			inLinks=0;

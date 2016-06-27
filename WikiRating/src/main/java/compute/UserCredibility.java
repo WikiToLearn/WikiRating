@@ -1,4 +1,4 @@
-package main.java;
+package main.java.compute;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,6 +11,8 @@ import com.tinkerpop.blueprints.Edge;
  */
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+
+import main.java.utilities.Connections;
 public class UserCredibility {
 	
 	//Main method that will compute all credibility for all the Users

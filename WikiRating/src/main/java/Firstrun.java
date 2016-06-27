@@ -1,9 +1,5 @@
 package main.java;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 /**This is the chief class will call all other methods
  * 
  */
@@ -11,6 +7,16 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
+import main.java.compute.LinkPages;
+import main.java.compute.LinkUserContributions;
+import main.java.compute.NormalisedVotes;
+import main.java.compute.PageRating;
+import main.java.compute.Pagerank;
+import main.java.compute.RandomVoteGenerator;
+import main.java.compute.Reliability;
+import main.java.compute.UserCredibility;
+import main.java.fetch.*;
 
 @Path("do")
 public class Firstrun {
@@ -23,26 +29,36 @@ public class Firstrun {
 	public Response pCompute() {
 		long startTime = System.currentTimeMillis();
 		
-		/*Page.insertPages();
+		Page.insertPages();
 		System.out.println("==================Page insertion over=====================");
-		LinkPages.linkAll();
+		
+		LinkPages.linkAll("@class","Page");
 		System.out.println("==================Page linking over=====================");
+		
 		User.insertAllUsers();
 		System.out.println("==================All Users inserted=====================");
-		Revision.getAllRevisions();
+		
+		Revision.getAllRevisions("@class","Page");
 		System.out.println("==================Page Revisions over=====================");
+		
 		Pagerank.pageRankCompute();
 		System.out.println("==================Page rank over=====================");
+		
 		LinkUserContributions.linkAll();
 		System.out.println("==================All Users Linked=====================");
+		
 		RandomVoteGenerator.generateVotes();
 		System.out.println("==================All Versions voted=====================");
+		
 		NormalisedVotes.calculatePageVotes();
 		System.out.println("==================All Page Votes computed=====================");
+		
 		UserCredibility.getUserCredibility();
 		System.out.println("==================User Credibility computed=====================");
+		
 		Reliability.calculateReliability();
-		System.out.println("==================Vote Reliability computed=====================");*/
+		System.out.println("==================Vote Reliability computed=====================");
+		
 		PageRating.computePageRatings();
 		System.out.println("==================Page Ratings computed=====================");
 		//EdgesTest.testMe();

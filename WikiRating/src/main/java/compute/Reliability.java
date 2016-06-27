@@ -1,9 +1,11 @@
-package main.java;
+package main.java.compute;
 
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+
+import main.java.utilities.Connections;
 
 /** This class will calculate the reliability of the vote given by the users
  * The structure and the methods of this class are very similar to class NormalisedVotes.java

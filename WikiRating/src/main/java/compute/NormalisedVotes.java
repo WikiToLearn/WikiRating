@@ -1,4 +1,4 @@
-package main.java;
+package main.java.compute;
 /** This class deals with the computation of Normalised votes for all the revisions and finally the page
  * 
  */
@@ -6,6 +6,8 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+
+import main.java.utilities.Connections;
 
 public class NormalisedVotes {
 	

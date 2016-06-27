@@ -1,4 +1,4 @@
-package main.java;
+package main.java.utilities;
 
 /**This class contains various utilities for the other classes
  * 

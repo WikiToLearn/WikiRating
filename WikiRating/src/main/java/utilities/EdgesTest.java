@@ -1,4 +1,4 @@
-package main.java;
+package main.java.utilities;
 
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;

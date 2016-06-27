@@ -1,4 +1,4 @@
-package main.java;
+package main.java.compute;
 /**This class will link the user to all their respective contributions on the platform
  * 
  */
@@ -12,6 +12,9 @@ import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+
+import main.java.utilities.Connections;
+import main.java.utilities.WikiUtil;
 
 public class LinkUserContributions {
 

@@ -1,4 +1,4 @@
-package main.java;
+package main.java.utilities;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

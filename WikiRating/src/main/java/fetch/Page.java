@@ -1,4 +1,4 @@
-package main.java;
+package main.java.fetch;
 
 /** This class will populate the database with all the pages available on the WikiPlatform.
  */
@@ -10,6 +10,9 @@ import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+
+import main.java.utilities.Connections;
+import main.java.utilities.WikiUtil;
 
 public class Page {
 	

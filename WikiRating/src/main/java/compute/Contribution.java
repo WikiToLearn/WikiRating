@@ -1,4 +1,4 @@
-package main.java;
+package main.java.compute;
 
 /*Class to calculate the contributions of User to the platfrom
  * 
@@ -9,6 +9,8 @@ import java.util.Map;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+
+import main.java.utilities.Connections;
 
 public class Contribution {
 

@@ -1,4 +1,4 @@
-package main.java;
+package main.java.utilities;
 
 /**This class will be used only for the creation of the classes in the database.
  * However the classes can be created on the fly too while inserting so this class is not used.

@@ -1,4 +1,4 @@
-package main.java;
+package main.java.utilities;
 
 /**This class deals with the handling of all the connections to Database and MediaWiki API
  * 

@@ -1,4 +1,4 @@
-package main.java;
+package main.java.fetch;
 /**This class is made to link the revisions to the corresponding pages
  * 
  */
@@ -11,16 +11,19 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
+import main.java.utilities.Connections;
+import main.java.utilities.WikiUtil;
+
 
 public class Revision {
 	
 	//This method will compute the revisions for all the pages and link them
-	public static void getAllRevisions(){
+	public static void getAllRevisions(String key,String value){
 		
 		String result="";
 		OrientGraph graph=Connections.getInstance().getDbGraph();
 		System.out.println("=====Checkpoint for Revisions==========");
-		for (Vertex v : graph.getVertices("@class","Page")) {
+		for (Vertex v : graph.getVertices(key,value)) {
 			
 			result=getRevision(v.getProperty("pid").toString());	//Fetching the revision string for a particular page.
 							
