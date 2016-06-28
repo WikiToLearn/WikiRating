@@ -1,4 +1,4 @@
-package main.java.compute;
+package main.java.computations;
 
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;

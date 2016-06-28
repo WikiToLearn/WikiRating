@@ -1,4 +1,4 @@
-package main.java;
+package main.java.models;
 /**This class will check for new pages, revisions made on previous pages and add them. Further it will link them to the corresponding User contributions
  * It will also link a page to other pages that has a back link towards it
  */
@@ -9,11 +9,9 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-import main.java.compute.LinkPages;
-import main.java.fetch.Page;
-import main.java.fetch.Revision;
+
+import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
-import main.java.utilities.WikiUtil;
 
 
 

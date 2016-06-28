@@ -1,4 +1,4 @@
-package main.java.compute;
+package main.java.computations;
 
 import java.util.ArrayList;
 import java.util.Random;

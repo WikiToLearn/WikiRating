@@ -1,4 +1,4 @@
-package main.java.compute;
+package main.java.models;
 /**This class will link the user to all their respective contributions on the platform
  * 
  */
@@ -13,8 +13,8 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
+import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
-import main.java.utilities.WikiUtil;
 
 public class LinkUserContributions {
 

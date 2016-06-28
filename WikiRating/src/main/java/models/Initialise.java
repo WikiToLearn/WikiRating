@@ -1,10 +1,12 @@
-package main.java.utilities;
+package main.java.models;
 
 /**This class will be used only for the creation of the classes in the database.
  * However the classes can be created on the fly too while inserting so this class is not used.
  */
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
+
+import main.java.utilities.Propaccess;
 
 public class Initialise {
 

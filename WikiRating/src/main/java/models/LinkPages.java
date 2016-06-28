@@ -1,4 +1,4 @@
-package main.java.compute;
+package main.java.models;
 
 /**This class will deal with the procedures to links the pages which points to some other pages.
  * That is this will interconnect all the Backlinks. 
@@ -12,8 +12,8 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
+import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
-import main.java.utilities.WikiUtil;
 
 
 public class LinkPages {

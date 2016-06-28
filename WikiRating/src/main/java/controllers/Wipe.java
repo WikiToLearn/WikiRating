@@ -1,4 +1,4 @@
-package main.java.utilities;
+package main.java.controllers;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -7,6 +7,8 @@ import javax.ws.rs.core.Response;
 
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+
+import main.java.utilities.Connections;
 
 @Path("wipe")
 public class Wipe {

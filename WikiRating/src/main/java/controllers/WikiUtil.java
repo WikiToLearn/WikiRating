@@ -1,4 +1,4 @@
-package main.java.utilities;
+package main.java.controllers;
 
 /**This class contains various utilities for the other classes
  * 
@@ -17,6 +17,8 @@ import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientEdge;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+
+import main.java.utilities.Connections;
 
 public class WikiUtil {
 

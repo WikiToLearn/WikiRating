@@ -1,4 +1,4 @@
-package main.java;
+package main.java.controllers;
 
 /**This is the chief class will call all other methods
  * 
@@ -8,18 +8,24 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import main.java.compute.LinkPages;
-import main.java.compute.LinkUserContributions;
-import main.java.compute.NormalisedVotes;
-import main.java.compute.PageRating;
-import main.java.compute.Pagerank;
-import main.java.compute.RandomVoteGenerator;
-import main.java.compute.Reliability;
-import main.java.compute.UserCredibility;
-import main.java.fetch.*;
+import main.java.computations.NormalisedVotes;
+import main.java.computations.PageRating;
+import main.java.computations.Pagerank;
+import main.java.computations.RandomVoteGenerator;
+import main.java.computations.Reliability;
+import main.java.computations.UserCredibility;
+import main.java.models.*;
 
 @Path("do")
 public class Firstrun {
+	 /**
+	   * This method is used to add two integers. This is
+	   * a the simplest form of a class method, just to
+	   * show the usage of various javadoc Tags.
+	   * @param numA This is the first paramter to addNum method
+	   * @param numB  This is the second parameter to addNum method
+	   * @return int This returns sum of numA and numB.
+	   */
 
 	@GET
 	@Produces("application/json")

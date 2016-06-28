@@ -1,4 +1,4 @@
-package main.java.compute;
+package main.java.computations;
 
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;

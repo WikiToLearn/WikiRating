@@ -1,4 +1,4 @@
-package main.java.compute;
+package main.java.computations;
 /** This class deals with the computation of Normalised votes for all the revisions and finally the page
  * 
  */

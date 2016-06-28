@@ -1,4 +1,4 @@
-package main.java.compute;
+package main.java.computations;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;

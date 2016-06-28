@@ -1,4 +1,4 @@
-package main.java.fetch;
+package main.java.models;
 /**This class is made to link the revisions to the corresponding pages
  * 
  */
@@ -11,8 +11,8 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
+import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
-import main.java.utilities.WikiUtil;
 
 
 public class Revision {

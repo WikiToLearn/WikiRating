@@ -1,4 +1,4 @@
-package main.java.fetch;
+package main.java.models;
 /**This class inserts all the users available on the WikitoLearn Platform
  */
 import java.io.InputStream;
@@ -9,8 +9,8 @@ import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
+import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
-import main.java.utilities.WikiUtil;
 
 public class User {
 

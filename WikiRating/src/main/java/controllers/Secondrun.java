@@ -1,4 +1,4 @@
-package main.java;
+package main.java.controllers;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -7,7 +7,8 @@ import javax.ws.rs.core.Response;
 
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
-import main.java.fetch.User;
+import main.java.models.AddNewPages;
+import main.java.models.User;
 import main.java.utilities.Connections;
 
 @Path("sec")

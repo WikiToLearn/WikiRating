@@ -1,4 +1,4 @@
-package main.java.compute;
+package main.java.computations;
 
 /*Class to calculate the contributions of User to the platfrom
  * 
