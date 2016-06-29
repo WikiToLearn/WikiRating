@@ -1,7 +1,5 @@
 package main.java.models;
-/**This class will check for new pages, revisions made on previous pages and add them. Further it will link them to the corresponding User contributions
- * It will also link a page to other pages that has a back link towards it
- */
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,17 +7,22 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
 import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
 
 
-
-
+/**
+ * This class will check for new pages, revisions made on previous pages and add them. 
+ * Further it will link them to the corresponding User contributions.
+ * It will also link a page to other pages that has a back link towards it.
+ */
 
 public class AddNewPages {
 	
-	public static void chackForPages(){
+	/**
+	 * This method will check for all the changes and then call suitable methods to handle them.
+	 */
+	public static void checkForPages(){
 		
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		String allPages="";
@@ -49,12 +52,9 @@ public class AddNewPages {
 							getNewRevisions(graph,"title",dummy.getString("title"),false);
 							linkAllBacklinks(graph,"title",dummy.getString("title"));
 							
-							
 						}
 						else{
 							getNewRevisions(graph,"title",dummy.getString("title"),true);
-							
-							
 						}
 					}
 				} catch (JSONException e) {
@@ -69,6 +69,13 @@ public class AddNewPages {
 		}
 		
 	}
+	
+	/**
+	 * This method will add new pages to the database
+	 * @param graph Orient Graph object
+	 * @param dummy	JSONObject having Page object
+	 * @param ns	Namespace of the page
+	 */
 	
 	public static void insertNewPage(OrientGraph graph,JSONObject dummy,int ns){
 		
@@ -87,59 +94,13 @@ public class AddNewPages {
 		
 	}
 	
-	//This is the main method will be used to linking all the pages available in the database.
-		public static void linkAll(String key,String value){
 
-			OrientGraph graph = Connections.getInstance().getDbGraph();
-			String result="";
-			int inLinks;
-			
-			//Iterating on every vertex to check it's backlinks
-			
-			for (Vertex v : graph.getVertices(key,value)) {
-				
-				result=LinkPages.getBacklinks((int)(v.getProperty("pid")));	//Getting the JSON formatted String to process.
-				inLinks=0;
-				
-				//JSON interpretation of the fetched String
-				
-				 try {  
-					 	JSONObject js=new JSONObject(result);
-					 	JSONObject js2=js.getJSONObject("query");
-					 	JSONArray arr=js2.getJSONArray("backlinks");	//This array has all the backlinks the page has.
-					 	JSONObject dummy;							
-					 	inLinks=arr.length();
-					 	
-					 	System.out.println(v.getProperty("title").toString()+" has inLinks = "+inLinks);
-					 	
-					 	//Iterating to get all the backlinks of a particular node(Page)
-					 	
-					 	for(int i=0;i<arr.length();i++){
-					 		dummy=arr.getJSONObject(i);
-					 		
-					 		try{	
-					 			
-					 			Vertex backLink=graph.getVertices("pid",dummy.getInt("pageid")).iterator().next();	//Getting the node linked to the current page.
-					 			Edge isbackLink = graph.addEdge("Backlink", backLink, v, "Backlink");				//Creating Edge in between the 2 vertices.
-					 			
-					 			System.out.println(v.getProperty("title").toString()+" is linked to "+backLink.getProperty("title").toString());
-					 			
-					 		graph.commit();														
-					 		} catch( Exception e ) {
-					 			e.printStackTrace();
-					 			graph.rollback();																	//In case the transaction fails we will rollback.
-					 		}
-					 		
-					 	}
-				 } catch (JSONException e) { 
-					 e.printStackTrace();
-				 }
-				 
-			}
-			//graph.commit();	
-			graph.shutdown();
-			//Revision.getAllRevisions();
-		}
+		/**
+		 * This method links all the backLinks of a particular page
+		 * @param graph OrientGraph object
+		 * @param key	Name of the key here '@class'
+		 * @param value	Value of the key here 'Page'
+		 */
 	
 		public static void linkAllBacklinks(OrientGraph graph,String key,String value){
 
@@ -161,8 +122,8 @@ public class AddNewPages {
 					 	JSONArray arr=js2.getJSONArray("backlinks");	//This array has all the backlinks the page has.
 					 	JSONObject dummy;							
 					 	inLinks=arr.length();
-					 	
 					 	System.out.println(v.getProperty("title").toString()+" has inLinks = "+inLinks);
+					 	
 					 	
 					 	//Iterating to get all the backlinks of a particular node(Page)
 					 	
@@ -173,8 +134,8 @@ public class AddNewPages {
 					 			
 					 			Vertex backLink=graph.getVertices("pid",dummy.getInt("pageid")).iterator().next();	//Getting the node linked to the current page.
 					 			Edge isbackLink = graph.addEdge("Backlink", backLink, v, "Backlink");				//Creating Edge in between the 2 vertices.
-					 			
 					 			System.out.println(v.getProperty("title").toString()+" is linked to "+backLink.getProperty("title").toString());
+					 			
 					 			
 					 		graph.commit();														
 					 		} catch( Exception e ) {
@@ -188,11 +149,16 @@ public class AddNewPages {
 				 }
 				 
 			}
-			//graph.commit();	
-			//graph.shutdown();
-			//Revision.getAllRevisions();
+			
 		}
 	
+		/**
+		 * This method will link the revisions to the new as well as modified pages
+		 * @param graph OrientGraph object
+		 * @param key	Name of the class here 'Page'
+		 * @param value	Value of the page
+		 * @param update	Set this true is the Page exsts already and needs to be updated
+		 */
 	public static void getNewRevisions(OrientGraph graph,String key,String value,boolean update){
 		
 		String result="";
@@ -223,17 +189,17 @@ public class AddNewPages {
 					 			System.out.println(pageNode.getProperty("title").toString()+dummy.getInt("revid"));
 					 			//Code to remove the Link of 'outdated'latest version from the parent page to make the room for the new one.
 					 			if(update==true&&flag){
-						 			System.out.println(pageNode.getProperty("title").toString()+" is getting updated");
 
+					 				System.out.println(pageNode.getProperty("title").toString()+" is getting updated");
 									graph.removeEdge(pageNode.getEdges(Direction.OUT,"@class","PreviousVersionOfPage").iterator().next());
 									//Remove old backlinks
-									 
-									for(Edge backlinkEdge:pageNode.getEdges(Direction.IN,"@class","Backlink"))
-									graph.removeEdge(backlinkEdge);
-									
+									for(Edge backlinkEdge:pageNode.getEdges(Direction.IN,"@class","Backlink")){
+										graph.removeEdge(backlinkEdge);
+									}
 									linkAllBacklinks(graph,"title",pageNode.getProperty("title").toString());
-								}
+					 			}
 					 			flag=false;
+									
 					 			
 					 			System.out.println("Adding some new revisions");
 					 			
@@ -295,11 +261,7 @@ public class AddNewPages {
 			   ee.printStackTrace();
 			 }
 			
-}		//graph.commit();
-		//graph.shutdown();
-//Pagerank.pageRankCompute();
-		
-			
+}		
 		
 	}
 

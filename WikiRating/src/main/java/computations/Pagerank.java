@@ -1,27 +1,34 @@
 package main.java.computations;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
-
 import main.java.utilities.Connections;
 
+/**
+ * This class will calculate the Pagerank (Cite Index) of all the Pages on the platform
+ */
 
 public class Pagerank {
 	
-	//This is a test method used for printing all the edges linking to a page for all the pages.
+	
+	/**
+	   * This method prints all the edges
+	   * linking to a page for all the pages on the platform.
+	   * @return void
+	   */
 	public static void edgeList(){
 		
 	OrientGraph graph = Connections.getInstance().getDbGraph();
-	for (Vertex v :graph.getVertices("@class","Page")) {
-		OrientVertex vv=(OrientVertex)v;
+	for (Vertex pageNode :graph.getVertices("@class","Page")) {
+		OrientVertex vv=(OrientVertex)pageNode;
 		long backLinks=vv.countEdges(Direction.IN, "@class","Backlink");
-		System.out.println("======= "+v.getProperty("name").toString()+"========"+backLinks);
+		System.out.println("======= "+pageNode.getProperty("name").toString()+"========"+backLinks);
 		for(Edge e:vv.getEdges(Direction.IN,"@class","Backlink")){
 			System.out.println(e.getVertex(Direction.OUT).getProperty("title"));
 		}
@@ -30,8 +37,13 @@ public class Pagerank {
 	
 	}
 	
-	//This is the method that will calculate the ranks of all the pages.
 	
+	
+	/**
+	 * This method will calculate and store the Pageranks of all the pages
+	 * on the platform.
+	 * @return void
+	 */
 	public static void pageRankCompute(){
 		
 		OrientGraph graph = Connections.getInstance().getDbGraph();
@@ -40,15 +52,15 @@ public class Pagerank {
 		double tempSum=0;double finalPageRank;
 		
 		//Iterating for the calculation of number of backLinks and the maximum of them.
-		for (Vertex v :graph.getVertices("@class","Page")) {
-			OrientVertex ov=(OrientVertex)v;
-			currLink=ov.countEdges(Direction.IN, "@class","Backlink");
-			pageRankMap.put((Integer)ov.getProperty("pid"),(double)currLink);
+		for (Vertex pageNode :graph.getVertices("@class","Page")) {
+			OrientVertex oPageNode=(OrientVertex)pageNode;
+			currLink=oPageNode.countEdges(Direction.IN, "@class","Backlink");
+			pageRankMap.put((Integer)oPageNode.getProperty("pid"),(double)currLink);
 			maxLink=(maxLink<currLink)?currLink:maxLink;
 		}
 		
-		 //Scaling the values by dividing with the maxlinks
 		
+		//Scaling the values by dividing with the maxlinks
 		 Iterator it = pageRankMap.entrySet().iterator();
 		    while (it.hasNext()) {
 		        Map.Entry pair = (Map.Entry)it.next();
@@ -58,12 +70,13 @@ public class Pagerank {
 		    
 		    System.out.println(maxLink+" is the max ");
 		
-		    //Now calculating the weighted Page Rank for every page.
 		    
-		    for (Vertex v :graph.getVertices("@class","Page")) {
+		    //Now calculating the weighted Page Rank for every page.
+		    for (Vertex pageNode :graph.getVertices("@class","Page")) {
 		    	
-				OrientVertex vv=(OrientVertex)v;			//Casting required to count the edges from a node.
+				OrientVertex vv=(OrientVertex)pageNode;			//Casting required to count the edges from a node.
 				tempSum=0;
+				
 				//Summing the contributions of different backLinks
 				for(Edge e:vv.getEdges(Direction.IN,"@class","Backlink")){
 					tempSum+=pageRankMap.get((Integer)e.getVertex(Direction.OUT).getProperty("pid"));
@@ -71,11 +84,12 @@ public class Pagerank {
 				}
 		        
 				finalPageRank=tempSum/maxLink;				//Final page rank
-				pageRankMap.put((Integer)v.getProperty("pid"),finalPageRank);
-				v.setProperty("Pagerank", finalPageRank);	//Adding the PageRank to Database
+				pageRankMap.put((Integer)pageNode.getProperty("pid"),finalPageRank);
+				pageNode.setProperty("Pagerank", finalPageRank);	//Adding the PageRank to Database
 				graph.commit();
 	
 			}
+		    
 		    //To print out the final results.
 		    Iterator it2 = pageRankMap.entrySet().iterator();
 		    while (it2.hasNext()) {

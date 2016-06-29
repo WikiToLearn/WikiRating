@@ -4,14 +4,20 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
 import main.java.utilities.Connections;
 
-/** This class will calculate the reliability of the vote given by the users
+/**
+ *  This class will calculate the reliability of the vote given by the users.
  * The structure and the methods of this class are very similar to class NormalisedVotes.java
  */
+
 public class Reliability {
 
+	/**
+	   *This method will calculate the reliability of the votes given by the user
+	   *to the versions.
+	   * @return void
+	   */
 	public static void calculateReliability(){
 		
 		OrientGraph graph = Connections.getInstance().getDbGraph();
@@ -29,8 +35,14 @@ public class Reliability {
 		graph.shutdown();
 	}
 	
-	
-public static double recursiveReliability(OrientGraph graph,int revid){
+	/**
+	 * This method will calculate and store the reliability of  votes for all the revisions of a particular page
+	 * and then return the final reliability of vote for the page itself
+	   * @param graph OrientGraph object
+	   * @param revid Revision Id of the latest version connected to the Page 
+	 * @return final reliabiity of the latest version is computed and returned
+	 */
+	public static double recursiveReliability(OrientGraph graph,int revid){
 		
 		double lastReliability=0,phi=0,normalReliability=0,currReliability=0;
 		if((int)graph.getVertices("revid", revid).iterator().next().getProperty("parentid")==0){
@@ -55,6 +67,13 @@ public static double recursiveReliability(OrientGraph graph,int revid){
 		
 	}
 	
+	/**
+	 * This method will calculate the  average of reliabilities of the current Revision Node 
+	 * 
+	 * @param graph	OrientGraph object
+	 * @param revid	Revision Id for the revision node under the calculation
+	 * @return	The calculated Simple weighted average. 
+	 */
 	public static double simpleReliability(OrientGraph graph,int revid){
 		
 		double denominator=0,numerator=0,simpleVote=0,globalVote=0,userVote=0;
@@ -72,6 +91,12 @@ public static double recursiveReliability(OrientGraph graph,int revid){
 		return simpleVote;
 	}
 	
+	/**
+	 * This will calculate the parameter phi to scale the reliabilities of the previous versions
+	 * @param graph
+	 * @param revid
+	 * @return The parameter phi
+	 */
 	public static double getPhi(OrientGraph graph,int revid){
 		final double P=1.0;
 		double phi=0;

@@ -1,6 +1,5 @@
 package main.java.models;
-/**This class inserts all the users available on the WikitoLearn Platform
- */
+
 import java.io.InputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -8,13 +7,17 @@ import org.json.JSONObject;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
 import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
 
+/**This class inserts all the users available on the WikitoLearn Platform
+ */
+
 public class User {
 
-
+	/**
+	 * This method will insert all the users into the database
+	 */
 	public static void insertAllUsers(){
 		
 		OrientGraph graph = Connections.getInstance().getDbGraph();
@@ -77,16 +80,21 @@ public class User {
 	
 	//This is the helper method to return the a JSON formatted string queried from the MediaWiki API to get all the users on the platform
 	
+	/**
+	 * This method will return the a JSON formatted string queried
+	 * from the MediaWiki API to get all the users.
+	 * @param username	Username of the user whose information has to be fetched
+	 * @return	A JSON formatted String containing the user information
+	 */
 	public static String getAllUsers(String username) {
-		
 		
 		//Accessing MediaWiki API using Wikidata Toolkit
 		String result = "";
 		ApiConnection con=Connections.getInstance().getApiConnection();
 		InputStream in=WikiUtil.reqSend(con,WikiUtil.getUserParam(username));
 		result=WikiUtil.streamToString(in);
-		//System.out.println(result);
 		return result;
+		
 	}
 		
 		

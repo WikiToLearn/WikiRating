@@ -1,7 +1,5 @@
 package main.java.models;
-/**This class is made to link the revisions to the corresponding pages
- * 
- */
+
 import java.io.InputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,14 +8,22 @@ import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
 import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
 
 
+/**
+ * This class will link the revisions to the corresponding pages
+ */
+
 public class Revision {
 	
-	//This method will compute the revisions for all the pages and link them
+	//This 
+	/**
+	 * This method will compute the revisions for all the pages and link them
+	 * @param key	Name of the key here '@class'
+	 * @param value	Value of the key here 'Revision'
+	 */
 	public static void getAllRevisions(String key,String value){
 		
 		String result="";
@@ -93,6 +99,14 @@ public class Revision {
 	}
 
 	//This is the helper method to return the a JSON formatted string queried from the MediaWiki API to get all the revisions for a particular pid.
+	
+	/**
+	 * This method will return the a JSON formatted string queried
+	 * from the MediaWiki API get all the pages in the particular Namespace
+	 * @param pid	PageID of the Page whose revisions are to be returned
+	 * @return	A JSON formatted String containing all the revisions 
+	 */
+	
 	public static String getRevision(String pid ){
 
 		String result = "";

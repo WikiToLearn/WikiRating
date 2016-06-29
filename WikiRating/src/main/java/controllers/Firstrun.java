@@ -1,13 +1,9 @@
 package main.java.controllers;
 
-/**This is the chief class will call all other methods
- * 
- */
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-
 import main.java.computations.NormalisedVotes;
 import main.java.computations.PageRating;
 import main.java.computations.Pagerank;
@@ -16,22 +12,26 @@ import main.java.computations.Reliability;
 import main.java.computations.UserCredibility;
 import main.java.models.*;
 
+
+/**
+ * This class will be used to initialize the engine. 
+ * 
+ */
 @Path("do")
 public class Firstrun {
-	 /**
-	   * This method is used to add two integers. This is
-	   * a the simplest form of a class method, just to
-	   * show the usage of various javadoc Tags.
-	   * @param numA This is the first paramter to addNum method
-	   * @param numB  This is the second parameter to addNum method
-	   * @return int This returns sum of numA and numB.
-	   */
+	
 
 	@GET
 	@Produces("application/json")
+	
 	// Warning: If you add revisions before the Users, only those users who have
 	// not contributed to Wiki will be added.
-	// However this behaviour can be inverted tool
+	// However this behaviour can be inverted too
+	
+	/**
+	 * This method will call different other methods that will initialize the engine
+	 * @return Response object showing time taken to run the computation
+	 */
 	public Response pCompute() {
 		long startTime = System.currentTimeMillis();
 		
@@ -67,20 +67,7 @@ public class Firstrun {
 		
 		PageRating.computePageRatings();
 		System.out.println("==================Page Ratings computed=====================");
-		//EdgesTest.testMe();
-		//Contribution.getPageEdits();
-		
-		// String result1="Nothing to show here!";
-		// String result1=Page.insertPages();
-		// String result1=Dataret.printVertex();
-		// result1=Dataret.printVertex();
-		// String result1=WikiUtil.testInsert("","");
-		/*
-		 * result1=Revision.getAllRevisions(); result1=result1+" "
-		 * +estimatedTime;
-		 */
-		// LinkPages.linkAll();
-		long estimatedTime = System.currentTimeMillis() - startTime;
+				long estimatedTime = System.currentTimeMillis() - startTime;
 		estimatedTime = estimatedTime / 60000;
 
 		return Response.status(200).entity("Successful and took" + estimatedTime + "Minutes").build();

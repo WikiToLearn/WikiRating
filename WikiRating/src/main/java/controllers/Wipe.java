@@ -4,11 +4,14 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-
-import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
-
 import main.java.utilities.Connections;
+
+/**
+ * This class will wipe the database clean
+ *
+ */
+
 
 @Path("wipe")
 public class Wipe {
@@ -16,6 +19,10 @@ public class Wipe {
 	@GET
 	  @Produces("application/json")
 	 
+	/**
+	 * This method will delete all the added classes,Vertices,Edges from the database
+	 * @return	Response object showing time taken to run the computation
+	 */
 	public Response wipeDatabase() {
 		  long startTime = System.currentTimeMillis();
 		  OrientGraphNoTx graph = Connections.getInstance().getDbGraphNT();

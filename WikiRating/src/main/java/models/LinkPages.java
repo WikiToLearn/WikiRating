@@ -1,8 +1,5 @@
 package main.java.models;
 
-/**This class will deal with the procedures to links the pages which points to some other pages.
- * That is this will interconnect all the Backlinks. 
- */
 import java.io.InputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,14 +8,22 @@ import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
 import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
 
 
+/**
+ * This class will deal with the procedures to links the pages which points to some other pages.
+ * So this will interconnect all the Backlinks. 
+ */
+
 public class LinkPages {
 	
-	//This is the main method will be used to linking all the pages available in the database.
+	/**
+	 * This method will link all the Pages in the database
+	 * @param key	Name of the key here '@class'
+	 * @param value	Value of the key here 'Page'
+	 */
 	public static void linkAll(String key,String value){
 
 		OrientGraph graph = Connections.getInstance().getDbGraph();
@@ -74,7 +79,13 @@ public class LinkPages {
 					
 	
 	
-	//This is the helper method to return the a JSON formatted string queried from the MediaWiki API to get all the backlinking pages
+	
+	/**
+	 * This method will return the a JSON formatted string queried
+	 * from the MediaWiki API to get all the backlinking pages
+	 * @param pid	PageID of the page whose backlinks are to be fetched
+	 * @return	A JSON formatted String containing all the backlinks  
+	 */
 	public static String getBacklinks(int pid) {
 		  
 		

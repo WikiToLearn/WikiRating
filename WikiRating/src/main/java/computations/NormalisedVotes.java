@@ -1,17 +1,25 @@
 package main.java.computations;
-/** This class deals with the computation of Normalised votes for all the revisions and finally the page
- * 
- */
+
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
 import main.java.utilities.Connections;
+
+/** 
+ * This class will calculate the Normalised Votes of all the revisions and hence the page by using the given
+ * recursive formula that takes keeps scaling the votes on the previous versions with the new ones
+ * 
+ */
 
 public class NormalisedVotes {
 	
-	//This method will calculate the finalVotes of all the Pages on the platform
+	
+	/**
+	   *This method will calculate the Normalised Votes of all the pages in on the platform
+	   *along with their respective revisions.
+	   * @return void
+	   */
 	public static void calculatePageVotes(){
 		
 		OrientGraph graph = Connections.getInstance().getDbGraph();
@@ -29,6 +37,13 @@ public class NormalisedVotes {
 		graph.shutdown();
 	}
 	
+	/**
+	   * This method will calculate and store the Normalised votes for all the revisions of a particular page
+	   * and then return the final Normalised vote for the page itself
+	   * @param graph OrientGraph object
+	   * @param revid Revision Id of the latest version connected to the Page 
+	   * @return final vote of the latest version is computed and returned
+	   */
 public static double recursiveVotes(OrientGraph graph,int revid){
 		
 		double lastVote=0,phi=0,normalVote=0,currVote=0;
@@ -54,6 +69,15 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 		
 	}
 	
+
+	/**This method will calculate the weighted average of votes of the current Revision Node 
+	 * 
+	 * @param graph	OrientGraph object
+	 * @param revid	Revision Id for the revision node under the calculation
+	 * @return	The calculated Simple weighted average. 
+	 */
+	
+	
 	public static double simpleVote(OrientGraph graph,int revid){
 		double denominator=0,numerator=0,simpleVote=0;
 		Vertex userNode=null;
@@ -68,6 +92,13 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 		return simpleVote;
 	}
 	
+	
+	/**
+	 * This will calculate the parameter phi to scale the votes of the previous versions
+	 * @param graph	OrientGraph object
+	 * @param revid	Revision Id for the revision node under the calculation
+	 * @return The parameter phi
+	 */
 	public static double getPhi(OrientGraph graph,int revid){
 		final double P=1.0;
 		double phi=0;

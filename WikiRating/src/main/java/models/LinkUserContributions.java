@@ -1,23 +1,27 @@
 package main.java.models;
-/**This class will link the user to all their respective contributions on the platform
- * 
- */
-import java.io.InputStream;
 
+import java.io.InputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
-
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
 import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
 
+
+/**This class will link the user to all their respective contributions on the platform
+ * 
+ */
+
 public class LinkUserContributions {
 
+	/**
+	 * This method will link all the Users to their work.
+	 */
+	
 	public static void linkAll() {
 
 		String result = "";
@@ -27,9 +31,7 @@ public class LinkUserContributions {
 
 			// Fetching the user contribution on a particular page
 			result = getUserContribution(userNode.getProperty("username").toString());
-
-			// System.out.println(result);
-			
+	
 				// JSON interpretation
 				try {
 
@@ -39,7 +41,7 @@ public class LinkUserContributions {
 					JSONObject dummy;
 					System.out.println(userNode.getProperty("username")+"      "+arr.length());
 					System.out.println("*");
-					// System.out.println(arr.length());
+
 					for (int i = 0; i < arr.length(); i++) {
 
 						dummy = arr.getJSONObject(i);
@@ -69,12 +71,18 @@ public class LinkUserContributions {
 			
 			graph.commit();	
 		}
-		//graph.commit();	
+
 		graph.shutdown();
 	}
+	
+	
+	/**
+	 * This method will return the a JSON formatted string queried
+	 * from the MediaWiki API to get all the user contributions.
+	 * @param username	Username of the user whose contributions are to be fetched
+	 * @return	A JSON formatted String containing all user contributions
+	 */
 
-	// This is the helper method to return the a JSON formatted string queried
-	// from the MediaWiki API to get all the user contributions.
 	public static String getUserContribution(String username) {
 
 		String result = "";

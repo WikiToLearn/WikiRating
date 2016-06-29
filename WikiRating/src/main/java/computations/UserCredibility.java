@@ -3,19 +3,22 @@ package main.java.computations;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
-/**This class will deal with the calculations of User Credibility
- *  
- */
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
 import main.java.utilities.Connections;
+
+/**
+ * This class will deal with the calculations of User Credibility 
+ */
+
 public class UserCredibility {
 	
-	//Main method that will compute all credibility for all the Users
+	//
+	/**
+	 *This method will compute the credibility for all the Users 
+	 */
 	public static void getUserCredibility(){
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		final double S1=1,S2=1;
@@ -38,6 +41,13 @@ public class UserCredibility {
 		
 	}
 
+	/**
+	 * This method calculates the parameter 'a' for credibility calculation
+	 * @param userNode	The Vertex of the User class whose credibility is being calculated
+	 * @param graph	OrientGraph object
+	 * @param pageEditMap	HashMap containing all the edits and their corresponding pid
+	 * @return	The value of parameter 'a'
+	 */
 	public static double geta(Vertex userNode,OrientGraph graph,HashMap<Integer,Integer> pageEditMap){
 		HashMap<Integer,Integer> userPageContributions=new HashMap<Integer,Integer>();  
 		int contpid=0,countContribution=0; 
@@ -45,23 +55,18 @@ public class UserCredibility {
 		double aTemp=0,aTotal=0;
 		int contributionSize=0;int randc=0;
 		for(Edge contributeEdge:userNode.getEdges(Direction.OUT,"@class","Contribute")){
-			//randc++;
-			//System.out.println("================#######++++++++++++++");
+			
 			contpid=(int)graph.getVertices("title",contributeEdge.getVertex(Direction.IN).getProperty("Page").toString()).iterator().next().getProperty("pid");
 			contributionSize=contributeEdge.getProperty("contributionSize");
-			//System.out.println(userNode.getProperty("username")+"  ====  "+contributionSize+"");
 			if(userPageContributions.containsKey(contpid)){
-				//System.out.println("second time");
 				contributionSize+=(int)userPageContributions.get(contpid);
 				userPageContributions.put(contpid,(Integer)contributionSize);
 			}
 			else
 			{
-				//System.out.println("first time");
 				userPageContributions.put(contpid,(Integer)contributionSize);
 			}
 	}
-		//System.out.println("No to contri "+randc);
 		Iterator it = userPageContributions.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
@@ -70,41 +75,36 @@ public class UserCredibility {
 			totalEdits=(int)pageEditMap.get(contpid);
 			finalPageVote=graph.getVertices("pid",contpid).iterator().next().getProperty("currentPageVote");
 			if(totalEdits==0)totalEdits=1;
-			/*System.out.println("======Printing the results======");
-			System.out.println("userEdits  "+userEdits);
-			System.out.println("totalEdits  "+totalEdits);
-			System.out.println("finalPageVote  "+finalPageVote);*/
+
 			aTemp=(finalPageVote*userEdits/totalEdits);
 			aTotal+=aTemp;
-		/*	System.out.println("aTemp  "+aTemp);
-			System.out.println("aTotal  "+aTotal);
-			System.out.println("aTemp  "+aTemp);*/
 			countContribution++;
-			//System.out.println("countContribution  "+countContribution);
 		}
 		if(countContribution==0)countContribution=1;
 		return aTotal/countContribution;
 }
 	
+	/**
+	 * This method calculates the parameter 'b' for credibility calculation
+	 * @param userNode	The Vertex of the User class whose credibility is being calculated
+	 * @param graph	OrientGraph object
+	 * @return	The value of parameter 'b'
+	 */
 	
 	public static double getb(Vertex userNode,OrientGraph graph){
 		double bTemp=0,bTotal=0,userVote,versionVote;
 		int countReview=0;
 		try{
 		for(Edge reviewEdge:userNode.getEdges(Direction.OUT,"@class","Review")){
-/*			System.out.println("bTemp------===="+bTemp);
-			System.out.println("bTotal------===="+bTotal);*/
+
 			userVote=reviewEdge.getProperty("vote");
 			versionVote=reviewEdge.getVertex(Direction.IN).getProperty("previousVote");
-			//System.out.println("userVote===="+userVote);
 			bTemp=1-Math.abs(userVote-versionVote);
-			//System.out.println("versionVote------===="+versionVote);
 			bTotal+=bTemp;
 			countReview++;
 		}
 		}catch(Exception e){e.printStackTrace();}
 		if(countReview==0)countReview=1;
-		//System.out.println("fffffffffffbTotal------===="+bTotal);
 		return bTotal/countReview;
 		
 	}

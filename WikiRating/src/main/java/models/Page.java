@@ -1,23 +1,26 @@
 package main.java.models;
 
-/** This class will populate the database with all the pages available on the WikiPlatform.
- */
 import java.io.InputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
-
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
 import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
 
+
+/** 
+ * This class will populate the database with all the pages available on the WikiPlatform.
+ */
+
 public class Page {
 	
+	/**
+	 * This method will insert all the pages from all the available Namespaces in database.
+	 */
 	
-	//This method will insert all the pages from all the available Namespaces in database.
 	public static void insertPages(){
 	
 		OrientGraph graph = Connections.getInstance().getDbGraph();
@@ -72,26 +75,26 @@ public class Page {
 		
 	}
 							
-							
-		
  		
 	
-	//This is the helper method to return the a JSON formatted string queried from the MediaWiki API to get all the pages in the particular Namespace
+	
+	/**
+	 * This method will return the a JSON formatted string queried
+	 * from the MediaWiki API get all the pages in the particular Namespace
+	 * @param ns	Namespace whose pages are to be fetched
+	 * @return	A JSON formatted String containing all the pages  
+	 */
 	
 	public static String getAllPages(int ns) {
+		
+		//Accessing MediaWiki API using Wikidata Toolkit
+		
+		String result = "";
+		ApiConnection con=Connections.getInstance().getApiConnection();
+		InputStream in=WikiUtil.reqSend(con,WikiUtil.getPageParam(ns+""));
+		result=WikiUtil.streamToString(in);
+		return result;
 		  
-		  
-		  //Accessing MediaWiki API using Wikidata Toolkit
-		  
-		  String result = "";
-		  
-		  ApiConnection con=Connections.getInstance().getApiConnection();
-		   
-		 
-		   InputStream in=WikiUtil.reqSend(con,WikiUtil.getPageParam(ns+""));
-			  result=WikiUtil.streamToString(in);
-		  
-	        return result;
 	}
 
 }

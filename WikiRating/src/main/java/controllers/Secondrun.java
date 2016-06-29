@@ -4,12 +4,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-
-import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
-
 import main.java.models.AddNewPages;
 import main.java.models.User;
-import main.java.utilities.Connections;
+/**
+ * This class will be used for detecting and storing any new changes like 
+ * Page addition, Page modification and User Addition to the platform.
+ */
 
 @Path("sec")
 
@@ -19,29 +19,29 @@ public class Secondrun {
 @GET
 @Produces("application/json")
 
+	/**
+	 * This method will call suitable methods to insert all the new users and
+	 * update the database for any new changes
+	 * @return	Response object showing time taken to run the computation
+	 */
 	public Response pCompute() {
 		long startTime = System.currentTimeMillis();
-		//Code here
-				
+						
+		/*Now we will check for new pages and add revisions to them too.
+		 *Make links to the user contributions too
+		 *Calculate the user votes and then calculate the recursive votes too.
+		 *We will calculate the backlinks too
+		 *Drop backlinks and then create the new ones again
+		 *Calculate the votes
+		 *Calculate the user reliability
+		 */
+		
 		User.insertAllUsers();
 		System.out.println("==================Checked for new User's insertion=====================");
 		
-		AddNewPages.chackForPages();
+		AddNewPages.checkForPages();
 		System.out.println("==================Checked for any new pages,revisions and linked the user contributions and made backlinks=====================");
 
-		
-		//Now we will check for new pages and add revisions to them too.
-		//Make links to the user contributions too
-		//calculate the user votes and then calculate the recursive votes too.
-		
-		//We will calculate the backlinks too
-		
-		//Drop backlinks and then create the new ones again
-		
-		//Calculate the votes
-		//calculate the user reliability
-		
-		
 		long estimatedTime = System.currentTimeMillis() - startTime;
 		estimatedTime = estimatedTime / 60000;
 
