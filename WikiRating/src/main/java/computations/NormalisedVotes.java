@@ -47,23 +47,29 @@ public class NormalisedVotes {
 public static double recursiveVotes(OrientGraph graph,int revid){
 		
 		double lastVote=0,phi=0,normalVote=0,currVote=0;
-		if((int)graph.getVertices("revid", revid).iterator().next().getProperty("parentid")==0){
+		Vertex revisionNode=graph.getVertices("revid", revid).iterator().next();
+		if(revisionNode.getProperty("previousVote")==null)System.out.println("I am NULLLL   "+revid);
+		if((double)revisionNode.getProperty("previousVote")!=-1){
+			System.out.println(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+revisionNode.getProperty("previousVote"));
+			return (double)revisionNode.getProperty("previousVote");
+		}
+		
+		if((int)revisionNode.getProperty("parentid")==0){
 			lastVote=simpleVote(graph,revid);
-			Vertex currRevision=graph.getVertices("revid", revid).iterator().next();
-			currRevision.setProperty("previousVote",lastVote);
+			revisionNode.setProperty("previousVote",lastVote);
 			graph.commit();
-			System.out.println(currRevision.getProperty("revid")+" of "+currRevision.getProperty("Page")+" has--- "+lastVote);
+			System.out.println(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+lastVote);
 			return lastVote;
 		}
+		
 		
 		else{
 			phi=getPhi(graph,revid);
 			currVote=simpleVote(graph,revid);
-			normalVote=((simpleVote(graph,revid)+phi*recursiveVotes(graph,(int)graph.getVertices("revid", revid).iterator().next().getProperty("parentid")))/(phi+1));
-			Vertex currRevision=graph.getVertices("revid", revid).iterator().next();
-			currRevision.setProperty("previousVote",normalVote);
+			normalVote=((simpleVote(graph,revid)+phi*recursiveVotes(graph,(int)revisionNode.getProperty("parentid")))/(phi+1));
+			revisionNode.setProperty("previousVote",normalVote);
 			graph.commit();
-			System.out.println(currRevision.getProperty("revid")+" of "+currRevision.getProperty("Page")+" has--- "+normalVote);
+			System.out.println(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+normalVote);
 			return normalVote;
 		}
 		

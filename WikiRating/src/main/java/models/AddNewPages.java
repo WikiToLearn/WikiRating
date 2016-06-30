@@ -86,6 +86,8 @@ public class AddNewPages {
 			ver.setProperty( "title", dummy.getString("title"));
 			ver.setProperty("pid",dummy.getInt("pageid"));
 			ver.setProperty("ns", ns);
+			ver.setProperty("currentPageVote",-1);
+			ver.setProperty("currentPageReliability", -1);
 			graph.commit();
 		} catch( Exception e ) {
 			e.printStackTrace();
@@ -211,7 +213,9 @@ public class AddNewPages {
 					 			  revisionNode.setProperty("user",dummy.getString("user"));
 					 			  revisionNode.setProperty("userid",dummy.getInt("userid"));
 					 			  revisionNode.setProperty("size",dummy.getInt("size"));
-					 			  
+					 			  revisionNode.setProperty("previousVote",-1);
+					 			  revisionNode.setProperty("previousReliability", -1);
+
 					 			  //Code to link the user contributions
 					 			  
 					 			  if((i==0)&&(WikiUtil.rCheck("userid", dummy.getInt("userid"), graph)==false)){

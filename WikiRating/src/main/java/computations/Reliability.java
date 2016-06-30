@@ -45,12 +45,18 @@ public class Reliability {
 	public static double recursiveReliability(OrientGraph graph,int revid){
 		
 		double lastReliability=0,phi=0,normalReliability=0,currReliability=0;
-		if((int)graph.getVertices("revid", revid).iterator().next().getProperty("parentid")==0){
+		Vertex revisionNode=graph.getVertices("revid", revid).iterator().next();
+		
+		if((double)revisionNode.getProperty("previousReliability")!=-1){
+			System.out.println(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+revisionNode.getProperty("previousReliability"));
+			return (double)revisionNode.getProperty("previousReliability");
+		}
+
+		if((int)revisionNode.getProperty("parentid")==0){
 			lastReliability=simpleReliability(graph,revid);
-			Vertex currRevision=graph.getVertices("revid", revid).iterator().next();
-			currRevision.setProperty("previousReliability",lastReliability);
+			revisionNode.setProperty("previousReliability",lastReliability);
 			graph.commit();
-			System.out.println(currRevision.getProperty("revid")+" of "+currRevision.getProperty("Page")+" has--- "+lastReliability);
+			System.out.println(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+lastReliability);
 			return lastReliability;
 		}
 		
@@ -58,10 +64,9 @@ public class Reliability {
 			phi=getPhi(graph,revid);
 			currReliability=simpleReliability(graph,revid);
 			normalReliability=((simpleReliability(graph,revid)+phi*recursiveReliability(graph,(int)graph.getVertices("revid", revid).iterator().next().getProperty("parentid")))/(phi+1));
-			Vertex currRevision=graph.getVertices("revid", revid).iterator().next();
-			currRevision.setProperty("previousReliability",normalReliability);
+			revisionNode.setProperty("previousReliability",normalReliability);
 			graph.commit();
-			System.out.println(currRevision.getProperty("revid")+" of "+currRevision.getProperty("Page")+" has--- "+normalReliability);
+			System.out.println(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+normalReliability);
 			return normalReliability;
 		}
 		

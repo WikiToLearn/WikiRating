@@ -4,6 +4,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
+import main.java.computations.NormalisedVotes;
 import main.java.models.AddNewPages;
 import main.java.models.User;
 /**
@@ -41,6 +43,9 @@ public class Secondrun {
 		
 		AddNewPages.checkForPages();
 		System.out.println("==================Checked for any new pages,revisions and linked the user contributions and made backlinks=====================");
+		
+		NormalisedVotes.calculatePageVotes();
+		System.out.println("==================Calculated new page votes=====================");
 
 		long estimatedTime = System.currentTimeMillis() - startTime;
 		estimatedTime = estimatedTime / 60000;
