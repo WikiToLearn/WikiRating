@@ -62,14 +62,14 @@ public class WikiUtil {
 	 */
 	
 	public static Map<String, String> getPageParam(String ns) {
-		Map<String, String> mm = new HashMap<String, String>();
-		mm.put("action", "query");
-		mm.put("list", "allpages");
-		mm.put("apfrom", "a");
-		mm.put("aplimit", "max");
-		mm.put("apnamespace", ns);
-		mm.put("format", "json");
-		return mm;
+		Map<String, String> queryParameterMap = new HashMap<String, String>();
+		queryParameterMap.put("action", "query");
+		queryParameterMap.put("list", "allpages");
+		queryParameterMap.put("apfrom", "a");
+		queryParameterMap.put("aplimit", "max");
+		queryParameterMap.put("apnamespace", ns);
+		queryParameterMap.put("format", "json");
+		return queryParameterMap;
 	}
 
 	/**
@@ -79,15 +79,15 @@ public class WikiUtil {
 	 * @return	Map having parameters
 	 */
 	public static Map<String, String> getRevisionParam(String pid) {
-		Map<String, String> mm = new HashMap<String, String>();
-		mm.put("action", "query");
-		mm.put("prop", "revisions");
-		mm.put("pageids", pid);
-		mm.put("rvprop", "userid|ids|timestamp|user|flags|size");
-		mm.put("rvlimit", "max");
-		mm.put("rvdir", "newer");
-		mm.put("format", "json");
-		return mm;
+		Map<String, String> queryParameterMap = new HashMap<String, String>();
+		queryParameterMap.put("action", "query");
+		queryParameterMap.put("prop", "revisions");
+		queryParameterMap.put("pageids", pid);
+		queryParameterMap.put("rvprop", "userid|ids|timestamp|user|flags|size");
+		queryParameterMap.put("rvlimit", "max");
+		queryParameterMap.put("rvdir", "newer");
+		queryParameterMap.put("format", "json");
+		return queryParameterMap;
 	}
 
 	/**
@@ -98,14 +98,14 @@ public class WikiUtil {
 	 */
 	
 	public static Map<String, String> getLinkParam(String pid) {
-		Map<String, String> mm = new HashMap<String, String>();
-		mm.put("action", "query");
-		mm.put("list", "backlinks");
-		mm.put("blpageid", pid);
-		mm.put("blfilterredir", "all");
-		mm.put("bllimit", "max");
-		mm.put("format", "json");
-		return mm;
+		Map<String, String> queryParameterMap = new HashMap<String, String>();
+		queryParameterMap.put("action", "query");
+		queryParameterMap.put("list", "backlinks");
+		queryParameterMap.put("blpageid", pid);
+		queryParameterMap.put("blfilterredir", "all");
+		queryParameterMap.put("bllimit", "max");
+		queryParameterMap.put("format", "json");
+		return queryParameterMap;
 	}
 
 
@@ -116,14 +116,14 @@ public class WikiUtil {
 	 * @return	Map having parameters
 	 */
 	public static Map<String, String> getUserParam(String username) {
-		Map<String, String> mm = new HashMap<String, String>();
-		mm.put("action", "query");
-		mm.put("list", "allusers");
-		mm.put("aulimit", "max");
-		mm.put("aufrom", username);
-		mm.put("rawcontinue", "");
-		mm.put("format", "json");
-		return mm;
+		Map<String, String> queryParameterMap = new HashMap<String, String>();
+		queryParameterMap.put("action", "query");
+		queryParameterMap.put("list", "allusers");
+		queryParameterMap.put("aulimit", "max");
+		queryParameterMap.put("aufrom", username);
+		queryParameterMap.put("rawcontinue", "");
+		queryParameterMap.put("format", "json");
+		return queryParameterMap;
 	}
 
 
@@ -134,16 +134,16 @@ public class WikiUtil {
 	 * @return	Map having parameters
 	 */
 	public static Map<String, String> getUserContriParam(String username) {
-		Map<String, String> mm = new HashMap<String, String>();
-		mm.put("action", "query");
-		mm.put("list", "usercontribs");
-		mm.put("uclimit", "max");
-		mm.put("ucdir", "newer");
-		mm.put("ucuser", username);
-		mm.put("ucshow", "!minor");
-		mm.put("ucprop", "sizediff|title|ids|flags");
-		mm.put("format", "json");
-		return mm;
+		Map<String, String> queryParameterMap = new HashMap<String, String>();
+		queryParameterMap.put("action", "query");
+		queryParameterMap.put("list", "usercontribs");
+		queryParameterMap.put("uclimit", "max");
+		queryParameterMap.put("ucdir", "newer");
+		queryParameterMap.put("ucuser", username);
+		queryParameterMap.put("ucshow", "!minor");
+		queryParameterMap.put("ucprop", "sizediff|title|ids|flags");
+		queryParameterMap.put("format", "json");
+		return queryParameterMap;
 	}
 
 	/**
@@ -174,8 +174,8 @@ public class WikiUtil {
 	 */
 	public static boolean rCheck(String key, int value, OrientGraph graph) {
 
-		Iterable<Vertex> vv = graph.getVertices(key, value);
-		Iterator it = vv.iterator();
+		Iterable<Vertex> checkNode = graph.getVertices(key, value);
+		Iterator it = checkNode.iterator();
 
 		if (it.hasNext()) {
 			return false;
@@ -194,8 +194,8 @@ public class WikiUtil {
 	public static String printVertex() {
 		String result = "";
 		OrientGraph graph = Connections.getInstance().getDbGraph();
-		for (Vertex v : graph.getVertices("@class", "Page")) {
-			result = result + " \n" + v.getProperty("title");
+		for (Vertex pageNode : graph.getVertices("@class", "Page")) {
+			result = result + " \n" + pageNode.getProperty("title");
 		}
 
 		return result;

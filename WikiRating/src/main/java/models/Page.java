@@ -9,6 +9,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
+import main.java.utilities.PropertiesAccess;
 
 
 /** 
@@ -16,6 +17,9 @@ import main.java.utilities.Connections;
  */
 
 public class Page {
+	
+	static int TEMPLATE=Integer.parseInt(PropertiesAccess.getParameterProperties("TEMPLATE")); 
+	static int MEDIAWIKI=Integer.parseInt(PropertiesAccess.getParameterProperties("MEDIAWIKI"));
 	
 	/**
 	 * This method will insert all the pages from all the available Namespaces in database.
@@ -31,6 +35,10 @@ public class Page {
 			//Now we will be iterating over all the namespaces to get all the pages in each og them.
 			
 			for(int ns=0;ns<=NO_OF_NAMESPACES;ns++){
+				
+				//To filter unwanted namespaces
+				if(ns==TEMPLATE||ns==MEDIAWIKI)
+					continue;
 				
 				//JSON interpretation
 				try {  
@@ -50,12 +58,12 @@ public class Page {
 							//Adding pages to database
 							try{
 								System.out.println(dummy.getString("title"));
-								Vertex ver = graph.addVertex("class:Page"); // 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
-								ver.setProperty( "title", dummy.getString("title"));
-								ver.setProperty("pid",dummy.getInt("pageid"));
-								ver.setProperty("ns", ns);
-								ver.setProperty("currentPageVote",-1.0);
-								ver.setProperty("currentPageReliability", -1.0);
+								Vertex pageNode = graph.addVertex("class:Page"); // 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
+								pageNode.setProperty( "title", dummy.getString("title"));
+								pageNode.setProperty("pid",dummy.getInt("pageid"));
+								pageNode.setProperty("ns", ns);
+								pageNode.setProperty("currentPageVote",-1.0);
+								pageNode.setProperty("currentPageReliability", -1.0);
 								graph.commit();
 							} catch( Exception e ) {
 								e.printStackTrace();

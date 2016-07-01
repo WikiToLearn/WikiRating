@@ -9,6 +9,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
+import main.java.utilities.PropertiesAccess;
 
 
 /**
@@ -19,6 +20,8 @@ import main.java.utilities.Connections;
 
 public class AddNewPages {
 	
+	static int TEMPLATE=Integer.parseInt(PropertiesAccess.getParameterProperties("TEMPLATE")); 
+	static int MEDIAWIKI=Integer.parseInt(PropertiesAccess.getParameterProperties("MEDIAWIKI"));
 	/**
 	 * This method will check for all the changes and then call suitable methods to handle them.
 	 */
@@ -33,28 +36,32 @@ public class AddNewPages {
 			
 			for(int ns=0;ns<=NO_OF_NAMESPACES;ns++){
 				
+				//To filter unwanted namespaces
+				if(ns==TEMPLATE||ns==MEDIAWIKI)
+					continue;
+				
 				//JSON interpretation
 				try {  
 					allPages =Page.getAllPages(ns);							//Getting the JSON formatted String to process.
 					JSONObject js=new JSONObject(allPages);
 					JSONObject js2=js.getJSONObject("query");
 					JSONArray arr=js2.getJSONArray("allpages");
-					JSONObject dummy;
+					JSONObject currentJsonObject;
 					
 					//Storing all the pages in a particular namespace
 					
 					for(int i=0;i<arr.length();i++){
-						dummy=arr.getJSONObject(i);
+						currentJsonObject=arr.getJSONObject(i);
 						
-						if(WikiUtil.rCheck("pid",dummy.getInt("pageid"),graph)){	//This is a makeshift way to avoid duplicate insertion.
+						if(WikiUtil.rCheck("pid",currentJsonObject.getInt("pageid"),graph)){	//This is a makeshift way to avoid duplicate insertion.
 							
-							insertNewPage(graph,dummy,ns);
-							getNewRevisions(graph,"title",dummy.getString("title"),false);
-							linkAllBacklinks(graph,"title",dummy.getString("title"));
+							insertNewPage(graph,currentJsonObject,ns);
+							getNewRevisions(graph,"title",currentJsonObject.getString("title"),false);
+							linkAllBacklinks(graph,"title",currentJsonObject.getString("title"));
 							
 						}
 						else{
-							getNewRevisions(graph,"title",dummy.getString("title"),true);
+							getNewRevisions(graph,"title",currentJsonObject.getString("title"),true);
 						}
 					}
 				} catch (JSONException e) {
@@ -73,18 +80,18 @@ public class AddNewPages {
 	/**
 	 * This method will add new pages to the database
 	 * @param graph Orient Graph object
-	 * @param dummy	JSONObject having Page object
+	 * @param currentJsonObject	JSONObject having Page object
 	 * @param ns	Namespace of the page
 	 */
 	
-	public static void insertNewPage(OrientGraph graph,JSONObject dummy,int ns){
+	public static void insertNewPage(OrientGraph graph,JSONObject currentJsonObject,int ns){
 		
 		//Adding pages to database
 		try{
-			System.out.println("++Adding this new Page++  "+dummy.getString("title"));
+			System.out.println("++Adding this new Page++  "+currentJsonObject.getString("title"));
 			Vertex ver = graph.addVertex("class:Page"); // 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
-			ver.setProperty( "title", dummy.getString("title"));
-			ver.setProperty("pid",dummy.getInt("pageid"));
+			ver.setProperty( "title", currentJsonObject.getString("title"));
+			ver.setProperty("pid",currentJsonObject.getInt("pageid"));
 			ver.setProperty("ns", ns);
 			ver.setProperty("currentPageVote",-1.0);
 			ver.setProperty("currentPageReliability", -1.0);
@@ -122,7 +129,7 @@ public class AddNewPages {
 					 	JSONObject js=new JSONObject(result);
 					 	JSONObject js2=js.getJSONObject("query");
 					 	JSONArray arr=js2.getJSONArray("backlinks");	//This array has all the backlinks the page has.
-					 	JSONObject dummy;							
+					 	JSONObject currentJsonObject;							
 					 	inLinks=arr.length();
 					 	System.out.println(v.getProperty("title").toString()+" has inLinks = "+inLinks);
 					 	
@@ -130,11 +137,11 @@ public class AddNewPages {
 					 	//Iterating to get all the backlinks of a particular node(Page)
 					 	
 					 	for(int i=0;i<arr.length();i++){
-					 		dummy=arr.getJSONObject(i);
+					 		currentJsonObject=arr.getJSONObject(i);
 					 		
 					 		try{	
 					 			
-					 			Vertex backLink=graph.getVertices("pid",dummy.getInt("pageid")).iterator().next();	//Getting the node linked to the current page.
+					 			Vertex backLink=graph.getVertices("pid",currentJsonObject.getInt("pageid")).iterator().next();	//Getting the node linked to the current page.
 					 			Edge isbackLink = graph.addEdge("Backlink", backLink, v, "Backlink");				//Creating Edge in between the 2 vertices.
 					 			System.out.println(v.getProperty("title").toString()+" is linked to "+backLink.getProperty("title").toString());
 					 			
@@ -178,17 +185,17 @@ public class AddNewPages {
 					 	JSONObject js=new JSONObject(result);
 					 	JSONObject js2=js.getJSONObject("query").getJSONObject("pages").getJSONObject(pageNode.getProperty("pid").toString());
 					 	JSONArray arr=js2.getJSONArray("revisions");
-						JSONObject dummy;
+						JSONObject currentJsonObject;
 						
 						
 					 	for(int i=0;i<arr.length();i++){
-					 		dummy=arr.getJSONObject(i);
+					 		currentJsonObject=arr.getJSONObject(i);
 					 		
 					 		
 					 		//Adding pages to database without the duplicates
-					 		if(WikiUtil.rCheck("revid", dummy.getInt("revid"), graph)){
+					 		if(WikiUtil.rCheck("revid", currentJsonObject.getInt("revid"), graph)){
 					 			
-					 			System.out.println(pageNode.getProperty("title").toString()+dummy.getInt("revid"));
+					 			System.out.println(pageNode.getProperty("title").toString()+currentJsonObject.getInt("revid"));
 					 			//Code to remove the Link of 'outdated'latest version from the parent page to make the room for the new one.
 					 			if(update==true&&flag){
 
@@ -208,28 +215,28 @@ public class AddNewPages {
 					 		try{
 					 			  Vertex revisionNode = graph.addVertex("class:Revision"); // 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
 					 			  revisionNode.setProperty( "Page", pageNode.getProperty("title").toString());
-					 			  revisionNode.setProperty("revid",dummy.getInt("revid"));
-					 			  revisionNode.setProperty("parentid",dummy.getInt("parentid"));
-					 			  revisionNode.setProperty("user",dummy.getString("user"));
-					 			  revisionNode.setProperty("userid",dummy.getInt("userid"));
-					 			  revisionNode.setProperty("size",dummy.getInt("size"));
+					 			  revisionNode.setProperty("revid",currentJsonObject.getInt("revid"));
+					 			  revisionNode.setProperty("parentid",currentJsonObject.getInt("parentid"));
+					 			  revisionNode.setProperty("user",currentJsonObject.getString("user"));
+					 			  revisionNode.setProperty("userid",currentJsonObject.getInt("userid"));
+					 			  revisionNode.setProperty("size",currentJsonObject.getInt("size"));
 					 			  revisionNode.setProperty("previousVote",-1.0);
 					 			  revisionNode.setProperty("previousReliability", -1.0);
 
 					 			  //Code to link the user contributions
 					 			  
-					 			  if((i==0)&&(WikiUtil.rCheck("userid", dummy.getInt("userid"), graph)==false)){
+					 			  if((i==0)&&(WikiUtil.rCheck("userid", currentJsonObject.getInt("userid"), graph)==false)){
 					 				  
-					 				 Vertex userNode= graph.getVertices("userid", dummy.getInt("userid")).iterator().next();
+					 				 Vertex userNode= graph.getVertices("userid", currentJsonObject.getInt("userid")).iterator().next();
 					 				 Edge contributes = graph.addEdge("contribute", userNode, revisionNode, "Contribute");
-					 				 contributes.setProperty("contributionSize", dummy.getInt("size"));
+					 				 contributes.setProperty("contributionSize", currentJsonObject.getInt("size"));
 					 			  }
 					 			  
-					 			 if((i!=0)&&(WikiUtil.rCheck("userid", dummy.getInt("userid"), graph)==false)){
+					 			 if((i!=0)&&(WikiUtil.rCheck("userid", currentJsonObject.getInt("userid"), graph)==false)){
 					 				  
-					 				 Vertex userNode= graph.getVertices("userid", dummy.getInt("userid")).iterator().next();
-					 				 Vertex parentVersionNode=graph.getVertices("revid",dummy.getInt("parentid")).iterator().next();
-					 				 sizeDiff=Math.abs((int)parentVersionNode.getProperty("size")-dummy.getInt("size"));
+					 				 Vertex userNode= graph.getVertices("userid", currentJsonObject.getInt("userid")).iterator().next();
+					 				 Vertex parentVersionNode=graph.getVertices("revid",currentJsonObject.getInt("parentid")).iterator().next();
+					 				 sizeDiff=Math.abs((int)parentVersionNode.getProperty("size")-currentJsonObject.getInt("size"));
 					 				 Edge contributes = graph.addEdge("contribute", userNode, revisionNode, "Contribute");
 					 				 contributes.setProperty("contributionSize", sizeDiff);
 					 			  }
@@ -243,7 +250,7 @@ public class AddNewPages {
 					 			  }
 					 			  
 					 			  if(i!=0){//To link the current revision to the previous versions
-					 				Vertex parentVersionNode=graph.getVertices("revid",dummy.getInt("parentid")).iterator().next();
+					 				Vertex parentVersionNode=graph.getVertices("revid",currentJsonObject.getInt("parentid")).iterator().next();
 					 				Edge isRevision = graph.addEdge("PreviousRevision", revisionNode,parentVersionNode,"PreviousRevision");
 					 			  }
 					 			  

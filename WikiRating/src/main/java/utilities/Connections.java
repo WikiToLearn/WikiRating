@@ -28,7 +28,7 @@ public class Connections {
 	 */
 	
 	public ApiConnection getApiConnection() {
-		ApiConnection con = new ApiConnection(Propaccess.getPropaccess("API_URL"));
+		ApiConnection con = new ApiConnection(PropertiesAccess.getConfigProperties("API_URL"));
 		return con;
 	}
 
@@ -38,8 +38,8 @@ public class Connections {
 	 */
 	public OrientGraph getDbGraph() {
 
-		OrientGraphFactory factory = new OrientGraphFactory(Propaccess.getPropaccess("DB_URL"),
-				Propaccess.getPropaccess("USER"), Propaccess.getPropaccess("PASSWD"));
+		OrientGraphFactory factory = new OrientGraphFactory(PropertiesAccess.getConfigProperties("DB_URL"),
+		PropertiesAccess.getConfigProperties("USER"), PropertiesAccess.getConfigProperties("PASSWD"));
 		OrientGraph graph = factory.getTx();
 
 		return graph;
@@ -53,8 +53,8 @@ public class Connections {
 	
 	public OrientGraphNoTx getDbGraphNT() {
 
-		OrientGraphFactory factory = new OrientGraphFactory(Propaccess.getPropaccess("DB_URL"),
-				Propaccess.getPropaccess("USER"), Propaccess.getPropaccess("PASSWD"));
+		OrientGraphFactory factory = new OrientGraphFactory(PropertiesAccess.getConfigProperties("DB_URL"),
+		PropertiesAccess.getConfigProperties("USER"), PropertiesAccess.getConfigProperties("PASSWD"));
 		factory.declareIntent(new OIntentMassiveInsert());
 		OrientGraphNoTx graph =factory.getNoTx();
 

@@ -41,22 +41,22 @@ public class User {
 					
 				JSONObject js2=js.getJSONObject("query");
 				JSONArray arr=js2.getJSONArray("allusers");
-				JSONObject dummy;
+				JSONObject currentJsonObject;
 				
 				//Storing all the Users in a particular namespace
 				
 				for(int i=0;i<arr.length();i++){
-					dummy=arr.getJSONObject(i);
-					if(WikiUtil.rCheck("userid",dummy.getInt("userid"),graph)){	//This is a makeshift way to avoid duplicate insertion.
-						System.out.println(dummy.getString("name"));
+					currentJsonObject=arr.getJSONObject(i);
+					if(WikiUtil.rCheck("userid",currentJsonObject.getInt("userid"),graph)){	//This is a makeshift way to avoid duplicate insertion.
+						System.out.println(currentJsonObject.getString("name"));
 						
 						//Adding Users to database
 						try{
-							System.out.println(dummy.getString("name"));
-							Vertex ver = graph.addVertex("class:User"); // 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
-							ver.setProperty( "username", dummy.getString("name"));
-							ver.setProperty("userid",dummy.getInt("userid"));
-							ver.setProperty("credibility",0.4);	//Initial credibility of the user
+							System.out.println(currentJsonObject.getString("name"));
+							Vertex userNode = graph.addVertex("class:User"); // 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
+							userNode.setProperty( "username", currentJsonObject.getString("name"));
+							userNode.setProperty("userid",currentJsonObject.getInt("userid"));
+							userNode.setProperty("credibility",0.4);	//Initial credibility of the user
 							graph.commit();
 						} catch( Exception e ) {
 							e.printStackTrace();

@@ -29,49 +29,49 @@ public class Revision {
 		String result="";
 		OrientGraph graph=Connections.getInstance().getDbGraph();
 		System.out.println("=====Checkpoint for Revisions==========");
-		for (Vertex v : graph.getVertices(key,value)) {
+		for (Vertex pageNode : graph.getVertices(key,value)) {
 			
-			result=getRevision(v.getProperty("pid").toString());	//Fetching the revision string for a particular page.
+			result=getRevision(pageNode.getProperty("pid").toString());	//Fetching the revision string for a particular page.
 							
 			try {
 				//JSON interpretation
 				 try {  
 					 	JSONObject js=new JSONObject(result);
-					 	JSONObject js2=js.getJSONObject("query").getJSONObject("pages").getJSONObject(v.getProperty("pid").toString());
+					 	JSONObject js2=js.getJSONObject("query").getJSONObject("pages").getJSONObject(pageNode.getProperty("pid").toString());
 					 	JSONArray arr=js2.getJSONArray("revisions");
-						JSONObject dummy;
+						JSONObject currentJsonObject;
 						
 						
 					 	for(int i=0;i<arr.length();i++){
-					 		dummy=arr.getJSONObject(i);
+					 		currentJsonObject=arr.getJSONObject(i);
 					 		
-					 		System.out.println(v.getProperty("title").toString()+dummy.getInt("revid"));
+					 		System.out.println(pageNode.getProperty("title").toString()+currentJsonObject.getInt("revid"));
 					 		
 					 		//Adding pages to database without the duplicates
-					 		if(WikiUtil.rCheck("revid", dummy.getInt("revid"), graph)){
+					 		if(WikiUtil.rCheck("revid", currentJsonObject.getInt("revid"), graph)){
 					 			
 					 		try{
-					 			  Vertex ver = graph.addVertex("class:Revision"); // 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
-					 			  ver.setProperty( "Page", v.getProperty("title").toString());
-					 			  ver.setProperty("revid",dummy.getInt("revid"));
-					 			  ver.setProperty("parentid",dummy.getInt("parentid"));
-					 			  ver.setProperty("user",dummy.getString("user"));
-					 			  ver.setProperty("userid",dummy.getInt("userid"));
-					 			  ver.setProperty("size",dummy.getInt("size"));
-					 			  ver.setProperty("previousVote",-1.0);
-					 			  ver.setProperty("previousReliability", -1.0);
+					 			  Vertex revisionNode = graph.addVertex("class:Revision"); // 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
+					 			  revisionNode.setProperty( "Page", pageNode.getProperty("title").toString());
+					 			  revisionNode.setProperty("revid",currentJsonObject.getInt("revid"));
+					 			  revisionNode.setProperty("parentid",currentJsonObject.getInt("parentid"));
+					 			  revisionNode.setProperty("user",currentJsonObject.getString("user"));
+					 			  revisionNode.setProperty("userid",currentJsonObject.getInt("userid"));
+					 			  revisionNode.setProperty("size",currentJsonObject.getInt("size"));
+					 			  revisionNode.setProperty("previousVote",-1.0);
+					 			  revisionNode.setProperty("previousReliability", -1.0);
 					 			  
 					 			  //All the versions are connected to each other like (Page)<-(Latest)<-(Latest-1)<-...<-(Last)
 					 			  
 					 			  if(i==arr.length()-1){//The latest version will be connected to the Page itself and to the previous revision too
 					 				  
-					 				  Vertex parentPage=graph.getVertices("pid",v.getProperty("pid")).iterator().next();
-					 				  Edge isRevision = graph.addEdge("PreviousVersionOfPage", parentPage,ver,"PreviousVersionOfPage");
+					 				  Vertex parentPage=graph.getVertices("pid",pageNode.getProperty("pid")).iterator().next();
+					 				  Edge isRevision = graph.addEdge("PreviousVersionOfPage", parentPage,revisionNode,"PreviousVersionOfPage");
 					 			  }
 					 			  
 					 			  if(i!=0){//To link the current revision to the previous versions
-					 				Vertex parent=graph.getVertices("revid",dummy.getInt("parentid")).iterator().next();
-					 				Edge isRevision = graph.addEdge("PreviousRevision", ver,parent,"PreviousRevision");
+					 				Vertex parent=graph.getVertices("revid",currentJsonObject.getInt("parentid")).iterator().next();
+					 				Edge isRevision = graph.addEdge("PreviousRevision", revisionNode,parent,"PreviousRevision");
 					 			  }
 					 			  
 					 			  

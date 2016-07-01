@@ -5,6 +5,7 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
+import main.java.utilities.PropertiesAccess;
 
 /**
  *  This class will calculate the reliability of the vote given by the users.
@@ -12,7 +13,8 @@ import main.java.utilities.Connections;
  */
 
 public class Reliability {
-	static boolean latestVoteCheck=true;
+	static boolean latestVoteCheck=true;		//To check for cases where latest version is voted on without any change
+	final static double PHI_POWER_PARAMETER=Double.parseDouble(PropertiesAccess.getParameterProperties("PHI_POWER_PARAMETER"));
 
 	/**
 	   *This method will calculate the reliability of the votes given by the user
@@ -107,7 +109,7 @@ public class Reliability {
 	 * @return The parameter phi
 	 */
 	public static double getPhi(OrientGraph graph,int revid){
-		final double P=1.0;
+		
 		double phi=0;
 		double sizePrev=0,newEdits=0,currSize=0;
 		Vertex revisionNode=graph.getVertices("revid",revid).iterator().next();
@@ -116,7 +118,7 @@ public class Reliability {
 		currSize=(int)revisionNode.getProperty("size");
 		newEdits=Math.abs(sizePrev-currSize);
 		if(sizePrev==0)sizePrev=1;
-		phi=Math.pow(Math.E,-1*(Math.pow(newEdits/sizePrev, P)));
+		phi=Math.pow(Math.E,-1*(Math.pow(newEdits/sizePrev, PHI_POWER_PARAMETER)));
 		return phi;
 	}
 	

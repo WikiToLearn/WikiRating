@@ -26,10 +26,10 @@ public class Pagerank {
 		
 	OrientGraph graph = Connections.getInstance().getDbGraph();
 	for (Vertex pageNode :graph.getVertices("@class","Page")) {
-		OrientVertex vv=(OrientVertex)pageNode;
-		long backLinks=vv.countEdges(Direction.IN, "@class","Backlink");
+		OrientVertex oPageNode=(OrientVertex)pageNode;
+		long backLinks=oPageNode.countEdges(Direction.IN, "@class","Backlink");
 		System.out.println("======= "+pageNode.getProperty("name").toString()+"========"+backLinks);
-		for(Edge e:vv.getEdges(Direction.IN,"@class","Backlink")){
+		for(Edge e:oPageNode.getEdges(Direction.IN,"@class","Backlink")){
 			System.out.println(e.getVertex(Direction.OUT).getProperty("title"));
 		}
 		
@@ -61,9 +61,9 @@ public class Pagerank {
 		
 		
 		//Scaling the values by dividing with the maxlinks
-		 Iterator it = pageRankMap.entrySet().iterator();
-		    while (it.hasNext()) {
-		        Map.Entry pair = (Map.Entry)it.next();
+		 Iterator it1 = pageRankMap.entrySet().iterator();
+		    while (it1.hasNext()) {
+		        Map.Entry pair = (Map.Entry)it1.next();
 		        pageRankMap.put((Integer) pair.getKey(), (Double)((double)pair.getValue()/maxLink));
 		        		        
 		    } 
@@ -74,11 +74,11 @@ public class Pagerank {
 		    //Now calculating the weighted Page Rank for every page.
 		    for (Vertex pageNode :graph.getVertices("@class","Page")) {
 		    	
-				OrientVertex vv=(OrientVertex)pageNode;			//Casting required to count the edges from a node.
+				OrientVertex oPageNode=(OrientVertex)pageNode;			//Casting required to count the edges from a node.
 				tempSum=0;
 				
 				//Summing the contributions of different backLinks
-				for(Edge e:vv.getEdges(Direction.IN,"@class","Backlink")){
+				for(Edge e:oPageNode.getEdges(Direction.IN,"@class","Backlink")){
 					tempSum+=pageRankMap.get((Integer)e.getVertex(Direction.OUT).getProperty("pid"));
 					
 				}

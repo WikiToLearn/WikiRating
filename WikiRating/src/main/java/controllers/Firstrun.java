@@ -35,6 +35,9 @@ public class Firstrun {
 	public Response pCompute() {
 		long startTime = System.currentTimeMillis();
 		
+		InitialiseDB.createClass();
+		System.out.println("==================Classes creation over=====================");
+		
 		Page.insertPages();
 		System.out.println("==================Page insertion over=====================");
 		
@@ -67,7 +70,8 @@ public class Firstrun {
 		
 		PageRating.computePageRatings();
 		System.out.println("==================Page Ratings computed=====================");
-				long estimatedTime = System.currentTimeMillis() - startTime;
+		
+		long estimatedTime = System.currentTimeMillis() - startTime;
 		estimatedTime = estimatedTime / 60000;
 
 		return Response.status(200).entity("Successful and took" + estimatedTime + "Minutes").build();
