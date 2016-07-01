@@ -32,9 +32,9 @@ public class LinkPages {
 		
 		//Iterating on every vertex to check it's backlinks
 		
-		for (Vertex v : graph.getVertices(key,value)) {
+		for (Vertex pageNode : graph.getVertices(key,value)) {
 			
-			result=getBacklinks((int)(v.getProperty("pid")));	//Getting the JSON formatted String to process.
+			result=getBacklinks((int)(pageNode.getProperty("pid")));	//Getting the JSON formatted String to process.
 			inLinks=0;
 			
 			//JSON interpretation of the fetched String
@@ -43,22 +43,22 @@ public class LinkPages {
 				 	JSONObject js=new JSONObject(result);
 				 	JSONObject js2=js.getJSONObject("query");
 				 	JSONArray arr=js2.getJSONArray("backlinks");	//This array has all the backlinks the page has.
-				 	JSONObject dummy;							
+				 	JSONObject currentJsonObject;							
 				 	inLinks=arr.length();
 				 	
-				 	System.out.println(v.getProperty("title").toString()+" has inLinks = "+inLinks);
+				 	System.out.println(pageNode.getProperty("title").toString()+" has inLinks = "+inLinks);
 				 	
 				 	//Iterating to get all the backlinks of a particular node(Page)
 				 	
 				 	for(int i=0;i<arr.length();i++){
-				 		dummy=arr.getJSONObject(i);
+				 		currentJsonObject=arr.getJSONObject(i);
 				 		
 				 		try{	
 				 			
-				 			Vertex backLink=graph.getVertices("pid",dummy.getInt("pageid")).iterator().next();	//Getting the node linked to the current page.
-				 			Edge isbackLink = graph.addEdge("Backlink", backLink, v, "Backlink");				//Creating Edge in between the 2 vertices.
+				 			Vertex backLink=graph.getVertices("pid",currentJsonObject.getInt("pageid")).iterator().next();	//Getting the node linked to the current page.
+				 			Edge isbackLink = graph.addEdge("Backlink", backLink, pageNode, "Backlink");				//Creating Edge in between the 2 vertices.
 				 			
-				 			System.out.println(v.getProperty("title").toString()+" is linked to "+backLink.getProperty("title").toString());
+				 			System.out.println(pageNode.getProperty("title").toString()+" is linked to "+backLink.getProperty("title").toString());
 				 			
 				 		graph.commit();														
 				 		} catch( Exception e ) {

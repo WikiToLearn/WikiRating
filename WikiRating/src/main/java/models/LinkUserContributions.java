@@ -38,26 +38,26 @@ public class LinkUserContributions {
 					JSONObject js = new JSONObject(result);
 					JSONObject js2 = js.getJSONObject("query");
 					JSONArray arr = js2.getJSONArray("usercontribs");
-					JSONObject dummy;
+					JSONObject currentJsonObject;
 					System.out.println(userNode.getProperty("username")+"      "+arr.length());
 					System.out.println("*");
 
 					for (int i = 0; i < arr.length(); i++) {
 
-						dummy = arr.getJSONObject(i);
+						currentJsonObject = arr.getJSONObject(i);
 
 						try {
 							// Check to avoid null links
-							if (graph.getVertices("revid", dummy.getInt("revid")).iterator().hasNext() == false) {
+							if (graph.getVertices("revid", currentJsonObject.getInt("revid")).iterator().hasNext() == false) {
 								continue;
 							} // Creating edges between the User and his contribution
-							Vertex targetVersionNode = graph.getVertices("revid", dummy.getInt("revid")).iterator().next();
+							Vertex targetVersionNode = graph.getVertices("revid", currentJsonObject.getInt("revid")).iterator().next();
 							Edge contributes = graph.addEdge("contribute", userNode, targetVersionNode, "Contribute");
-							contributes.setProperty("contributionSize", Math.abs(dummy.getInt("sizediff")));
+							contributes.setProperty("contributionSize", Math.abs(currentJsonObject.getInt("sizediff")));
 							//graph.commit();
 							System.out.println(userNode.getProperty("username") + " Contributes to "
-									+ dummy.getString("title") + " to " + targetVersionNode.getProperty("revid")
-									+ " of size " + Math.abs(dummy.getInt("sizediff")));
+									+ currentJsonObject.getString("title") + " to " + targetVersionNode.getProperty("revid")
+									+ " of size " + Math.abs(currentJsonObject.getInt("sizediff")));
 						} catch (Exception e) {
 							e.printStackTrace();
 							graph.rollback();
