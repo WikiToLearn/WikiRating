@@ -61,7 +61,7 @@ public class Page {
 								Vertex pageNode = graph.addVertex("class:Page"); // 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
 								pageNode.setProperty( "title", dummy.getString("title"));
 								pageNode.setProperty("pid",dummy.getInt("pageid"));
-								pageNode.setProperty("ns", ns);
+								pageNode.setProperty("namespace", ns);
 								pageNode.setProperty("currentPageVote",-1.0);
 								pageNode.setProperty("currentPageReliability", -1.0);
 								graph.commit();
@@ -80,7 +80,6 @@ public class Page {
 		} finally {
 			//graph.commit();
 			graph.shutdown();
-			//LinkPages.linkAll();
 		}
 		
 	}
@@ -101,7 +100,7 @@ public class Page {
 		
 		String result = "";
 		ApiConnection con=Connections.getInstance().getApiConnection();
-		InputStream in=WikiUtil.reqSend(con,WikiUtil.getPageParam(ns+""));
+		InputStream in=WikiUtil.reqSend(con,WikiUtil.getPageParam(ns +""));
 		result=WikiUtil.streamToString(in);
 		return result;
 		  
