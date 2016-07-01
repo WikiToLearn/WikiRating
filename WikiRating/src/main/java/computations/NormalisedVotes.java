@@ -13,7 +13,7 @@ import main.java.utilities.Connections;
  */
 
 public class NormalisedVotes {
-	
+	static boolean latestVoteCheck=true;
 	
 	/**
 	   *This method will calculate the Normalised Votes of all the pages in on the platform
@@ -26,6 +26,7 @@ public class NormalisedVotes {
 		double currentPageVote=0;
 		Vertex revisionNode=null;
 		for (Vertex pageNode : graph.getVertices("@class","Page")) {
+			latestVoteCheck=true;
 			try{
 			revisionNode = pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next().getVertex(Direction.IN);
 			currentPageVote=recursiveVotes(graph,(int)revisionNode.getProperty("revid"));
@@ -48,12 +49,13 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 		
 		double lastVote=0,phi=0,normalVote=0,currVote=0;
 		Vertex revisionNode=graph.getVertices("revid", revid).iterator().next();
-		if(revisionNode.getProperty("previousVote")==null)System.out.println("I am NULLLL   "+revid);
-		if((double)revisionNode.getProperty("previousVote")!=-1){
+		
+		if(latestVoteCheck==false&&(double)revisionNode.getProperty("previousVote")!=-1){
 			System.out.println(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+revisionNode.getProperty("previousVote"));
 			return (double)revisionNode.getProperty("previousVote");
 		}
 		
+		latestVoteCheck=false;
 		if((int)revisionNode.getProperty("parentid")==0){
 			lastVote=simpleVote(graph,revid);
 			revisionNode.setProperty("previousVote",lastVote);

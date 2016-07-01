@@ -12,6 +12,7 @@ import main.java.utilities.Connections;
  */
 
 public class Reliability {
+	static boolean latestVoteCheck=true;
 
 	/**
 	   *This method will calculate the reliability of the votes given by the user
@@ -25,6 +26,7 @@ public class Reliability {
 		Vertex revisionNode=null;
 		for (Vertex pageNode : graph.getVertices("@class","Page")) {
 			try{
+				
 			revisionNode = pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next().getVertex(Direction.IN);
 			currentPageReliability=recursiveReliability(graph,(int)revisionNode.getProperty("revid"));
 			pageNode.setProperty("currentPageReliability",currentPageReliability);
@@ -47,11 +49,13 @@ public class Reliability {
 		double lastReliability=0,phi=0,normalReliability=0,currReliability=0;
 		Vertex revisionNode=graph.getVertices("revid", revid).iterator().next();
 		
-		if((double)revisionNode.getProperty("previousReliability")!=-1){
+		if(latestVoteCheck==false&&(double)revisionNode.getProperty("previousReliability")!=-1){
 			System.out.println(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+revisionNode.getProperty("previousReliability"));
 			return (double)revisionNode.getProperty("previousReliability");
 		}
-
+		
+		
+		latestVoteCheck=false;
 		if((int)revisionNode.getProperty("parentid")==0){
 			lastReliability=simpleReliability(graph,revid);
 			revisionNode.setProperty("previousReliability",lastReliability);

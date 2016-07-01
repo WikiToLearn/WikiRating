@@ -17,7 +17,7 @@ import main.java.models.*;
  * This class will be used to initialize the engine. 
  * 
  */
-@Path("do")
+@Path("firstRun")
 public class Firstrun {
 	
 
