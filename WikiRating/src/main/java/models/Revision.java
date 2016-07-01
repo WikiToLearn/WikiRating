@@ -58,8 +58,8 @@ public class Revision {
 					 			  ver.setProperty("user",dummy.getString("user"));
 					 			  ver.setProperty("userid",dummy.getInt("userid"));
 					 			  ver.setProperty("size",dummy.getInt("size"));
-					 			  ver.setProperty("previousVote",-1);
-					 			  ver.setProperty("previousReliability", -1);
+					 			  ver.setProperty("previousVote",-1.0);
+					 			  ver.setProperty("previousReliability", -1.0);
 					 			  
 					 			  //All the versions are connected to each other like (Page)<-(Latest)<-(Latest-1)<-...<-(Last)
 					 			  

@@ -6,6 +6,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import main.java.computations.NormalisedVotes;
+import main.java.computations.Reliability;
 import main.java.models.AddNewPages;
 import main.java.models.User;
 /**
@@ -38,15 +39,18 @@ public class Secondrun {
 		 *Calculate the user reliability
 		 */
 		
-		User.insertAllUsers();
+		/*User.insertAllUsers();
 		System.out.println("==================Checked for new User's insertion=====================");
 		
 		AddNewPages.checkForPages();
 		System.out.println("==================Checked for any new pages,revisions and linked the user contributions and made backlinks=====================");
-		
+		*/
 		NormalisedVotes.calculatePageVotes();
 		System.out.println("==================Calculated new page votes=====================");
-
+		
+		Reliability.calculateReliability();
+		System.out.println("==================Calculated new reliabilities=====================");
+		
 		long estimatedTime = System.currentTimeMillis() - startTime;
 		estimatedTime = estimatedTime / 60000;
 

@@ -54,8 +54,8 @@ public class Page {
 								ver.setProperty( "title", dummy.getString("title"));
 								ver.setProperty("pid",dummy.getInt("pageid"));
 								ver.setProperty("ns", ns);
-								ver.setProperty("currentPageVote",-1);
-								ver.setProperty("currentPageReliability", -1);
+								ver.setProperty("currentPageVote",-1.0);
+								ver.setProperty("currentPageReliability", -1.0);
 								graph.commit();
 							} catch( Exception e ) {
 								e.printStackTrace();
