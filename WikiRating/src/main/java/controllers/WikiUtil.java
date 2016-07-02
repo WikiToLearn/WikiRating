@@ -149,14 +149,14 @@ public class WikiUtil {
 	/**
 	 * This method sends a POST request to MediaWiki API and then gets back an InputStream
 	 * @param con	The ApiConnection object
-	 * @param mm	The Map having all the query parameters
+	 * @param queryParameterMap	The Map having all the query parameters
 	 * @return	InputStream object having the requested data
 	 */
 
-	public static InputStream reqSend(ApiConnection con, Map<String, String> mm) {
+	public static InputStream reqSend(ApiConnection con, Map<String, String> queryParameterMap) {
 		InputStream in = null;
 		try {
-			in = con.sendRequest("POST", mm);
+			in = con.sendRequest("POST", queryParameterMap);
 		} catch (IOException e) {
 
 			e.printStackTrace();

@@ -8,6 +8,7 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.controllers.WikiUtil;
+import main.java.utilities.AllowedNamespaces;
 import main.java.utilities.Connections;
 import main.java.utilities.PropertiesAccess;
 
@@ -19,9 +20,7 @@ import main.java.utilities.PropertiesAccess;
  */
 
 public class AddNewPages {
-	
-	static int TEMPLATE=Integer.parseInt(PropertiesAccess.getParameterProperties("TEMPLATE")); 
-	static int MEDIAWIKI=Integer.parseInt(PropertiesAccess.getParameterProperties("MEDIAWIKI"));
+
 	/**
 	 * This method will check for all the changes and then call suitable methods to handle them.
 	 */
@@ -29,21 +28,17 @@ public class AddNewPages {
 		
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		String allPages="";
-		final int NO_OF_NAMESPACES=15;
 		
 		try {
 			//Now we will be iterating over all the namespaces to get all the pages in each og them.
 			
-			for(int ns=0;ns<=NO_OF_NAMESPACES;ns++){
+			for(AllowedNamespaces namespace:AllowedNamespaces.values()){
 				
-				//To filter unwanted namespaces
-				if(ns==TEMPLATE||ns==MEDIAWIKI)
-					continue;
 				
 				//JSON interpretation
 				try {  
 					//Getting the JSON formatted String to process.
-					allPages =Page.getAllPages(ns);							
+					allPages =Page.getAllPages(namespace.getValue());							
 					JSONObject js=new JSONObject(allPages);
 					JSONObject js2=js.getJSONObject("query");
 					JSONArray arr=js2.getJSONArray("allpages");
@@ -57,7 +52,7 @@ public class AddNewPages {
 						//This is a makeshift way to avoid duplicate insertion.
 						if(WikiUtil.rCheck("pid",currentJsonObject.getInt("pageid"),graph)){	
 							
-							insertNewPage(graph,currentJsonObject,ns);
+							insertNewPage(graph,currentJsonObject,namespace.getValue());
 							getNewRevisions(graph,"title",currentJsonObject.getString("title"),false);
 							linkAllBacklinks(graph,"title",currentJsonObject.getString("title"));
 							

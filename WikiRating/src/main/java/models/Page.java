@@ -8,6 +8,7 @@ import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.controllers.WikiUtil;
+import main.java.utilities.AllowedNamespaces;
 import main.java.utilities.Connections;
 import main.java.utilities.PropertiesAccess;
 
@@ -18,9 +19,7 @@ import main.java.utilities.PropertiesAccess;
 
 public class Page {
 	
-	static int TEMPLATE=Integer.parseInt(PropertiesAccess.getParameterProperties("TEMPLATE")); 
-	static int MEDIAWIKI=Integer.parseInt(PropertiesAccess.getParameterProperties("MEDIAWIKI"));
-	
+
 	/**
 	 * This method will insert all the pages from all the available Namespaces in database.
 	 */
@@ -29,21 +28,17 @@ public class Page {
 	
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		String allPages="";
-		final int NO_OF_NAMESPACES=15;
 		
 		try {
 			//Now we will be iterating over all the namespaces to get all the pages in each og them.
 			
-			for(int ns=0;ns<=NO_OF_NAMESPACES;ns++){
+			for(AllowedNamespaces namespace:AllowedNamespaces.values()){
 				
-				//To filter unwanted namespaces
-				if(ns==TEMPLATE||ns==MEDIAWIKI)
-					continue;
 				
 				//JSON interpretation
 				try {  
 					//Getting the JSON formatted String to process.
-					allPages = getAllPages(ns);							
+					allPages = getAllPages(namespace.getValue());							
 					JSONObject js=new JSONObject(allPages);
 					JSONObject js2=js.getJSONObject("query");
 					JSONArray arr=js2.getJSONArray("allpages");
@@ -64,7 +59,7 @@ public class Page {
 								Vertex pageNode = graph.addVertex("class:Page"); 
 								pageNode.setProperty( "title", dummy.getString("title"));
 								pageNode.setProperty("pid",dummy.getInt("pageid"));
-								pageNode.setProperty("namespace", ns);
+								pageNode.setProperty("namespace", namespace.getValue());
 								pageNode.setProperty("currentPageVote",-1.0);
 								pageNode.setProperty("currentPageReliability", -1.0);
 								graph.commit();
@@ -103,7 +98,7 @@ public class Page {
 		
 		String result = "";
 		ApiConnection con=Connections.getInstance().getApiConnection();
-		InputStream in=WikiUtil.reqSend(con,WikiUtil.getPageParam(ns +""));
+		InputStream in=WikiUtil.reqSend(con,WikiUtil.getPageParam(Integer.toString(ns)));
 		result=WikiUtil.streamToString(in);
 		return result;
 		  

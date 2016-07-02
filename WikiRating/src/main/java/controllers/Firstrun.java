@@ -11,6 +11,7 @@ import main.java.computations.RandomVoteGenerator;
 import main.java.computations.Reliability;
 import main.java.computations.UserCredibility;
 import main.java.models.*;
+import main.java.utilities.AllowedNamespaces;
 
 
 /**
