@@ -8,13 +8,18 @@ import main.java.utilities.Connections;
 import main.java.utilities.PropertiesAccess;
 
 /** 
- * This class will calculate the Normalised Votes of all the revisions and hence the page by using the given
- * recursive formula that takes keeps scaling the votes on the previous versions with the new ones
+ * This class will calculate the Normalised Votes
+ * of all the revisions and hence the page by using the given
+ * recursive formula that takes keeps scaling the votes on the 
+ * previous versions with the new ones
  * 
  */
 
 public class NormalisedVotes {
-	static boolean latestVoteCheck=true;		//To check for cases where latest version is voted on without any change
+	
+	//To check for cases where latest version is voted on without any change
+	
+	static boolean latestVoteCheck=true;		
 	final static double PHI_POWER_PARAMETER=Double.parseDouble(PropertiesAccess.getParameterProperties("PHI_POWER_PARAMETER"));
 	
 	/**

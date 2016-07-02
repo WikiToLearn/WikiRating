@@ -74,7 +74,8 @@ public class Pagerank {
 		    //Now calculating the weighted Page Rank for every page.
 		    for (Vertex pageNode :graph.getVertices("@class","Page")) {
 		    	
-				OrientVertex oPageNode=(OrientVertex)pageNode;			//Casting required to count the edges from a node.
+		    	//Casting required to count the edges from a node.
+				OrientVertex oPageNode=(OrientVertex)pageNode;			
 				tempSum=0;
 				
 				//Summing the contributions of different backLinks
@@ -83,9 +84,11 @@ public class Pagerank {
 					
 				}
 		        
-				finalPageRank=tempSum/maxLink;				//Final page rank
+				//Final page rank
+				finalPageRank=tempSum/maxLink;				
 				pageRankMap.put((Integer)pageNode.getProperty("pid"),finalPageRank);
-				pageNode.setProperty("Pagerank", finalPageRank);	//Adding the PageRank to Database
+				//Adding the PageRank to Database
+				pageNode.setProperty("Pagerank", finalPageRank);	
 				graph.commit();
 	
 			}

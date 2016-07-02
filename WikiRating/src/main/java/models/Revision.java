@@ -31,7 +31,8 @@ public class Revision {
 		System.out.println("=====Checkpoint for Revisions==========");
 		for (Vertex pageNode : graph.getVertices(key,value)) {
 			
-			result=getRevision(pageNode.getProperty("pid").toString());	//Fetching the revision string for a particular page.
+			//Fetching the revision string for a particular page.
+			result=getRevision(pageNode.getProperty("pid").toString());	
 							
 			try {
 				//JSON interpretation
@@ -51,7 +52,8 @@ public class Revision {
 					 		if(WikiUtil.rCheck("revid", currentJsonObject.getInt("revid"), graph)){
 					 			
 					 		try{
-					 			  Vertex revisionNode = graph.addVertex("class:Revision"); // 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
+					 			// 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
+					 			  Vertex revisionNode = graph.addVertex("class:Revision"); 
 					 			  revisionNode.setProperty( "Page", pageNode.getProperty("title").toString());
 					 			  revisionNode.setProperty("revid",currentJsonObject.getInt("revid"));
 					 			  revisionNode.setProperty("parentid",currentJsonObject.getInt("parentid"));
@@ -63,13 +65,15 @@ public class Revision {
 					 			  
 					 			  //All the versions are connected to each other like (Page)<-(Latest)<-(Latest-1)<-...<-(Last)
 					 			  
-					 			  if(i==arr.length()-1){//The latest version will be connected to the Page itself and to the previous revision too
+					 			  //The latest version will be connected to the Page itself and to the previous revision too
+					 			  if(i==arr.length()-1){
 					 				  
 					 				  Vertex parentPage=graph.getVertices("pid",pageNode.getProperty("pid")).iterator().next();
 					 				  Edge isRevision = graph.addEdge("PreviousVersionOfPage", parentPage,revisionNode,"PreviousVersionOfPage");
 					 			  }
 					 			  
-					 			  if(i!=0){//To link the current revision to the previous versions
+					 			  //To link the current revision to the previous versions
+					 			  if(i!=0){
 					 				Vertex parent=graph.getVertices("revid",currentJsonObject.getInt("parentid")).iterator().next();
 					 				Edge isRevision = graph.addEdge("PreviousRevision", revisionNode,parent,"PreviousRevision");
 					 			  }
@@ -93,14 +97,14 @@ public class Revision {
 			 }
 			
 }		//graph.commit();
-		graph.shutdown();
+		graph.shutdown(); 
 //Pagerank.pageRankCompute();
 		
 			
 		
 	}
 
-	//This is the helper method to return the a JSON formatted string queried from the MediaWiki API to get all the revisions for a particular pid.
+
 	
 	/**
 	 * This method will return the a JSON formatted string queried

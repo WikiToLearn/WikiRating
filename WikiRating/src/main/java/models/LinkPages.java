@@ -34,7 +34,8 @@ public class LinkPages {
 		
 		for (Vertex pageNode : graph.getVertices(key,value)) {
 			
-			result=getBacklinks((int)(pageNode.getProperty("pid")));	//Getting the JSON formatted String to process.
+			//Getting the JSON formatted String to process.
+			result=getBacklinks((int)(pageNode.getProperty("pid")));	
 			inLinks=0;
 			
 			//JSON interpretation of the fetched String
@@ -42,7 +43,8 @@ public class LinkPages {
 			 try {  
 				 	JSONObject js=new JSONObject(result);
 				 	JSONObject js2=js.getJSONObject("query");
-				 	JSONArray arr=js2.getJSONArray("backlinks");	//This array has all the backlinks the page has.
+				 	//This array has all the backlinks the page has.
+				 	JSONArray arr=js2.getJSONArray("backlinks");	
 				 	JSONObject currentJsonObject;							
 				 	inLinks=arr.length();
 				 	
@@ -55,15 +57,18 @@ public class LinkPages {
 				 		
 				 		try{	
 				 			
-				 			Vertex backLink=graph.getVertices("pid",currentJsonObject.getInt("pageid")).iterator().next();	//Getting the node linked to the current page.
-				 			Edge isbackLink = graph.addEdge("Backlink", backLink, pageNode, "Backlink");				//Creating Edge in between the 2 vertices.
+				 			//Getting the node linked to the current page.
+				 			Vertex backLink=graph.getVertices("pid",currentJsonObject.getInt("pageid")).iterator().next();	
+				 			//Creating Edge in between the 2 vertices.
+				 			Edge isbackLink = graph.addEdge("Backlink", backLink, pageNode, "Backlink");				
 				 			
 				 			System.out.println(pageNode.getProperty("title").toString()+" is linked to "+backLink.getProperty("title").toString());
 				 			
 				 		graph.commit();														
 				 		} catch( Exception e ) {
 				 			e.printStackTrace();
-				 			graph.rollback();																	//In case the transaction fails we will rollback.
+				 			//In case the transaction fails we will rollback.
+				 			graph.rollback();																	
 				 		}
 				 		
 				 	}
@@ -91,8 +96,10 @@ public class LinkPages {
 		
 		String result = "";
 		ApiConnection con=Connections.getInstance().getApiConnection();
-		InputStream in=WikiUtil.reqSend(con,WikiUtil.getLinkParam(pid+""));	//Getting the InputStream object having JSON form MediaWiki API
-		result=WikiUtil.streamToString(in);		  							//Converting the InputStream to String
+		//Getting the InputStream object having JSON form MediaWiki API
+		InputStream in=WikiUtil.reqSend(con,WikiUtil.getLinkParam(pid+""));	
+		//Converting the InputStream to String
+		result=WikiUtil.streamToString(in);		  							
 		return result;
 		  
 	}

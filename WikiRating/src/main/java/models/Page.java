@@ -42,7 +42,8 @@ public class Page {
 				
 				//JSON interpretation
 				try {  
-					allPages = getAllPages(ns);							//Getting the JSON formatted String to process.
+					//Getting the JSON formatted String to process.
+					allPages = getAllPages(ns);							
 					JSONObject js=new JSONObject(allPages);
 					JSONObject js2=js.getJSONObject("query");
 					JSONArray arr=js2.getJSONArray("allpages");
@@ -53,12 +54,14 @@ public class Page {
 					for(int i=0;i<arr.length();i++){
 						dummy=arr.getJSONObject(i);
 						
-						if(WikiUtil.rCheck("pid",dummy.getInt("pageid"),graph)){	//This is a makeshift way to avoid duplicate insertion.
+						//This is a makeshift way to avoid duplicate insertion.
+						if(WikiUtil.rCheck("pid",dummy.getInt("pageid"),graph)){	
 							
 							//Adding pages to database
 							try{
 								System.out.println(dummy.getString("title"));
-								Vertex pageNode = graph.addVertex("class:Page"); // 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
+								// 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
+								Vertex pageNode = graph.addVertex("class:Page"); 
 								pageNode.setProperty( "title", dummy.getString("title"));
 								pageNode.setProperty("pid",dummy.getInt("pageid"));
 								pageNode.setProperty("namespace", ns);

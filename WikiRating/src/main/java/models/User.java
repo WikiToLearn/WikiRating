@@ -14,7 +14,7 @@ import main.java.utilities.Connections;
  */
 
 public class User {
-
+	final static double INITIAL_USER_CREDIBILTY=0.4;
 	/**
 	 * This method will insert all the users into the database
 	 */
@@ -23,7 +23,8 @@ public class User {
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		String allUsers="";
 		String nextPageUsername="";
-		boolean loopCounter=true;				//To re query till we get all the users on the platform
+		//To re query till we get all the users on the platform
+		boolean loopCounter=true;				
 		while(loopCounter){
 
 			try {  
@@ -47,16 +48,19 @@ public class User {
 				
 				for(int i=0;i<arr.length();i++){
 					currentJsonObject=arr.getJSONObject(i);
-					if(WikiUtil.rCheck("userid",currentJsonObject.getInt("userid"),graph)){	//This is a makeshift way to avoid duplicate insertion.
+					//This is a makeshift way to avoid duplicate insertion.
+					if(WikiUtil.rCheck("userid",currentJsonObject.getInt("userid"),graph)){	
 						System.out.println(currentJsonObject.getString("name"));
 						
 						//Adding Users to database
 						try{
 							System.out.println(currentJsonObject.getString("name"));
-							Vertex userNode = graph.addVertex("class:User"); // 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
+							// 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
+							Vertex userNode = graph.addVertex("class:User"); 
 							userNode.setProperty( "username", currentJsonObject.getString("name"));
 							userNode.setProperty("userid",currentJsonObject.getInt("userid"));
-							userNode.setProperty("credibility",0.4);	//Initial credibility of the user
+							//Initial credibility of the user
+							userNode.setProperty("credibility",INITIAL_USER_CREDIBILTY);	
 							graph.commit();
 						} catch( Exception e ) {
 							e.printStackTrace();
@@ -76,10 +80,7 @@ public class User {
 	}
 	
 	
-	
-	
-	//This is the helper method to return the a JSON formatted string queried from the MediaWiki API to get all the users on the platform
-	
+
 	/**
 	 * This method will return the a JSON formatted string queried
 	 * from the MediaWiki API to get all the users.

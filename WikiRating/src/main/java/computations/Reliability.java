@@ -13,7 +13,9 @@ import main.java.utilities.PropertiesAccess;
  */
 
 public class Reliability {
-	static boolean latestVoteCheck=true;		//To check for cases where latest version is voted on without any change
+	
+	//To check for cases where latest version is voted on without any change
+	static boolean latestVoteCheck=true;		
 	final static double PHI_POWER_PARAMETER=Double.parseDouble(PropertiesAccess.getParameterProperties("PHI_POWER_PARAMETER"));
 
 	/**
@@ -40,7 +42,8 @@ public class Reliability {
 	}
 	
 	/**
-	 * This method will calculate and store the reliability of  votes for all the revisions of a particular page
+	 * This method will calculate and store the reliability
+	 *  of  votes for all the revisions of a particular page
 	 * and then return the final reliability of vote for the page itself
 	   * @param graph OrientGraph object
 	   * @param revid Revision Id of the latest version connected to the Page 

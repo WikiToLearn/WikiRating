@@ -42,7 +42,8 @@ public class AddNewPages {
 				
 				//JSON interpretation
 				try {  
-					allPages =Page.getAllPages(ns);							//Getting the JSON formatted String to process.
+					//Getting the JSON formatted String to process.
+					allPages =Page.getAllPages(ns);							
 					JSONObject js=new JSONObject(allPages);
 					JSONObject js2=js.getJSONObject("query");
 					JSONArray arr=js2.getJSONArray("allpages");
@@ -53,7 +54,8 @@ public class AddNewPages {
 					for(int i=0;i<arr.length();i++){
 						currentJsonObject=arr.getJSONObject(i);
 						
-						if(WikiUtil.rCheck("pid",currentJsonObject.getInt("pageid"),graph)){	//This is a makeshift way to avoid duplicate insertion.
+						//This is a makeshift way to avoid duplicate insertion.
+						if(WikiUtil.rCheck("pid",currentJsonObject.getInt("pageid"),graph)){	
 							
 							insertNewPage(graph,currentJsonObject,ns);
 							getNewRevisions(graph,"title",currentJsonObject.getString("title"),false);
@@ -89,10 +91,11 @@ public class AddNewPages {
 		//Adding pages to database
 		try{
 			System.out.println("++Adding this new Page++  "+currentJsonObject.getString("title"));
-			Vertex ver = graph.addVertex("class:Page"); // 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
+			// 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
+			Vertex ver = graph.addVertex("class:Page");
 			ver.setProperty( "title", currentJsonObject.getString("title"));
 			ver.setProperty("pid",currentJsonObject.getInt("pageid"));
-			ver.setProperty("ns", ns);
+			ver.setProperty("namespace", ns);
 			ver.setProperty("currentPageVote",-1.0);
 			ver.setProperty("currentPageReliability", -1.0);
 			graph.commit();
@@ -120,7 +123,8 @@ public class AddNewPages {
 			
 			for (Vertex v : graph.getVertices(key,value)) {
 				
-				result=LinkPages.getBacklinks((int)(v.getProperty("pid")));	//Getting the JSON formatted String to process.
+				//Getting the JSON formatted String to process.
+				result=LinkPages.getBacklinks((int)(v.getProperty("pid")));	
 				inLinks=0;
 				
 				//JSON interpretation of the fetched String
@@ -128,7 +132,8 @@ public class AddNewPages {
 				 try {  
 					 	JSONObject js=new JSONObject(result);
 					 	JSONObject js2=js.getJSONObject("query");
-					 	JSONArray arr=js2.getJSONArray("backlinks");	//This array has all the backlinks the page has.
+					 	//This array has all the backlinks the page has.
+					 	JSONArray arr=js2.getJSONArray("backlinks");	
 					 	JSONObject currentJsonObject;							
 					 	inLinks=arr.length();
 					 	System.out.println(v.getProperty("title").toString()+" has inLinks = "+inLinks);
@@ -141,15 +146,18 @@ public class AddNewPages {
 					 		
 					 		try{	
 					 			
-					 			Vertex backLink=graph.getVertices("pid",currentJsonObject.getInt("pageid")).iterator().next();	//Getting the node linked to the current page.
-					 			Edge isbackLink = graph.addEdge("Backlink", backLink, v, "Backlink");				//Creating Edge in between the 2 vertices.
+					 			//Getting the node linked to the current page.
+					 			Vertex backLink=graph.getVertices("pid",currentJsonObject.getInt("pageid")).iterator().next();	
+					 			//Creating Edge in between the 2 vertices.
+					 			Edge isbackLink = graph.addEdge("Backlink", backLink, v, "Backlink");				
 					 			System.out.println(v.getProperty("title").toString()+" is linked to "+backLink.getProperty("title").toString());
 					 			
 					 			
 					 		graph.commit();														
 					 		} catch( Exception e ) {
 					 			e.printStackTrace();
-					 			graph.rollback();																	//In case the transaction fails we will rollback.
+					 			//In case the transaction fails we will rollback.
+					 			graph.rollback();																	
 					 		}
 					 		
 					 	}
@@ -177,7 +185,8 @@ public class AddNewPages {
 		System.out.println("=====Checkpoint for Revisions==========");
 		for (Vertex pageNode : graph.getVertices(key,value)) {
 			
-			result=Revision.getRevision(pageNode.getProperty("pid").toString());	//Fetching the revision string for a particular page.
+			//Fetching the revision string for a particular page.
+			result=Revision.getRevision(pageNode.getProperty("pid").toString());	
 				
 			try {
 				//JSON interpretation
@@ -213,7 +222,8 @@ public class AddNewPages {
 					 			System.out.println("Adding some new revisions");
 					 			
 					 		try{
-					 			  Vertex revisionNode = graph.addVertex("class:Revision"); // 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
+					 			// 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
+					 			  Vertex revisionNode = graph.addVertex("class:Revision"); 
 					 			  revisionNode.setProperty( "Page", pageNode.getProperty("title").toString());
 					 			  revisionNode.setProperty("revid",currentJsonObject.getInt("revid"));
 					 			  revisionNode.setProperty("parentid",currentJsonObject.getInt("parentid"));
@@ -243,7 +253,8 @@ public class AddNewPages {
 					 			  
 					 			  //All the versions are connected to each other like (Page)<-(Latest)<-(Latest-1)<-...<-(Last)
 					 			  
-					 			  if(i==arr.length()-1){//The latest version will be connected to the Page itself and to the previous revision too
+					 			 //The latest version will be connected to the Page itself and to the previous revision too
+					 			  if(i==arr.length()-1){
 					 				  
 					 				  Vertex parentPage=pageNode;
 					 				  Edge isRevision = graph.addEdge("PreviousVersionOfPage", parentPage,revisionNode,"PreviousVersionOfPage");
