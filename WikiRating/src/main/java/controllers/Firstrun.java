@@ -4,6 +4,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
+import main.java.computations.BadgeGenerator;
 import main.java.computations.NormalisedVotes;
 import main.java.computations.PageRating;
 import main.java.computations.Pagerank;
@@ -71,6 +73,9 @@ public class Firstrun {
 		
 		PageRating.computePageRatings();
 		System.out.println("==================Page Ratings computed=====================");
+		
+		new BadgeGenerator().generateBadges();
+		System.out.println("==================Badges given=====================");
 		
 		long estimatedTime = System.currentTimeMillis() - startTime;
 		estimatedTime = estimatedTime / 60000;

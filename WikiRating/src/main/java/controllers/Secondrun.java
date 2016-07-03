@@ -4,6 +4,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
+import main.java.computations.BadgeGenerator;
 import main.java.computations.NormalisedVotes;
 import main.java.computations.Reliability;
 import main.java.models.AddNewPages;
@@ -50,6 +52,7 @@ public class Secondrun {
 		
 		Reliability.calculateReliability();
 		System.out.println("==================Calculated new reliabilities=====================");
+		
 		
 		long estimatedTime = System.currentTimeMillis() - startTime;
 		estimatedTime = estimatedTime / 60000;

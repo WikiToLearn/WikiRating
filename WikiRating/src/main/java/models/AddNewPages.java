@@ -87,12 +87,13 @@ public class AddNewPages {
 		try{
 			System.out.println("++Adding this new Page++  "+currentJsonObject.getString("title"));
 			// 1st OPERATION: will implicitly begin the transaction and this command will create the class too.
-			Vertex ver = graph.addVertex("class:Page");
-			ver.setProperty( "title", currentJsonObject.getString("title"));
-			ver.setProperty("pid",currentJsonObject.getInt("pageid"));
-			ver.setProperty("namespace", ns);
-			ver.setProperty("currentPageVote",-1.0);
-			ver.setProperty("currentPageReliability", -1.0);
+			Vertex pageNode = graph.addVertex("class:Page");
+			pageNode.setProperty( "title", currentJsonObject.getString("title"));
+			pageNode.setProperty("pid",currentJsonObject.getInt("pageid"));
+			pageNode.setProperty("namespace", ns);
+			pageNode.setProperty("currentPageVote",-1.0);
+			pageNode.setProperty("currentPageReliability", -1.0);
+			pageNode.setProperty("PageRating", 0.0);
 			graph.commit();
 		} catch( Exception e ) {
 			e.printStackTrace();
