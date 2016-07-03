@@ -90,20 +90,20 @@ public class Reliability {
 	 */
 	public static double simpleReliability(OrientGraph graph,int revid){
 		
-		double denominator=0,numerator=0,simpleVote=0,globalVote=0,userVote=0;
-		int noOfVotes=0;
+		double numerator=0,simpleVote=0,globalVote=0,userVote=0;
+		
 		Vertex revisionNode=graph.getVertices("revid",revid).iterator().next();
 		for(Edge reviewEdge:revisionNode.getEdges(Direction.IN,"@class","Review")){
 			userVote=reviewEdge.getProperty("vote");
 			globalVote=revisionNode.getProperty("previousVote");
 			numerator+=(double)reviewEdge.getProperty("voteCredibility")*(1-Math.abs(userVote-globalVote));
-			noOfVotes++;
+			
 		}
-		denominator=noOfVotes;
-		if(denominator==0)denominator=1;
-		simpleVote=numerator/denominator;
+		
+		simpleVote=numerator;
 		return simpleVote;
 	}
+		
 	
 	/**
 	 * This will calculate the parameter phi to scale the reliabilities of the previous versions

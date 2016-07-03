@@ -26,7 +26,7 @@ public class PageRating{
 			currentPageReliability=pageNode.getProperty("currentPageReliability");
 			pageRank=pageNode.getProperty("Pagerank");
 			currentPageVote=pageNode.getProperty("currentPageVote");
-			pageRating=((currentPageReliability*currentPageVote)+(PAGERANK_IMPORTANCE_PARAMETER*pageRank))/(PAGERANK_IMPORTANCE_PARAMETER+1);
+			pageRating=((currentPageReliability*currentPageVote)+(PAGERANK_IMPORTANCE_PARAMETER*pageRank));
 			pageNode.setProperty("PageRating", pageRating);
 			System.out.println(pageNode.getProperty("title")+"   ======has rating====   "+pageRating);
 			}catch(Exception e){e.printStackTrace();}
