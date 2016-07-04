@@ -95,20 +95,20 @@ public class UserCredibility {
 	 */
 	
 	public static double getVoteDeviation(Vertex userNode,OrientGraph graph){
-		double bTemp=0,bTotal=0,userVote,versionVote;
+		double voteDeviationTemp=0,voteDeviationTotal=0,userVote,versionVote;
 		int countReview=0;
 		try{
 		for(Edge reviewEdge:userNode.getEdges(Direction.OUT,"@class","Review")){
 
 			userVote=reviewEdge.getProperty("vote");
 			versionVote=reviewEdge.getVertex(Direction.IN).getProperty("previousVote");
-			bTemp=1-Math.abs(userVote-versionVote);
-			bTotal+=bTemp;
+			voteDeviationTemp=1-Math.abs(userVote-versionVote);
+			voteDeviationTotal+=voteDeviationTemp;
 			countReview++;
 		}
 		}catch(Exception e){e.printStackTrace();}
 		if(countReview==0)countReview=1;
-		return bTotal/countReview;
+		return voteDeviationTotal/countReview;
 		
 	}
 }

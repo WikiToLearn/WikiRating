@@ -7,7 +7,10 @@ import javax.ws.rs.core.Response;
 
 import main.java.computations.BadgeGenerator;
 import main.java.computations.NormalisedVotes;
+import main.java.computations.PageRating;
+import main.java.computations.Pagerank;
 import main.java.computations.Reliability;
+import main.java.computations.UserCredibility;
 import main.java.models.AddNewPages;
 import main.java.models.User;
 
@@ -52,6 +55,18 @@ public class Secondrun {
 		
 		Reliability.calculateReliability();
 		System.out.println("==================Calculated new reliabilities=====================");
+		
+		Pagerank.pageRankCompute();
+		System.out.println("==================Page rank over=====================");
+		
+		UserCredibility.getUserCredibility();
+		System.out.println("==================User Credibility computed=====================");
+		
+		PageRating.computePageRatings();
+		System.out.println("==================Page Ratings computed=====================");
+		
+		new BadgeGenerator().generateBadges();
+		System.out.println("==================Badges given=====================");
 		
 		
 		long estimatedTime = System.currentTimeMillis() - startTime;

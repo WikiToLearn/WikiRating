@@ -60,7 +60,7 @@ public class BadgeGenerator {
 	}
 	
 	/**
-	 * This is the custome comparator to sort the pageList in the ascending 
+	 * This is the custom comparator to sort the pageList in the ascending 
 	 * order of PageRatings
 	 */
 	 class PageRatingComparator implements Comparator<PageRatingData>{

@@ -12,8 +12,12 @@ import main.java.computations.Pagerank;
 import main.java.computations.RandomVoteGenerator;
 import main.java.computations.Reliability;
 import main.java.computations.UserCredibility;
-import main.java.models.*;
-import main.java.utilities.AllowedNamespaces;
+import main.java.models.InitialiseDB;
+import main.java.models.LinkPages;
+import main.java.models.LinkUserContributions;
+import main.java.models.Page;
+import main.java.models.Revision;
+import main.java.models.User;
 
 
 /**
