@@ -32,6 +32,14 @@
     		<version>0.6.0</version>
 		</dependency>
   		
+  		
+  		<dependency>
+    <groupId>org.glassfish.main.extras</groupId>
+    <artifactId>glassfish-embedded-all</artifactId>
+    <version>4.0</version>
+        <scope>provided</scope>
+</dependency>
+  		
   		<dependency>
    			<groupId>com.tinkerpop.blueprints</groupId>
    			<artifactId>blueprints-core</artifactId>
