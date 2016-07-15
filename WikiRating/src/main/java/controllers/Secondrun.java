@@ -13,6 +13,7 @@ import main.java.computations.Reliability;
 import main.java.computations.UserCredibility;
 import main.java.models.AddNewPages;
 import main.java.models.User;
+import main.java.utilities.PropertiesAccess;
 
 /**
  * This class will be used for detecting and storing any new changes like 
@@ -43,8 +44,8 @@ public class Secondrun {
 		 *Calculate the votes
 		 *Calculate the user reliability
 		 */
-		
-		User.insertAllUsers();
+		//PropertiesAccess.putParameter("maxPageRainting", 20.0);
+		/*User.insertAllUsers();
 		System.out.println("==================Checked for new User's insertion=====================");
 		
 		AddNewPages.checkForPages();
@@ -66,7 +67,7 @@ public class Secondrun {
 		System.out.println("==================Page Ratings computed=====================");
 		
 		new BadgeGenerator().generateBadges();
-		System.out.println("==================Badges given=====================");
+		System.out.println("==================Badges given=====================");*/
 		
 		
 		long estimatedTime = System.currentTimeMillis() - startTime;

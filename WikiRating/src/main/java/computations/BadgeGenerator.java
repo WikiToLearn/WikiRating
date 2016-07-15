@@ -6,6 +6,7 @@ import java.util.Comparator;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
+import main.java.utilities.PropertiesAccess;
 
 
 
@@ -27,7 +28,11 @@ public class BadgeGenerator {
 	 * This enum has the percentile ranges for various badges
 	 */
 	public enum Badges {
-		
+		PLATINUM(1),
+		GOLD(2),
+		SILVER(3),
+		BRONZE(4),
+		STONE(5),
 		PLATINUM_BADGE_START_PERCENTILE(80),
 		GOLD_BADGE_START_PERCENTILE(60),
 		SILVER_BADGE_START_PERCENTILE(40),
@@ -86,10 +91,10 @@ public class BadgeGenerator {
 		ArrayList<PageRatingData> pageList=new ArrayList<PageRatingData>();
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		
-		
-		String badgeName="";
-		int currentPageID=0;
-		double currentPageRating=0;
+		Vertex currentPageNode=null;
+		int badgeNumber=4;
+		int currentPageID=0,noOfPages=0;
+		double currentPageRating=0,maxPageRating=0;
 		String currentPageName="";
 		
 		for(Vertex pageNode:graph.getVertices("@class","Page")){
@@ -101,11 +106,23 @@ public class BadgeGenerator {
 		Collections.sort(pageList,new PageRatingComparator());
 		calculateBadgeCutoff(pageList);
 		
+		noOfPages=pageList.size();
+		int noOfPagesCounter=0; 
 		for(PageRatingData currentPage:pageList){
-			badgeName=getBadgeName(currentPage.pageRating);
-			System.out.println(currentPage.pageName + " ------with ratings= "+currentPage.pageRating+" earned "+badgeName);
+			badgeNumber=getBadgeNumber(currentPage.pageRating);
+			System.out.println(currentPage.pageName + " ------with ratings= "+currentPage.pageRating+" earned "+badgeNumber);
+			
+			currentPageNode=graph.getVertices("pid",currentPage.pid).iterator().next();
+			currentPageNode.setProperty("badgeNumber",badgeNumber);
+			graph.commit();
+			noOfPagesCounter++;
+			if(noOfPagesCounter==noOfPages)
+				maxPageRating=currentPage.pageRating;
 		}
-	
+		//Adding the max value to the Preferences for later access
+		PropertiesAccess.putParameter("maxRating", maxPageRating);
+		
+		graph.shutdown();
 	}
 	
 	/**
@@ -148,22 +165,22 @@ public class BadgeGenerator {
 	 * @param pageRating	PageRating of the page under consideration
 	 * @return	The name of the Badge earned
 	 */
-	public static String getBadgeName(double pageRating){
+	public static int getBadgeNumber(double pageRating){
 		
 		if(pageRating>=platinumBadgeRatingCutoff)
-			return "PLATINUM";
+			return Badges.PLATINUM.value;
 		
 		else if(pageRating>=goldBadgeRatingCutoff)
-				return "GOLD";
+				return Badges.GOLD.value;
 		
 		else if(pageRating>=silverBadgeRatingCutoff)
-				return "SILVER";
+				return Badges.SILVER.value;
 		
 		else if(pageRating>=bronzeBadgeRatingCutoff)
-				return "BRONZE";
+				return Badges.BRONZE.value;
 		
 			else
-				return "STONE";
+				return Badges.STONE.value;
 	}
 
 }

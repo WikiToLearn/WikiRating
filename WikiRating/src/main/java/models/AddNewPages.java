@@ -94,6 +94,7 @@ public class AddNewPages {
 			pageNode.setProperty("currentPageVote",-1.0);
 			pageNode.setProperty("currentPageReliability", -1.0);
 			pageNode.setProperty("PageRating", 0.0);
+			pageNode.setProperty("badgeNumber",4);
 			graph.commit();
 		} catch( Exception e ) {
 			e.printStackTrace();
@@ -170,7 +171,7 @@ public class AddNewPages {
 		 * @param graph OrientGraph object
 		 * @param key	Name of the class here 'Page'
 		 * @param value	Value of the page
-		 * @param update	Set this true is the Page exsts already and needs to be updated
+		 * @param update	Set this true is the Page exists already and needs to be updated
 		 */
 	public static void getNewRevisions(OrientGraph graph,String key,String value,boolean update){
 		

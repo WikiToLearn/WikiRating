@@ -63,6 +63,7 @@ public class Page {
 								pageNode.setProperty("currentPageVote",-1.0);
 								pageNode.setProperty("currentPageReliability", -1.0);
 								pageNode.setProperty("PageRating", 0.0);
+								pageNode.setProperty("badgeNumber",4);
 								graph.commit();
 							} catch( Exception e ) {
 								e.printStackTrace();

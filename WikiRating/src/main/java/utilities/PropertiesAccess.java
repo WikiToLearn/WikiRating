@@ -1,7 +1,12 @@
 package main.java.utilities;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.prefs.Preferences;
 
 /**This class handles the resources fetch . 
  * 
@@ -47,5 +52,21 @@ public class PropertiesAccess {
 		}
 		return value;
 	}
+	
+	public static void putParameter(String parameterName,Double parameterValue){
+		
+		Preferences prefs = Preferences.userRoot().node(PropertiesAccess.class.getClass().getName());
+		prefs.putDouble(parameterName, parameterValue);
+				
+	}
+	
+	public static double getParameter(String parameterName){
+		
+		Preferences prefs = Preferences.userRoot().node(PropertiesAccess.class.getClass().getName());
+		double parameter=prefs.getDouble(parameterName, 0);
+		return parameter;
+		
+	}
 
+	
 }
