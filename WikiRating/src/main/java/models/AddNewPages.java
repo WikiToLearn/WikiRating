@@ -176,6 +176,7 @@ public class AddNewPages {
 	public static void getNewRevisions(OrientGraph graph,String key,String value,boolean update){
 		
 		String result="";
+		int currentContributionBytes=0;
 		int sizeDiff=0;
 		boolean flag=true;
 		
@@ -237,6 +238,8 @@ public class AddNewPages {
 					 				 Vertex userNode= graph.getVertices("userid", currentJsonObject.getInt("userid")).iterator().next();
 					 				 Edge contributes = graph.addEdge("contribute", userNode, revisionNode, "Contribute");
 					 				 contributes.setProperty("contributionSize", currentJsonObject.getInt("size"));
+					 				 currentContributionBytes=currentJsonObject.getInt("size");
+					 				 userNode.setProperty("totalContributedBytes", (int)userNode.getProperty("totalContributedBytes")+currentContributionBytes);
 					 			  }
 					 			  
 					 			 if((i!=0)&&(WikiUtil.rCheck("userid", currentJsonObject.getInt("userid"), graph)==false)){
@@ -246,6 +249,8 @@ public class AddNewPages {
 					 				 sizeDiff=Math.abs((int)parentVersionNode.getProperty("size")-currentJsonObject.getInt("size"));
 					 				 Edge contributes = graph.addEdge("contribute", userNode, revisionNode, "Contribute");
 					 				 contributes.setProperty("contributionSize", sizeDiff);
+					 				 currentContributionBytes=sizeDiff;
+					 				 userNode.setProperty("totalContributedBytes", (int)userNode.getProperty("totalContributedBytes")+currentContributionBytes);
 					 			  }
 					 			  
 					 			  //All the versions are connected to each other like (Page)<-(Latest)<-(Latest-1)<-...<-(Last)

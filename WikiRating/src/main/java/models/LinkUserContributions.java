@@ -25,11 +25,14 @@ public class LinkUserContributions {
 	public static void linkAll() {
 
 		String result = "";
+		int totalContributedBytes=0;
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		//graph.setUseLightweightEdges(false);
 		for (Vertex userNode : graph.getVertices("@class", "User")) {
+			
+			totalContributedBytes=0;
 
-			// Fetching the user contribution on a particular page
+			// Fetching the user contribution of a particular User
 			result = getUserContribution(userNode.getProperty("username").toString());
 	
 				// JSON interpretation
@@ -54,6 +57,7 @@ public class LinkUserContributions {
 							Vertex targetVersionNode = graph.getVertices("revid", currentJsonObject.getInt("revid")).iterator().next();
 							Edge contributes = graph.addEdge("contribute", userNode, targetVersionNode, "Contribute");
 							contributes.setProperty("contributionSize", Math.abs(currentJsonObject.getInt("sizediff")));
+							totalContributedBytes+=Math.abs(currentJsonObject.getInt("sizediff"));
 							//graph.commit();
 							System.out.println(userNode.getProperty("username") + " Contributes to "
 									+ currentJsonObject.getString("title") + " to " + targetVersionNode.getProperty("revid")
@@ -68,7 +72,8 @@ public class LinkUserContributions {
 					e.printStackTrace();
 				}
 
-			
+			userNode.setProperty("totalContributedBytes", totalContributedBytes);
+				
 			graph.commit();	
 		}
 

@@ -60,7 +60,8 @@ public class User {
 							userNode.setProperty( "username", currentJsonObject.getString("name"));
 							userNode.setProperty("userid",currentJsonObject.getInt("userid"));
 							//Initial credibility of the user
-							userNode.setProperty("credibility",INITIAL_USER_CREDIBILTY);	
+							userNode.setProperty("credibility",INITIAL_USER_CREDIBILTY);
+							userNode.setProperty("totalContributedBytes", 0);
 							graph.commit();
 						} catch( Exception e ) {
 							e.printStackTrace();
@@ -98,7 +99,21 @@ public class User {
 		
 	}
 		
+	/**
+	 * Function to expose the total bytes contributed by a certain user
+	 * @param username	Username of the user whose contributions are to be fetched
+	 * @return	The total contributed bytes
+	 */
+	public static int getTotalContributionBytes(String username){
 		
+		int totalContributionBytes=0;
+		OrientGraph graph = Connections.getInstance().getDbGraph();
+		Vertex userNode=graph.getVertices("username",username).iterator().next();
+		totalContributionBytes=userNode.getProperty("totalContributedBytes");
+		graph.shutdown();
+		return totalContributionBytes;
+		
+	}	
 		
 	
 }

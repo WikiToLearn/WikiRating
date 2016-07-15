@@ -44,8 +44,8 @@ public class Secondrun {
 		 *Calculate the votes
 		 *Calculate the user reliability
 		 */
-		//PropertiesAccess.putParameter("maxPageRainting", 20.0);
-		/*User.insertAllUsers();
+		
+		User.insertAllUsers();
 		System.out.println("==================Checked for new User's insertion=====================");
 		
 		AddNewPages.checkForPages();
@@ -67,7 +67,7 @@ public class Secondrun {
 		System.out.println("==================Page Ratings computed=====================");
 		
 		new BadgeGenerator().generateBadges();
-		System.out.println("==================Badges given=====================");*/
+		System.out.println("==================Badges given=====================");
 		
 		
 		long estimatedTime = System.currentTimeMillis() - startTime;
