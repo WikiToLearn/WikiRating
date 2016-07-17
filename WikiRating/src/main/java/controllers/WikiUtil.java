@@ -129,7 +129,7 @@ public class WikiUtil {
 
 	/**
 	 * This method constructs the MAP of parameters to attach with the MediaWiki Query to get
-	 * all the contibutions by the specified User
+	 * all the contributions by the specified User
 	 * @param username Username for whom the contributions have to be fetched
 	 * @return	Map having parameters
 	 */
