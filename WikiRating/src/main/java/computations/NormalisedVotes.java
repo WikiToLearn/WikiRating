@@ -4,6 +4,8 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+import com.tinkerpop.blueprints.impls.orient.OrientVertex;
+
 import main.java.utilities.Connections;
 import main.java.utilities.PropertiesAccess;
 
@@ -41,7 +43,8 @@ public class NormalisedVotes {
 			graph.commit();
 			}catch(Exception e){e.printStackTrace();}
 		}
-		//graph.commit();	
+			
+		getTotalVotes(graph);
 		graph.shutdown();
 	}
 	
@@ -128,8 +131,34 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 		return phi;
 	}
 	
-	
-	
+	/**
+	 * This method will compute the no of Votes given to a particular page
+	 * for all the pages
+	 * @param graph OrientGraph
+	 */
+	public static void getTotalVotes(OrientGraph graph){
+					
+		long totalVotes=0;
+		OrientVertex revisionNode=null;
+		for (Vertex pageNode : graph.getVertices("@class","Page")) {
+			totalVotes=0;
+			revisionNode=(OrientVertex)pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next().getVertex(Direction.IN);
+						
+			while((int)revisionNode.getProperty("parentid")!=0){
+				totalVotes+=revisionNode.countEdges(Direction.IN, "@class","Review");
+				revisionNode=(OrientVertex) graph.getVertices("revid", (int)revisionNode.getProperty("parentid")).iterator().next();
+				System.out.println(revisionNode.getProperty("revid"));
+			}
+			
+			totalVotes+=revisionNode.countEdges(Direction.IN, "@class","Review");
+			System.out.println(pageNode.getProperty("title")+"  "+totalVotes);
+			
+			//Adding the totalVotes into the DB for faster retrieval
+			pageNode.setProperty("totalVotes", totalVotes);
+			graph.commit();
+		}
+		
+	}
 	
 	
 }

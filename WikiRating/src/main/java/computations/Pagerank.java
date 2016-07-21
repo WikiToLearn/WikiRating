@@ -9,6 +9,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import main.java.utilities.Connections;
+import main.java.utilities.PropertiesAccess;
 
 /**
  * This class will calculate the Pagerank (Cite Index) of all the Pages on the platform
@@ -93,13 +94,19 @@ public class Pagerank {
 	
 			}
 		    
-		    //To print out the final results.
+		    //To print out the final results and store the maxPageRank in preferences.
+		    double maxPageRank=-1;
 		    Iterator it2 = pageRankMap.entrySet().iterator();
 		    while (it2.hasNext()) {
 		        Map.Entry pair = (Map.Entry)it2.next();
 		        System.out.println("===========Finals===========");
 		        System.out.println(pair.getKey()+"  "+pair.getValue());
+		        if(maxPageRank<=(double)pair.getValue()){
+		        	maxPageRank=(double)pair.getValue();
+		        }
 		       } 
+		    System.out.println("=======This is maxPageRank=======  "+maxPageRank);
+		    PropertiesAccess.putParameter("maxPageRank", maxPageRank);
 		    //graph.commit();
 		    graph.shutdown();
 	}

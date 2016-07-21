@@ -8,8 +8,6 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
 import main.java.utilities.PropertiesAccess;
 
-
-
 /**
  * This class will calculate the Badges that will be assigned
  * to the Pages based on the analysis of Page Rating distribution
@@ -17,7 +15,7 @@ import main.java.utilities.PropertiesAccess;
 
 public class BadgeGenerator {
 	
-	//These varibales will store the computed cutoffs for the various badges
+	//These variables will store the computed cutoffs for the various badges
 	static double platinumBadgeRatingCutoff;
 	static double goldBadgeRatingCutoff;
 	static double silverBadgeRatingCutoff;
@@ -25,7 +23,7 @@ public class BadgeGenerator {
 	static double stoneBadgeRatingCutoff;
 	
 	/**
-	 * This enum has the percentile ranges for various badges
+	 * This ENUM has the percentile ranges for various badges
 	 */
 	public enum Badges {
 		PLATINUM(1),
@@ -48,7 +46,7 @@ public class BadgeGenerator {
     
 
  /**
-  * This class will store our PageObjects to insert into Arraylist for
+  * This class will store our PageObjects to insert into ArrayList for
   * percentile calculations
   */
 	public class PageRatingData{
@@ -127,7 +125,7 @@ public class BadgeGenerator {
 	
 	/**
 	 * This method will calculate the cutoff for the various badges
-	 * @param pageList The Arraylist containg Page Objects
+	 * @param pageList The ArrayList containing Page Objects
 	 */
 	public static void calculateBadgeCutoff(ArrayList<PageRatingData> pageList){
 		

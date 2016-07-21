@@ -28,16 +28,23 @@ public class Reliability {
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		double currentPageReliability=0;
 		Vertex revisionNode=null;
+		double maxPageReliability=-1;
 		for (Vertex pageNode : graph.getVertices("@class","Page")) {
 			try{
 				
 			revisionNode = pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next().getVertex(Direction.IN);
 			currentPageReliability=recursiveReliability(graph,(int)revisionNode.getProperty("revid"));
+			
+			if(maxPageReliability<=currentPageReliability){
+				maxPageReliability=currentPageReliability;
+			}
+			
 			pageNode.setProperty("currentPageReliability",currentPageReliability);
 			graph.commit();
 			}catch(Exception e){e.printStackTrace();}
 		}
-		//graph.commit();	
+		//graph.commit();
+		PropertiesAccess.putParameter("maxPageReliability", maxPageReliability);
 		graph.shutdown();
 	}
 	
@@ -47,7 +54,7 @@ public class Reliability {
 	 * and then return the final reliability of vote for the page itself
 	   * @param graph OrientGraph object
 	   * @param revid Revision Id of the latest version connected to the Page 
-	 * @return final reliabiity of the latest version is computed and returned
+	 * @return final reliability of the latest version is computed and returned
 	 */
 	public static double recursiveReliability(OrientGraph graph,int revid){
 		
