@@ -34,12 +34,12 @@ public class CreditSystem {
 	public static String generateCredits(@QueryParam("name") List<String> pageList,@QueryParam("join") boolean join){
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		
-		if(join){
+		if(!join){
+			
 			Vertex pageNode=null;
 			for(int i=0;i<pageList.size();i++){
 				pageNode=graph.getVertices("title",pageList.get(i)).iterator().next();
-				HashMap<Integer,Integer> userContributions=new HashMap<Integer,Integer>();
-				getUserContributions(graph,userContributions,pageNode);
+				HashMap<String,Integer> userContributions=getUserContributions(graph,pageNode);
 				
 				
 			}
@@ -52,6 +52,42 @@ public class CreditSystem {
 		
 		
 		else{
+			
+			Vertex pageNode=null;
+			int contributionSize=0;
+			String username="";
+			HashMap<String,Integer> totalUserContributions=new HashMap<String,Integer>();
+			for(int i=0;i<pageList.size();i++){
+			
+				pageNode=graph.getVertices("title",pageList.get(i)).iterator().next();
+				HashMap<String,Integer> userContributions=getUserContributions(graph,pageNode);
+				
+				Iterator it = userContributions.entrySet().iterator();
+				while (it.hasNext()) {
+					
+					Map.Entry pair = (Map.Entry) it.next();
+					
+					username=(String)pair.getKey();
+					contributionSize=(int)pair.getValue();
+					
+					if(totalUserContributions.containsKey(username)){
+						totalUserContributions.put(username, totalUserContributions.get(username)+contributionSize);
+					}
+					else{
+						totalUserContributions.put(username, contributionSize);
+					}
+						
+				}
+			}
+			
+			System.out.println("===Printing bulk contributions===");
+			Iterator it = totalUserContributions.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pair = (Map.Entry) it.next();
+				System.out.println(pair.getKey()+"   "+pair.getValue());
+			}
+			
+			
 			graph.shutdown();
 			return "Success";
 			
@@ -64,33 +100,38 @@ public class CreditSystem {
 	 * @param userContributions
 	 * @param pageNode
 	 */
-	public static void getUserContributions(OrientGraph graph,HashMap<Integer,Integer> userContributions,Vertex pageNode){
+	public static HashMap<String,Integer> getUserContributions(OrientGraph graph,Vertex pageNode){
 		Vertex revisionNode=null,userNode=null;
 		revisionNode=pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next().getVertex(Direction.IN);
 		Edge contribute=null;
-		int contributionSize=0,userid=0;
+		int contributionSize=0;
+		String username="";
+		HashMap<String,Integer> userContributions=new HashMap<String,Integer>();
 		try{
 		while(true){
-			 
+			//System.out.println("Hello");
+			if(revisionNode.getEdges(Direction.IN, "@class", "Contribute").iterator().hasNext()){
+				//System.out.println("insider");
 			contribute=revisionNode.getEdges(Direction.IN, "@class", "Contribute").iterator().next();
 			userNode=contribute.getVertex(Direction.OUT);
 			 
-			 //Get the required bytes and the corresponding userid
+			 //Get the required bytes and the corresponding username
 			contributionSize=contribute.getProperty("contributionSize");
-			userid=userNode.getProperty("userid"); //Putting the data into the HashMap
+			username=userNode.getProperty("username"); //Putting the data into the HashMap
 			 
-			 if(userContributions.containsKey(userid)){
+			 if(userContributions.containsKey(username)){
 			 
-				 userContributions.put(userid, userContributions.get(userid)+contributionSize);
+				 userContributions.put(username, userContributions.get(username)+contributionSize);
 			 
 			 }
 			 else{
 			
-				 userContributions.put(userid, contributionSize);
+				 userContributions.put(username, contributionSize);
 			 
 			 }
-			 
-			 if((int)revisionNode.getProperty("parentid")!=0)
+		}
+	 
+			 if((int)revisionNode.getProperty("parentid")==0)
 				 break;
 			 
 			revisionNode=graph.getVertices("revid", (int)revisionNode.getProperty("parentid")).iterator().next();
@@ -100,10 +141,13 @@ public class CreditSystem {
 			e.printStackTrace();
 		}
 		
+		System.out.println(pageNode.getProperty("title"));
 		Iterator it = userContributions.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
 			System.out.println(pair.getKey()+"   "+pair.getValue());
 		}
+		
+		return userContributions;
 	}
 }
