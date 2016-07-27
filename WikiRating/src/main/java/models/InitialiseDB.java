@@ -15,6 +15,7 @@ public class InitialiseDB {
 	 * This method will create  various classes in the database 
 	 */
 	public static void createClass() {
+		// No transaction to avoid warnings
 		OrientGraphNoTx graph = Connections.getInstance().getDbGraphNT();
 		graph.createVertexType("Page");
 		System.out.println("====Created Class Page====");
@@ -39,6 +40,8 @@ public class InitialiseDB {
 		
 		graph.createEdgeType("Review");
 		System.out.println("====Created Class Review====");
+		
+		graph.shutdown();
 	}
 
 }

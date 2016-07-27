@@ -39,8 +39,9 @@ public class DisplayStatistics {
 		graph.shutdown();
 		System.out.println(nameSpace+" "+badgeNumber+" "+pageRank+" "+totalVotes+" "+currentPageVote+" "+pageReliability+" "+maxPageReliability+" "+maxPageRank);
 		
-		String sJson="{\"pageTitle\":\"dd\",\"currentPageRating\":2,\"maxPageRating\":55,\"badgeNumber\":4}";
+		//String sJson="{\"pageTitle\":\"dd\",\"currentPageRating\":2,\"maxPageRating\":55,\"badgeNumber\":4}";
 		
+		String sJson="{\"nameSpace\":"+nameSpace+",\"badgeNumber\":"+badgeNumber+",\"pageRank\":"+pageRank+",\"totalVotes\":"+totalVotes+",\"currentPageVote\":"+currentPageVote+",\"pageReliability\":"+pageReliability+",\"maxPageReliability\":"+maxPageReliability+",\"maxPageRank\":"+maxPageRank+"}";
 		String result = callback + "(" + sJson + ");";
 		return result;
 

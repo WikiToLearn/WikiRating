@@ -5,6 +5,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import com.orientechnologies.orient.core.Orient;
+
 import main.java.computations.BadgeGenerator;
 import main.java.computations.NormalisedVotes;
 import main.java.computations.PageRating;
@@ -51,7 +53,9 @@ public class Firstrun {
 		LinkPages.linkAll("@class","Page");
 		System.out.println("==================Page linking over=====================");
 		
-		User.insertAllUsers();
+		Orient.instance().shutdown();
+		
+		/*User.insertAllUsers();
 		System.out.println("==================All Users inserted=====================");
 		
 		Revision.getAllRevisions("@class","Page");
@@ -79,7 +83,7 @@ public class Firstrun {
 		System.out.println("==================Page Ratings computed=====================");
 		
 		new BadgeGenerator().generateBadges();
-		System.out.println("==================Badges given=====================");
+		System.out.println("==================Badges given=====================");*/
 		
 		long estimatedTime = System.currentTimeMillis() - startTime;
 		estimatedTime = estimatedTime / 60000;

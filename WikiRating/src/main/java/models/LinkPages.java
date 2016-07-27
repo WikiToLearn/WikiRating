@@ -55,8 +55,9 @@ public class LinkPages {
 				 	for(int i=0;i<arr.length();i++){
 				 		currentJsonObject=arr.getJSONObject(i);
 				 		
-				 		try{	
-				 			
+				 		try{
+				 			//The check is done to prevent the rollback in case any error occurs due to null vertices
+				 			if(graph.getVertices("pid",currentJsonObject.getInt("pageid")).iterator().hasNext()){
 				 			//Getting the node linked to the current page.
 				 			Vertex backLink=graph.getVertices("pid",currentJsonObject.getInt("pageid")).iterator().next();	
 				 			//Creating Edge in between the 2 vertices.
@@ -64,7 +65,8 @@ public class LinkPages {
 				 			
 				 			System.out.println(pageNode.getProperty("title").toString()+" is linked to "+backLink.getProperty("title").toString());
 				 			
-				 		graph.commit();														
+				 		graph.commit();	
+				 			}
 				 		} catch( Exception e ) {
 				 			e.printStackTrace();
 				 			//In case the transaction fails we will rollback.

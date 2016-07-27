@@ -20,9 +20,9 @@ public enum AllowedNamespaces {
 			HELP(12),
 			HELP_TALK(13),
 			CATEGORY(14),
-			CATEGORY_TALK(15),
-			SPECIAL(-1),
-			MEDIA(-2);
+			CATEGORY_TALK(15);
+//			SPECIAL(-1),
+//			MEDIA(-2);
 	 
 	    private  int value;
 	 
