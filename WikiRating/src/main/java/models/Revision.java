@@ -18,7 +18,7 @@ import main.java.utilities.Connections;
 
 public class Revision {
 	
-	//This 
+	
 	/**
 	 * This method will compute the revisions for all the pages and link them
 	 * @param key	Name of the key here '@class'
