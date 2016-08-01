@@ -221,6 +221,8 @@ public class AddNewPages {
 					 			
 					 		try{
 					 			// 1st OPERATION: IMPLICITLY BEGINS TRANSACTION
+					 			  
+					 			
 					 			  Vertex revisionNode = graph.addVertex("class:Revision"); 
 					 			  revisionNode.setProperty( "Page", pageNode.getProperty("title").toString());
 					 			  revisionNode.setProperty("revid",currentJsonObject.getInt("revid"));
@@ -230,9 +232,12 @@ public class AddNewPages {
 					 			  revisionNode.setProperty("size",currentJsonObject.getInt("size"));
 					 			  revisionNode.setProperty("previousVote",-1.0);
 					 			  revisionNode.setProperty("previousReliability", -1.0);
-
-					 			  //Code to link the user contributions
-					 			  
+					 			 try{
+						 				//Inner try catch to check any null pointer due to links to annonymous users.
+					 				 
+					 			// If condition to prevent the linking of users from minor versions just like in the firstRun.java
+					 			if(currentJsonObject.has("minor")==false){
+					 				//Code to link the user contributions
 					 			  if((i==0)&&(WikiUtil.rCheck("userid", currentJsonObject.getInt("userid"), graph)==false)){
 					 				  
 					 				 Vertex userNode= graph.getVertices("userid", currentJsonObject.getInt("userid")).iterator().next();
@@ -252,6 +257,10 @@ public class AddNewPages {
 					 				 currentContributionBytes=sizeDiff;
 					 				 userNode.setProperty("totalContributedBytes", (int)userNode.getProperty("totalContributedBytes")+currentContributionBytes);
 					 			  }
+					 		}
+					 			}catch(Exception e){
+					 				e.printStackTrace();
+					 			}
 					 			  
 					 			  //All the versions are connected to each other like (Page)<-(Latest)<-(Latest-1)<-...<-(Last)
 					 			  

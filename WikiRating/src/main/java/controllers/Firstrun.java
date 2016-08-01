@@ -85,7 +85,7 @@ public class Firstrun {
 		new BadgeGenerator().generateBadges();
 		System.out.println("==================Badges given=====================");
 		
-		Orient.instance().shutdown();
+		//Orient.instance().shutdown(); 
 		
 		long estimatedTime = System.currentTimeMillis() - startTime;
 		estimatedTime = estimatedTime / 60000;
