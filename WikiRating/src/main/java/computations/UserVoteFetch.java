@@ -39,6 +39,22 @@ public class UserVoteFetch {
 		Vertex userNode=graph.getVertices("username",userName).iterator().next();
 		Vertex pageNode=graph.getVertices("title",pageTitle).iterator().next();
 		Vertex revisionNode = pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next().getVertex(Direction.IN);
+		Vertex revisionNodeContributor=null;
+		
+		if(revisionNode.getEdges(Direction.IN, "@class", "Contribute").iterator().hasNext()){
+			
+			revisionNodeContributor=revisionNode.getEdges(Direction.IN, "@class", "Contribute").iterator().next().getVertex(Direction.OUT);
+			//Code to prevent contributor from rating their own contributions
+			if(((String)revisionNodeContributor.getProperty("username")).equals(userName)){
+				
+				System.out.println("Users can't vote their own work");
+				graph.shutdown();
+				String sJson="{\"pageTitle\":\"User cant vote thier own work\"}";
+				String result = callback + "(" + sJson + ");";
+				return result;
+			}
+				
+		}
 		
 		//Removes the old vote if exists
 		if(IsNotDuplicateVote(userNode, revisionNode)==false){
