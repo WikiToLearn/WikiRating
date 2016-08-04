@@ -12,7 +12,9 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 import main.java.utilities.Connections;
 import main.java.utilities.PropertiesAccess;
-
+/**
+ * This class deals with the basic info requested by the platform's pages
+ */
 @Path("display")
 public class PageInfo {
 
@@ -20,6 +22,12 @@ public class PageInfo {
 	@Path("pageRating")
 	@JSONP(queryParam = "callback")
 	@Produces({ "application/x-javascript" })
+	/**
+	 * This method returns all the parameters requested by the Wiki page during the page load.
+	 * @param callback The function name for bypassing SOP
+	 * @param pageTitle Page title for which the information is being requested
+	 * @return	JSON string consisting of requesting parameters.
+	 */
 	public String getAllTestData(@QueryParam("callback") String callback, @QueryParam("pageTitle") String pageTitle) {
 
 		double currentPageRating=0,maxPageRating=0;
@@ -39,13 +47,9 @@ public class PageInfo {
 		System.out.println(currentPageRating);
 		System.out.println(maxPageRating);
 		System.out.println(badgeNumber);
-		
-		//{\"pageTitle\":ccc,\"currentPageRating\":xxc,\"maxPageRating\":vvv}
-		// String sJson="{\"data\":{\"id\":1}}";
-		// String sJson="{\"id\":1}";
-		//String sJson = "{\"PageName\":78,\"Ratings\":2.02}";
+	
 		String sJson="{\"pageTitle\":\""+pageTitle+"\",\"currentPageRating\":"+currentPageRating+",\"maxPageRating\":"+maxPageRating+",\"badgeNumber\":"+badgeNumber+"}";
-		//String sJson="{\"pageTitle\":22,\"currentPageRating\":12.0,\"maxPageRating\":20.4}";
+		
 		
 		String result = callback + "(" + sJson + ");";
 		return result;

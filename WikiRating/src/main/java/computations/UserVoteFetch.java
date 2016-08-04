@@ -13,7 +13,10 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 import main.java.utilities.Connections;
-
+/**
+ * This class is used to fetch the votes given by the user and add that to the database.
+ * Duplicate votes aren't added but previous votes are updated during a revote
+ */
 @Path("votePage")
 public class UserVoteFetch {
 
@@ -21,6 +24,14 @@ public class UserVoteFetch {
 	@Path("userVote")
 	@JSONP(queryParam = "callback")
 	@Produces({ "application/x-javascript" })
+	/**
+	 * This method adds the user vote to the the latest version of the page
+	 * @param callback The function name for bypassing SOP
+	 * @param pageTitle	The title of the page whose latest revision is being voted
+	 * @param userName	The name of the user who is voting
+	 * @param userVote	The value of the vote
+	 * @return	A string stating the process is successful
+	 */
 	public String getAllTestData(@QueryParam("callback") String callback, @QueryParam("pageTitle") String pageTitle,@QueryParam("userName") String userName,@QueryParam("userVote") int userVote) {
 		
 		try{
@@ -29,9 +40,21 @@ public class UserVoteFetch {
 		Vertex pageNode=graph.getVertices("title",pageTitle).iterator().next();
 		Vertex revisionNode = pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next().getVertex(Direction.IN);
 		
-		if(IsNotDuplicateVote(userNode, revisionNode)){
+		//Removes the old vote if exists
+		if(IsNotDuplicateVote(userNode, revisionNode)==false){
+			Vertex votedRevisionNode=null;
+			for(Edge votedRevisionEdge:userNode.getEdges(Direction.OUT, "@class", "Review")){
+				votedRevisionNode=votedRevisionEdge.getVertex(Direction.IN);
+				if(votedRevisionNode.getId()==revisionNode.getId()){
+					System.out.println("Vote removed with value = "+votedRevisionEdge.getProperty("vote")+" having id = "+votedRevisionEdge.getProperty("@RID"));
+					graph.removeEdge(votedRevisionEdge);
+									
+					}
+			}
+			
+		}
 		
-		
+		//Creates the new vote
 		Edge review = graph.addEdge("review", userNode, revisionNode, "Review");
 		review.setProperty("vote", userVote/10.0);
 		review.setProperty("voteCredibility",userNode.getProperty("credibility"));
@@ -42,7 +65,7 @@ public class UserVoteFetch {
 		System.out.println(userVote);
 		System.out.println("New Vote added successfully");
 		
-		}
+		
 		
 		
 
@@ -51,13 +74,19 @@ public class UserVoteFetch {
 			e.printStackTrace();
 		}
 		
-		String sJson="{\"pageTitle\":\"dd\",\"currentPageRating\":2,\"maxPageRating\":55,\"badgeNumber\":4}";
+		String sJson="{\"pageTitle\":\"Successful\"}";
 		
 		String result = callback + "(" + sJson + ");";
 		return result;
 
 	}
 
+	/**
+	 * This method checks whether the user already voted for the current version or not
+	 * @param userNode	The user Vertex
+	 * @param revisionNode The latest revision of the Page being voted
+	 * @return Either true of false indicating the presence of a duplicate edge 
+	 */
 	public boolean IsNotDuplicateVote(Vertex userNode,Vertex revisionNode){
 		Vertex votedRevisionNode=null;
 		for(Edge votedRevisionEdge:userNode.getEdges(Direction.OUT, "@class", "Review")){
