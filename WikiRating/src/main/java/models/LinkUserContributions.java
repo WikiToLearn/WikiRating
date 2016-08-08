@@ -10,18 +10,18 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.controllers.WikiUtil;
 import main.java.utilities.Connections;
-
+import main.java.utilities.Loggings;
 
 /**This class will link the user to all their respective contributions on the platform
- * 
+ *
  */
 
 public class LinkUserContributions {
-
+	static Class className=LinkUserContributions.class;
 	/**
 	 * This method will link all the Users to their work.
 	 */
-	
+
 	public static void linkAll() {
 
 		String result = "";
@@ -29,12 +29,12 @@ public class LinkUserContributions {
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		//graph.setUseLightweightEdges(false);
 		for (Vertex userNode : graph.getVertices("@class", "User")) {
-			
+
 			totalContributedBytes=0;
 
 			// Fetching the user contribution of a particular User
 			result = getUserContribution(userNode.getProperty("username").toString());
-	
+
 				// JSON interpretation
 				try {
 
@@ -42,8 +42,8 @@ public class LinkUserContributions {
 					JSONObject js2 = js.getJSONObject("query");
 					JSONArray arr = js2.getJSONArray("usercontribs");
 					JSONObject currentJsonObject;
-					System.out.println(userNode.getProperty("username")+"      "+arr.length());
-					System.out.println("*");
+					Loggings.getLogs(className).info(userNode.getProperty("username")+"      "+arr.length());
+					Loggings.getLogs(className).info("*");
 
 					for (int i = 0; i < arr.length(); i++) {
 
@@ -59,7 +59,7 @@ public class LinkUserContributions {
 							contributes.setProperty("contributionSize", Math.abs(currentJsonObject.getInt("sizediff")));
 							totalContributedBytes+=Math.abs(currentJsonObject.getInt("sizediff"));
 							//graph.commit();
-							System.out.println(userNode.getProperty("username") + " Contributes to "
+							Loggings.getLogs(className).info(userNode.getProperty("username") + " Contributes to "
 									+ currentJsonObject.getString("title") + " to " + targetVersionNode.getProperty("revid")
 									+ " of size " + Math.abs(currentJsonObject.getInt("sizediff")));
 						} catch (Exception e) {
@@ -73,14 +73,14 @@ public class LinkUserContributions {
 				}
 
 			userNode.setProperty("totalContributedBytes", totalContributedBytes);
-				
-			graph.commit();	
+
+			graph.commit();
 		}
 
 		graph.shutdown();
 	}
-	
-	
+
+
 	/**
 	 * This method will return the a JSON formatted string queried
 	 * from the MediaWiki API to get all the user contributions.

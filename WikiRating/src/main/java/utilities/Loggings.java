@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import main.java.computations.PageRating;
 
 
-public class Logs {
+public class Loggings {
 	
 
 /**

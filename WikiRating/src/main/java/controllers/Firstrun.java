@@ -6,7 +6,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import com.orientechnologies.orient.core.Orient;
-
+import main.java.utilities.Loggings;
 import main.java.computations.BadgeGenerator;
 import main.java.computations.NormalisedVotes;
 import main.java.computations.PageRating;
@@ -20,73 +20,73 @@ import main.java.models.LinkUserContributions;
 import main.java.models.Page;
 import main.java.models.Revision;
 import main.java.models.User;
-
+import main.java.utilities.Loggings;
 
 /**
- * This class will be used to initialize the engine. 
- * 
+ * This class will be used to initialize the engine.
+ *
  */
 @Path("firstRun")
 public class Firstrun {
-	
+	static Class className=Firstrun.class;
 
 	@GET
 	@Produces("application/json")
-	
+
 	// Warning: If you add revisions before the Users, only those users who have
 	// not contributed to Wiki will be added.
 	// However this behaviour can be inverted too
-	
+
 	/**
 	 * This method will call different other methods that will initialize the engine
 	 * @return Response object showing time taken to run the computation
 	 */
 	public Response pCompute() {
 		long startTime = System.currentTimeMillis();
-		
+
 		InitialiseDB.createClass();
-		System.out.println("==================Classes creation over=====================");
-		
+		Loggings.getLogs(className).info("==================Classes creation over=====================");
+
 		Page.insertPages();
-		System.out.println("==================Page insertion over=====================");
-		
+		Loggings.getLogs(className).info("==================Page insertion over=====================");
+
 		LinkPages.linkAll("@class","Page");
-		System.out.println("==================Page linking over=====================");
-		
-		
+		Loggings.getLogs(className).info("==================Page linking over=====================");
+
+
 		User.insertAllUsers();
-		System.out.println("==================All Users inserted=====================");
-		
+		Loggings.getLogs(className).info("==================All Users inserted=====================");
+
 		Revision.getAllRevisions("@class","Page");
-		System.out.println("==================Page Revisions over=====================");
-		
+		Loggings.getLogs(className).info("==================Page Revisions over=====================");
+
 		Pagerank.pageRankCompute();
-		System.out.println("==================Page rank over=====================");
-		
+		Loggings.getLogs(className).info("==================Page rank over=====================");
+
 		LinkUserContributions.linkAll();
-		System.out.println("==================All Users Linked=====================");
-		
+		Loggings.getLogs(className).info("==================All Users Linked=====================");
+
 		RandomVoteGenerator.generateVotes();
-		System.out.println("==================All Versions voted=====================");
-		
+		Loggings.getLogs(className).info("==================All Versions voted=====================");
+
 		NormalisedVotes.calculatePageVotes();
-		System.out.println("==================All Page Votes computed=====================");
-		
+		Loggings.getLogs(className).info("==================All Page Votes computed=====================");
+
 		UserCredibility.getUserCredibility();
-		System.out.println("==================User Credibility computed=====================");
-		
+		Loggings.getLogs(className).info("==================User Credibility computed=====================");
+
 		Reliability.calculateReliability();
-		System.out.println("==================Vote Reliability computed=====================");
-		
+		Loggings.getLogs(className).info("==================Vote Reliability computed=====================");
+
 
 		PageRating.computePageRatings();
-		System.out.println("==================Page Ratings computed=====================");
-		
+		Loggings.getLogs(className).info("==================Page Ratings computed=====================");
+
 		new BadgeGenerator().generateBadges();
-		System.out.println("==================Badges given=====================");
-		
-		//Orient.instance().shutdown(); 
-		
+		Loggings.getLogs(className).info("==================Badges given=====================");
+
+		//Orient.instance().shutdown();
+
 		long estimatedTime = System.currentTimeMillis() - startTime;
 		estimatedTime = estimatedTime / 60000;
 

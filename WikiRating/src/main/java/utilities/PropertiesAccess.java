@@ -8,15 +8,15 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 
-/**This class handles the resources fetch . 
- * 
+/**This class handles the resources fetch .
+ *
  */
 
 public class PropertiesAccess {
-	
+	static Class className=PropertiesAccess.class;
 
 	/**
-	 *Return the corresponding value for the passed key. 
+	 *Return the corresponding value for the passed key.
 	 * @param key	Key name for which value needs to be fetched
 	 * @return	String having the key value
 	 */
@@ -28,12 +28,12 @@ public class PropertiesAccess {
 			value = configFile.getProperty(key);
 			return value;
 		} catch (IOException e) {
- 
+
 			e.printStackTrace();
 		}
 		return value;
 	}
-	
+
 	/**
 	 * Returns the corresponding Parameter's value for the passed key
 	 * @param key	Key name for which value needs to be fetched
@@ -47,26 +47,26 @@ public class PropertiesAccess {
 			value = parameterFile.getProperty(key);
 			return value;
 		} catch (IOException e) {
- 
+
 			e.printStackTrace();
 		}
 		return value;
 	}
-	
+
 	public static void putParameter(String parameterName,Double parameterValue){
-		
+
 		Preferences prefs = Preferences.userRoot().node(PropertiesAccess.class.getClass().getName());
 		prefs.putDouble(parameterName, parameterValue);
-				
+
 	}
-	
+
 	public static double getParameter(String parameterName){
-		
+
 		Preferences prefs = Preferences.userRoot().node(PropertiesAccess.class.getClass().getName());
 		double parameter=prefs.getDouble(parameterName, 0);
 		return parameter;
-		
+
 	}
 
-	
+
 }

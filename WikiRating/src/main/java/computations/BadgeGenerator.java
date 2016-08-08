@@ -6,7 +6,7 @@ import java.util.Comparator;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
-import main.java.utilities.Logs;
+import main.java.utilities.Loggings;
 import main.java.utilities.PropertiesAccess;
 
 /**
@@ -15,7 +15,7 @@ import main.java.utilities.PropertiesAccess;
  */
 
 public class BadgeGenerator {
-	Class className=BadgeGenerator.class;
+	static Class className=BadgeGenerator.class;
 	
 	//These variables will store the computed cutoffs for the various badges
 	static double platinumBadgeRatingCutoff;
@@ -110,8 +110,8 @@ public class BadgeGenerator {
 		int noOfPagesCounter=0; 
 		for(PageRatingData currentPage:pageList){
 			badgeNumber=getBadgeNumber(currentPage.pageRating);
-			Logs.getLogs(className).info(currentPage.pageName + " ------with ratings= "+currentPage.pageRating+" earned "+badgeNumber);
-			System.out.println(currentPage.pageName + " ------with ratings= "+currentPage.pageRating+" earned "+badgeNumber);
+			
+			Loggings.getLogs(className).info(currentPage.pageName + " ------with ratings= "+currentPage.pageRating+" earned "+badgeNumber);
 			
 			currentPageNode=graph.getVertices("pid",currentPage.pid).iterator().next();
 			currentPageNode.setProperty("badgeNumber",badgeNumber);
@@ -153,12 +153,13 @@ public class BadgeGenerator {
 		bronzeBadgeRatingCutoff=pageList.get(bronzePageIndex).pageRating;
 		stoneBadgeRatingCutoff=pageList.get(stonePageIndex).pageRating;
 		
-		System.out.println("Index "+platinumPageIndex+"marks platinum cutoff -------"+platinumBadgeRatingCutoff);
-		System.out.println("Index "+goldPageIndex+"marks gold cutoff------"+goldBadgeRatingCutoff);
-		System.out.println("Index "+silverPageIndex+"marks silver cutoff------"+silverBadgeRatingCutoff);
-		System.out.println("Index "+bronzePageIndex+"marks bronze cutoff------"+bronzeBadgeRatingCutoff);
-		System.out.println("Index "+stonePageIndex+"marks stone cutoff------"+stoneBadgeRatingCutoff);
-		
+
+		Loggings.getLogs(className).info("Index "+platinumPageIndex+"marks platinum cutoff -------"+platinumBadgeRatingCutoff);
+		Loggings.getLogs(className).info("Index "+goldPageIndex+"marks gold cutoff------"+goldBadgeRatingCutoff);
+		Loggings.getLogs(className).info("Index "+silverPageIndex+"marks silver cutoff------"+silverBadgeRatingCutoff);
+		Loggings.getLogs(className).info("Index "+bronzePageIndex+"marks bronze cutoff------"+bronzeBadgeRatingCutoff);
+		Loggings.getLogs(className).info("Index "+stonePageIndex+"marks stone cutoff------"+stoneBadgeRatingCutoff);
+
 	}
 	
 	/**

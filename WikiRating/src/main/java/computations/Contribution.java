@@ -7,19 +7,21 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
+import main.java.utilities.Loggings;
 
 /**
  * This class will calculate the total size of all the edits done on the single page.
- * 
+ *
  */
 
 public class Contribution {
+	static Class className=Contribution.class;
 
 	public static HashMap<Integer, Integer> getPageEdits() {
 		/**
 		 * This method is used to calculate the total edits on a page and make a
 		 * HashMap linking pid(PageID) and corresponding edits on the Page
-		 * 
+		 *
 		 * @return  This returns a HashMap containing all the pid along
 		 *         with the total number of edits on that page.
 		 */
@@ -45,7 +47,7 @@ public class Contribution {
 													// revisons
 
 				// Finding out the total edits by traversing all the revisions  for a particular page.
-				
+
 				while (loopCounter) {
 					if (revisionNode.getEdges(Direction.OUT, "@class", "PreviousRevision").iterator().hasNext()) {
 						nextRevisionNode = revisionNode.getEdges(Direction.OUT, "@class", "PreviousRevision").iterator()
@@ -68,12 +70,13 @@ public class Contribution {
 		}
 
 		// Iterating through the Map to print the results for total edits on the pages.
-		 
+
 		Iterator it = totalPageEdits.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
-			System.out.println(graph.getVertices("pid", pair.getKey()).iterator().next().getProperty("title")
+			Loggings.getLogs(className).info(graph.getVertices("pid", pair.getKey()).iterator().next().getProperty("title")
 					+ " has got insertions= " + pair.getValue());
+			
 		}
 
 		graph.shutdown();

@@ -4,7 +4,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-
+import main.java.utilities.Loggings;
 import main.java.computations.BadgeGenerator;
 import main.java.computations.NormalisedVotes;
 import main.java.computations.PageRating;
@@ -16,7 +16,7 @@ import main.java.models.User;
 import main.java.utilities.PropertiesAccess;
 
 /**
- * This class will be used for detecting and storing any new changes like 
+ * This class will be used for detecting and storing any new changes like
  * Page addition, Page modification and User Addition to the platform.
  */
 
@@ -24,6 +24,7 @@ import main.java.utilities.PropertiesAccess;
 
 
 public class Secondrun {
+	static Class className=Secondrun.class;
 
 @GET
 @Produces("application/json")
@@ -35,7 +36,7 @@ public class Secondrun {
 	 */
 	public Response pCompute() {
 		long startTime = System.currentTimeMillis();
-						
+
 		/*Now we will check for new pages and add revisions to them too.
 		 *Make links to the user contributions too
 		 *Calculate the user votes and then calculate the recursive votes too.
@@ -44,36 +45,36 @@ public class Secondrun {
 		 *Calculate the votes
 		 *Calculate the user reliability
 		 */
-		
+
 		User.insertAllUsers();
-		System.out.println("==================Checked for new User's insertion=====================");
-		
+		Loggings.getLogs(className).info("==================Checked for new User's insertion=====================");
+
 		AddNewPages.checkForPages();
-		System.out.println("==================Checked for any new pages,revisions and linked the user contributions and made backlinks=====================");
-		
+		Loggings.getLogs(className).info("==================Checked for any new pages,revisions and linked the user contributions and made backlinks=====================");
+
 		NormalisedVotes.calculatePageVotes();
-		System.out.println("==================Calculated new page votes=====================");
-		
+		Loggings.getLogs(className).info("==================Calculated new page votes=====================");
+
 		Reliability.calculateReliability();
-		System.out.println("==================Calculated new reliabilities=====================");
-		
+		Loggings.getLogs(className).info("==================Calculated new reliabilities=====================");
+
 		Pagerank.pageRankCompute();
-		System.out.println("==================Page rank over=====================");
-		
+		Loggings.getLogs(className).info("==================Page rank over=====================");
+
 		UserCredibility.getUserCredibility();
-		System.out.println("==================User Credibility computed=====================");
-		
+		Loggings.getLogs(className).info("==================User Credibility computed=====================");
+
 		PageRating.computePageRatings();
-		System.out.println("==================Page Ratings computed=====================");
-		
+		Loggings.getLogs(className).info("==================Page Ratings computed=====================");
+
 		new BadgeGenerator().generateBadges();
-		System.out.println("==================Badges given=====================");
-		
-		
+		Loggings.getLogs(className).info("==================Badges given=====================");
+
+
 		long estimatedTime = System.currentTimeMillis() - startTime;
 		estimatedTime = estimatedTime / 60000;
 
 		return Response.status(200).entity("Successful and took" + estimatedTime + "Minutes").build();
 	}
-	
+
 }

@@ -3,7 +3,7 @@ package main.java.computations;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
-import main.java.utilities.Logs;
+import main.java.utilities.Loggings;
 import main.java.utilities.PropertiesAccess;
 
 

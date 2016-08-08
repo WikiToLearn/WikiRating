@@ -9,39 +9,41 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
 import main.java.utilities.PropertiesAccess;
+import main.java.utilities.Loggings;
+
 
 /**
- * This class will deal with the calculations of User Credibility 
+ * This class will deal with the calculations of User Credibility
  */
 
 public class UserCredibility {
-	
+	static Class className=CreditSystem.class;
 	final static double USER_CONTRI_IMPORTANCE_PARAMETER=Double.parseDouble(PropertiesAccess.getParameterProperties("USER_CONTRI_IMPORTANCE_PARAMETER"));
 	final static double USER_VOTE_IMPORTANCE_PARAMETER=Double.parseDouble(PropertiesAccess.getParameterProperties("USER_VOTE_IMPORTANCE_PARAMETER"));
-	
+
 	/**
-	 *This method will compute the credibility for all the Users 
+	 *This method will compute the credibility for all the Users
 	 */
-	
+
 	public static void getUserCredibility(){
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		double alpha=0,relativeUserContribution=0,voteDeviation=0,credibility=0;
 		HashMap<Integer,Integer> pageEditMap=Contribution.getPageEdits();
 		//To iterate over all the Users for getting their respective Credibility
 		try{
-		for(Vertex userNode:graph.getVertices("@class", "User")){ 
+		for(Vertex userNode:graph.getVertices("@class", "User")){
 			relativeUserContribution=getRelativeUserContribution(userNode,graph,pageEditMap);
 			voteDeviation=getVoteDeviation(userNode,graph);
 			alpha=(USER_CONTRI_IMPORTANCE_PARAMETER*relativeUserContribution+USER_VOTE_IMPORTANCE_PARAMETER*voteDeviation)/(USER_CONTRI_IMPORTANCE_PARAMETER+USER_VOTE_IMPORTANCE_PARAMETER);
 			credibility=alpha;
 			userNode.setProperty("credibility",credibility);
-			System.out.println(userNode.getProperty("username")+" has "+credibility);
+			Loggings.getLogs(className).info(userNode.getProperty("username")+" has "+credibility);
 			graph.commit();
 		}
 		}catch(Exception e){e.printStackTrace();}
 		//graph.commit();
 		graph.shutdown();
-		
+
 	}
 
 	/**
@@ -52,13 +54,13 @@ public class UserCredibility {
 	 * @return	The value of parameter 'a'
 	 */
 	public static double getRelativeUserContribution(Vertex userNode,OrientGraph graph,HashMap<Integer,Integer> pageEditMap){
-		HashMap<Integer,Integer> userPageContributions=new HashMap<Integer,Integer>();  
-		int contpid=0,countContribution=0; 
+		HashMap<Integer,Integer> userPageContributions=new HashMap<Integer,Integer>();
+		int contpid=0,countContribution=0;
 		double userEdits=0,totalEdits=1,finalPageVote=0;
 		double userPageContributionsTemp=0,userPageContributionsTotal=0;
 		int contributionSize=0;
 		for(Edge contributeEdge:userNode.getEdges(Direction.OUT,"@class","Contribute")){
-			
+
 			contpid=(int)graph.getVertices("title",contributeEdge.getVertex(Direction.IN).getProperty("Page").toString()).iterator().next().getProperty("pid");
 			contributionSize=contributeEdge.getProperty("contributionSize");
 			if(userPageContributions.containsKey(contpid)){
@@ -86,14 +88,14 @@ public class UserCredibility {
 		if(countContribution==0)countContribution=1;
 		return userPageContributionsTotal/countContribution;
 }
-	
+
 	/**
 	 * This method calculates the parameter 'b'(voteDeviation) for credibility calculation
 	 * @param userNode	The Vertex of the User class whose credibility is being calculated
 	 * @param graph	OrientGraph object
 	 * @return	The value of parameter 'b'
 	 */
-	
+
 	public static double getVoteDeviation(Vertex userNode,OrientGraph graph){
 		double voteDeviationTemp=0,voteDeviationTotal=0,userVote,versionVote;
 		int countReview=0;
@@ -109,6 +111,6 @@ public class UserCredibility {
 		}catch(Exception e){e.printStackTrace();}
 		if(countReview==0)countReview=1;
 		return voteDeviationTotal/countReview;
-		
+
 	}
 }

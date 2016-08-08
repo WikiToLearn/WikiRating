@@ -7,10 +7,11 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
 /**This singleton class deals with the handling of all the connections to Database and MediaWiki API
- * 
+ *
  */
 
 public class Connections {
+	static Class className=Connections.class;
 
 	private static Connections singletonConnection = new Connections();
 
@@ -26,7 +27,7 @@ public class Connections {
 	 * This method creates a MediaWWiki Connection object
 	 * @return	ApiConnection object
 	 */
-	
+
 	public ApiConnection getApiConnection() {
 		ApiConnection con = new ApiConnection(PropertiesAccess.getConfigProperties("API_URL"));
 		return con;
@@ -34,7 +35,7 @@ public class Connections {
 
 	 /**
 	 * This method will return the OreintDB graph instance after connection.
-	 * @return	Transaction enabled OrientGraph object 
+	 * @return	Transaction enabled OrientGraph object
 	 */
 	public OrientGraph getDbGraph() {
 
@@ -44,13 +45,13 @@ public class Connections {
 
 		return graph;
 	}
-	
+
 	/**
 	 * This method will return the OreintDB graph instance after connection,
-	 * for massive inserts to improve performance,no transaction method 
+	 * for massive inserts to improve performance,no transaction method
 	 * @return	Transaction disabled OrientGraph object
 	 */
-	
+
 	public OrientGraphNoTx getDbGraphNT() {
 
 		OrientGraphFactory factory = new OrientGraphFactory(PropertiesAccess.getConfigProperties("DB_URL"),
@@ -60,6 +61,6 @@ public class Connections {
 
 		return graph;
 	}
-	
+
 
 }

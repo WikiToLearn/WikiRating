@@ -9,7 +9,7 @@ import org.glassfish.jersey.server.JSONP;
 
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
+import main.java.utilities.Loggings;
 import main.java.utilities.Connections;
 import main.java.utilities.PropertiesAccess;
 /**
@@ -17,7 +17,7 @@ import main.java.utilities.PropertiesAccess;
  */
 @Path("display")
 public class PageInfo {
-
+	static Class className=PageInfo.class;
 	@GET
 	@Path("pageRating")
 	@JSONP(queryParam = "callback")
@@ -41,16 +41,16 @@ public class PageInfo {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
+
 		graph.shutdown();
-		System.out.println(pageTitle);
-		System.out.println(currentPageRating);
-		System.out.println(maxPageRating);
-		System.out.println(badgeNumber);
-	
+		Loggings.getLogs(className).info(pageTitle);
+		Loggings.getLogs(className).info(currentPageRating);
+		Loggings.getLogs(className).info(maxPageRating);
+		Loggings.getLogs(className).info(badgeNumber);
+
 		String sJson="{\"pageTitle\":\""+pageTitle+"\",\"currentPageRating\":"+currentPageRating+",\"maxPageRating\":"+maxPageRating+",\"badgeNumber\":"+badgeNumber+"}";
-		
-		
+
+
 		String result = callback + "(" + sJson + ");";
 		return result;
 

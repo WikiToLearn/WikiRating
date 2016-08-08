@@ -13,15 +13,15 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientEdge;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
-
+import main.java.utilities.Loggings;
 
 
 /**This class contains various utilities methods for the other classes
- * 
+ *
  */
 
 public class WikiUtil {
-
+	static Class className=WikiUtil.class;
 
 	/**
 	 * This method converts an InputStream object to String
@@ -60,7 +60,7 @@ public class WikiUtil {
 	 * @param ns	The namespace whose pages are requested
 	 * @return	Map having parameters
 	 */
-	
+
 	public static Map<String, String> getPageParam(String ns) {
 		Map<String, String> queryParameterMap = new HashMap<String, String>();
 		queryParameterMap.put("action", "query");
@@ -96,7 +96,7 @@ public class WikiUtil {
 	 * @param pid	The PageID of the page for which backlinks are requested
 	 * @return	Map having parameters
 	 */
-	
+
 	public static Map<String, String> getLinkParam(String pid) {
 		Map<String, String> queryParameterMap = new HashMap<String, String>();
 		queryParameterMap.put("action", "query");
@@ -184,9 +184,9 @@ public class WikiUtil {
 
 	}
 
-	
 
-	
+
+
 	/**
 	 * This method prints all the pages
 	 * @return A formatted string containing all the Page names

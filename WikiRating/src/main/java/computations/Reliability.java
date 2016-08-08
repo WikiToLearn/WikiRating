@@ -6,6 +6,8 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
 import main.java.utilities.PropertiesAccess;
+import main.java.utilities.Loggings;
+
 
 /**
  *  This class will calculate the reliability of the vote given by the users.
@@ -13,9 +15,9 @@ import main.java.utilities.PropertiesAccess;
  */
 
 public class Reliability {
-	
+	static Class className=Reliability.class;
 	//To check for cases where latest version is voted on without any change
-	static boolean latestVoteCheck=true;		
+	static boolean latestVoteCheck=true;
 	final static double PHI_POWER_PARAMETER=Double.parseDouble(PropertiesAccess.getParameterProperties("PHI_POWER_PARAMETER"));
 
 	/**
@@ -24,21 +26,21 @@ public class Reliability {
 	   * @return void
 	   */
 	public static void calculateReliability(){
-		
+
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		double currentPageReliability=0;
 		Vertex revisionNode=null;
 		double maxPageReliability=-1;
 		for (Vertex pageNode : graph.getVertices("@class","Page")) {
 			try{
-				
+
 			revisionNode = pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next().getVertex(Direction.IN);
 			currentPageReliability=recursiveReliability(graph,(int)revisionNode.getProperty("revid"));
-			
+
 			if(maxPageReliability<=currentPageReliability){
 				maxPageReliability=currentPageReliability;
 			}
-			
+
 			pageNode.setProperty("currentPageReliability",currentPageReliability);
 			graph.commit();
 			}catch(Exception e){e.printStackTrace();}
@@ -47,71 +49,71 @@ public class Reliability {
 		PropertiesAccess.putParameter("maxPageReliability", maxPageReliability);
 		graph.shutdown();
 	}
-	
+
 	/**
 	 * This method will calculate and store the reliability
 	 *  of  votes for all the revisions of a particular page
 	 * and then return the final reliability of vote for the page itself
 	   * @param graph OrientGraph object
-	   * @param revid Revision Id of the latest version connected to the Page 
+	   * @param revid Revision Id of the latest version connected to the Page
 	 * @return final reliability of the latest version is computed and returned
 	 */
 	public static double recursiveReliability(OrientGraph graph,int revid){
-		
+
 		double lastReliability=0,phi=0,normalReliability=0,currReliability=0;
 		Vertex revisionNode=graph.getVertices("revid", revid).iterator().next();
-		
+
 		if(latestVoteCheck==false&&(double)revisionNode.getProperty("previousReliability")!=-1){
-			System.out.println(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+revisionNode.getProperty("previousReliability"));
+			Loggings.getLogs(className).info(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+revisionNode.getProperty("previousReliability"));
 			return (double)revisionNode.getProperty("previousReliability");
 		}
-		
-		
+
+
 		latestVoteCheck=false;
 		if((int)revisionNode.getProperty("parentid")==0){
 			lastReliability=simpleReliability(graph,revid);
 			revisionNode.setProperty("previousReliability",lastReliability);
 			graph.commit();
-			System.out.println(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+lastReliability);
+			Loggings.getLogs(className).info(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+lastReliability);
 			return lastReliability;
 		}
-		
+
 		else{
 			phi=getPhi(graph,revid);
 			currReliability=simpleReliability(graph,revid);
 			normalReliability=((simpleReliability(graph,revid)+phi*recursiveReliability(graph,(int)graph.getVertices("revid", revid).iterator().next().getProperty("parentid")))/(phi+1));
 			revisionNode.setProperty("previousReliability",normalReliability);
 			graph.commit();
-			System.out.println(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+normalReliability);
+			Loggings.getLogs(className).info(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+normalReliability);
 			return normalReliability;
 		}
-		
+
 	}
-	
+
 	/**
-	 * This method will calculate the  average of reliabilities of the current Revision Node 
-	 * 
+	 * This method will calculate the  average of reliabilities of the current Revision Node
+	 *
 	 * @param graph	OrientGraph object
 	 * @param revid	Revision Id for the revision node under the calculation
-	 * @return	The calculated Simple weighted average. 
+	 * @return	The calculated Simple weighted average.
 	 */
 	public static double simpleReliability(OrientGraph graph,int revid){
-		
+
 		double numerator=0,simpleVote=0,globalVote=0,userVote=0;
-		
+
 		Vertex revisionNode=graph.getVertices("revid",revid).iterator().next();
 		for(Edge reviewEdge:revisionNode.getEdges(Direction.IN,"@class","Review")){
 			userVote=reviewEdge.getProperty("vote");
 			globalVote=revisionNode.getProperty("previousVote");
 			numerator+=(double)reviewEdge.getProperty("voteCredibility")*(1-Math.abs(userVote-globalVote));
-			
+
 		}
-		
+
 		simpleVote=numerator;
 		return simpleVote;
 	}
-		
-	
+
+
 	/**
 	 * This will calculate the parameter phi to scale the reliabilities of the previous versions
 	 * @param graph
@@ -119,7 +121,7 @@ public class Reliability {
 	 * @return The parameter phi
 	 */
 	public static double getPhi(OrientGraph graph,int revid){
-		
+
 		double phi=0;
 		double sizePrev=0,newEdits=0,currSize=0;
 		Vertex revisionNode=graph.getVertices("revid",revid).iterator().next();
@@ -131,5 +133,5 @@ public class Reliability {
 		phi=Math.pow(Math.E,-1*(Math.pow(newEdits/sizePrev, PHI_POWER_PARAMETER)));
 		return phi;
 	}
-	
+
 }
