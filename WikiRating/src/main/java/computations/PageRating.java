@@ -3,6 +3,7 @@ package main.java.computations;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
+import main.java.utilities.Logs;
 import main.java.utilities.PropertiesAccess;
 
 
@@ -19,6 +20,7 @@ public class PageRating{
 	 * @return void
 	 */
 	public static void computePageRatings(){
+		
 		double currentPageReliability=0,pageRank=0,currentPageVote=0,pageRating=0;
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		for(Vertex pageNode:graph.getVertices("@class","Page")){

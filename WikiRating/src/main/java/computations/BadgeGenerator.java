@@ -6,6 +6,7 @@ import java.util.Comparator;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
+import main.java.utilities.Logs;
 import main.java.utilities.PropertiesAccess;
 
 /**
@@ -14,6 +15,7 @@ import main.java.utilities.PropertiesAccess;
  */
 
 public class BadgeGenerator {
+	Class className=BadgeGenerator.class;
 	
 	//These variables will store the computed cutoffs for the various badges
 	static double platinumBadgeRatingCutoff;
@@ -108,6 +110,7 @@ public class BadgeGenerator {
 		int noOfPagesCounter=0; 
 		for(PageRatingData currentPage:pageList){
 			badgeNumber=getBadgeNumber(currentPage.pageRating);
+			Logs.getLogs(className).info(currentPage.pageName + " ------with ratings= "+currentPage.pageRating+" earned "+badgeNumber);
 			System.out.println(currentPage.pageName + " ------with ratings= "+currentPage.pageRating+" earned "+badgeNumber);
 			
 			currentPageNode=graph.getVertices("pid",currentPage.pid).iterator().next();
