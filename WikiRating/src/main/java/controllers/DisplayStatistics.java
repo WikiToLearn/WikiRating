@@ -22,8 +22,9 @@ public class DisplayStatistics {
 	@JSONP(queryParam = "callback")
 	@Produces({ "application/x-javascript" })
 	public String getAllStats(@QueryParam("callback") String callback, @QueryParam("pageTitle") String pageTitle) {
-		int nameSpace,badgeNumber;long totalVotes=0;
-		double pageRank,currentPageVote,pageReliability,maxPageReliability,maxPageRank;
+		int nameSpace=0,badgeNumber=0;long totalVotes=0;
+		double pageRank=0,currentPageVote=0,pageReliability=0,maxPageReliability=0,maxPageRank=0;
+		try{
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		Vertex pageNode=graph.getVertices("title",pageTitle).iterator().next();
 
@@ -39,7 +40,10 @@ public class DisplayStatistics {
 		graph.shutdown();
 		Loggings.getLogs(className).info(nameSpace+" "+badgeNumber+" "+pageRank+" "+totalVotes+" "+currentPageVote+" "+pageReliability+" "+maxPageReliability+" "+maxPageRank);
 
-		//String sJson="{\"pageTitle\":\"dd\",\"currentPageRating\":2,\"maxPageRating\":55,\"badgeNumber\":4}";
+
+		}catch(Exception e){
+			Loggings.getLogs(className).error(e);
+		}
 
 		String sJson="{\"nameSpace\":"+nameSpace+",\"badgeNumber\":"+badgeNumber+",\"pageRank\":"+pageRank+",\"totalVotes\":"+totalVotes+",\"currentPageVote\":"+currentPageVote+",\"pageReliability\":"+pageReliability+",\"maxPageReliability\":"+maxPageReliability+",\"maxPageRank\":"+maxPageRank+"}";
 		String result = callback + "(" + sJson + ");";

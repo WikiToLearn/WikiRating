@@ -44,7 +44,7 @@ public class Contribution {
 				revisionNode = pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next()
 						.getVertex(Direction.IN); // Getting the latest version
 													// to iterate on the
-													// revisons
+													// revisions
 
 				// Finding out the total edits by traversing all the revisions  for a particular page.
 
@@ -65,7 +65,8 @@ public class Contribution {
 				totalPageEdits.put((Integer) pageNode.getProperty("pid"), pageEdits);
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				
+				Loggings.getLogs(className).error(e);
 			}
 		}
 

@@ -40,7 +40,7 @@ public class UserCredibility {
 			Loggings.getLogs(className).info(userNode.getProperty("username")+" has "+credibility);
 			graph.commit();
 		}
-		}catch(Exception e){e.printStackTrace();}
+		}catch(Exception e){Loggings.getLogs(className).error(e);}
 		//graph.commit();
 		graph.shutdown();
 
@@ -108,7 +108,7 @@ public class UserCredibility {
 			voteDeviationTotal+=voteDeviationTemp;
 			countReview++;
 		}
-		}catch(Exception e){e.printStackTrace();}
+		}catch(Exception e){Loggings.getLogs(className).error(e);}
 		if(countReview==0)countReview=1;
 		return voteDeviationTotal/countReview;
 

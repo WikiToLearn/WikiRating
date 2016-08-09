@@ -67,14 +67,14 @@ public class Page {
 								pageNode.setProperty("badgeNumber",4);
 								graph.commit();
 							} catch( Exception e ) {
-								e.printStackTrace();
+								Loggings.getLogs(className).error(e);
 								graph.rollback();
 							}
 
 						}
 					}
 				} catch (JSONException e) {
-					e.printStackTrace();
+					Loggings.getLogs(className).error(e);
 				}
 			}
 

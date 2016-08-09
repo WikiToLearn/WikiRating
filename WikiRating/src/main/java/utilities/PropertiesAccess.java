@@ -29,7 +29,7 @@ public class PropertiesAccess {
 			return value;
 		} catch (IOException e) {
 
-			e.printStackTrace();
+			Loggings.getLogs(className).error(e);
 		}
 		return value;
 	}
@@ -48,7 +48,7 @@ public class PropertiesAccess {
 			return value;
 		} catch (IOException e) {
 
-			e.printStackTrace();
+			Loggings.getLogs(className).error(e);
 		}
 		return value;
 	}

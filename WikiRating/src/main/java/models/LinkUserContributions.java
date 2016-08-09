@@ -63,13 +63,13 @@ public class LinkUserContributions {
 									+ currentJsonObject.getString("title") + " to " + targetVersionNode.getProperty("revid")
 									+ " of size " + Math.abs(currentJsonObject.getInt("sizediff")));
 						} catch (Exception e) {
-							e.printStackTrace();
+							Loggings.getLogs(className).error(e);
 							graph.rollback();
 						}
 
 					}
 				} catch (JSONException e) {
-					e.printStackTrace();
+					Loggings.getLogs(className).error(e);
 				}
 
 			userNode.setProperty("totalContributedBytes", totalContributedBytes);

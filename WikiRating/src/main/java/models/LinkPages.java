@@ -70,14 +70,14 @@ public class LinkPages {
 				 		graph.commit();
 				 			}
 				 		} catch( Exception e ) {
-				 			e.printStackTrace();
+				 			Loggings.getLogs(className).error(e);
 				 			//In case the transaction fails we will rollback.
 				 			graph.rollback();
 				 		}
 
 				 	}
 			 } catch (JSONException e) {
-				 e.printStackTrace();
+				 Loggings.getLogs(className).error(e);
 			 }
 
 		}

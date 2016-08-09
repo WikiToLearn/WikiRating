@@ -43,7 +43,9 @@ public class Reliability {
 
 			pageNode.setProperty("currentPageReliability",currentPageReliability);
 			graph.commit();
-			}catch(Exception e){e.printStackTrace();}
+			}catch(Exception e){
+				Loggings.getLogs(className).error(e);
+			}
 		}
 		//graph.commit();
 		PropertiesAccess.putParameter("maxPageReliability", maxPageReliability);

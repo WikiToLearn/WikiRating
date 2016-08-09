@@ -49,7 +49,7 @@ public class WikiUtil {
 			in.close();
 		} catch (IOException e) {
 
-			e.printStackTrace();
+			Loggings.getLogs(className).error(e);
 		}
 		return result;
 	}
@@ -159,7 +159,7 @@ public class WikiUtil {
 			in = con.sendRequest("POST", queryParameterMap);
 		} catch (IOException e) {
 
-			e.printStackTrace();
+			Loggings.getLogs(className).error(e);
 		}
 
 		return in;

@@ -42,7 +42,7 @@ public class NormalisedVotes {
 			currentPageVote=recursiveVotes(graph,(int)revisionNode.getProperty("revid"));
 			pageNode.setProperty("currentPageVote",currentPageVote);
 			graph.commit();
-			}catch(Exception e){e.printStackTrace();}
+			}catch(Exception e){Loggings.getLogs(className).error(e);}
 		}
 
 		getTotalVotes(graph);

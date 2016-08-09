@@ -82,19 +82,19 @@ public class Revision {
 
 					 			  graph.commit();
 					 			} catch( Exception e ) {
-					 				e.printStackTrace();
+					 				Loggings.getLogs(className).error(e);
 					 			  graph.rollback();
 					 			}
 					 	}
 
 					 		}
 					} catch (JSONException e) {
-						e.printStackTrace();
+						Loggings.getLogs(className).error(e);
 					}
 
 
 			 } catch(Exception ee) {
-			   ee.printStackTrace();
+			   Loggings.getLogs(className).error(ee);
 			 }
 
 }		//graph.commit();

@@ -39,7 +39,8 @@ public class PageInfo {
 		maxPageRating=PropertiesAccess.getParameter("maxRating");
 		badgeNumber=currentPage.getProperty("badgeNumber");
 		}catch(Exception e){
-			e.printStackTrace();
+
+			Loggings.getLogs(className).error(e);
 		}
 
 		graph.shutdown();

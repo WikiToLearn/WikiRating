@@ -188,7 +188,7 @@ public class CreditSystem {
 
 		}
 		}catch(Exception e){
-			e.printStackTrace();
+			Loggings.getLogs(className).error(e);
 		}
 
 		Loggings.getLogs(className).info(pageNode.getProperty("title"));

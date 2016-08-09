@@ -63,7 +63,7 @@ public class AddNewPages {
 						}
 					}
 				} catch (JSONException e) {
-					e.printStackTrace();
+					Loggings.getLogs(className).error(e);
 				}
 			}
 
@@ -98,7 +98,7 @@ public class AddNewPages {
 			pageNode.setProperty("badgeNumber",4);
 			graph.commit();
 		} catch( Exception e ) {
-			e.printStackTrace();
+			Loggings.getLogs(className).error(e);
 			graph.rollback();
 		}
 
@@ -153,14 +153,14 @@ public class AddNewPages {
 
 					 		graph.commit();
 					 		} catch( Exception e ) {
-					 			e.printStackTrace();
+					 			Loggings.getLogs(className).error(e);
 					 			//In case the transaction fails we will rollback.
 					 			graph.rollback();
 					 		}
 
 					 	}
 				 } catch (JSONException e) {
-					 e.printStackTrace();
+					 Loggings.getLogs(className).error(e);
 				 }
 
 			}
@@ -260,7 +260,7 @@ public class AddNewPages {
 					 			  }
 					 		}
 					 			}catch(Exception e){
-					 				e.printStackTrace();
+					 				Loggings.getLogs(className).error(e);
 					 			}
 
 					 			  //All the versions are connected to each other like (Page)<-(Latest)<-(Latest-1)<-...<-(Last)
@@ -280,19 +280,19 @@ public class AddNewPages {
 
 					 			  graph.commit();
 					 			} catch( Exception e ) {
-					 				e.printStackTrace();
+					 				Loggings.getLogs(className).error(e);
 					 			  graph.rollback();
 					 			}
 					 	}
 
 					 		}
 					} catch (JSONException e) {
-						e.printStackTrace();
+						Loggings.getLogs(className).error(e);
 					}
 
 
 			 } catch(Exception ee) {
-			   ee.printStackTrace();
+			   Loggings.getLogs(className).error(ee);
 			 }
 
 }

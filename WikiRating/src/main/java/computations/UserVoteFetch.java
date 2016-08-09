@@ -87,7 +87,7 @@ public class UserVoteFetch {
 
 		graph.shutdown();
 		}catch(Exception e){
-			e.printStackTrace();
+			Loggings.getLogs(className).error(e);
 		}
 
 		String sJson="{\"pageTitle\":\"Successful\"}";

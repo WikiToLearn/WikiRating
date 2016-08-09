@@ -31,51 +31,51 @@ public class Wipe {
 		  try{
 			  graph.dropVertexType("Page");
 		  }catch(Exception e){
-			  e.printStackTrace();
+			  Loggings.getLogs(className).error(e);
 			  }
 		  Loggings.getLogs(className).info("=============Page deleted=========");
 
 		  try{
 			  graph.dropVertexType("Revision");
 		  }catch(Exception e){
-			  e.printStackTrace();
+			  Loggings.getLogs(className).error(e);
 			  }
 		  Loggings.getLogs(className).info("=============Revision deleted=========");
 		  try{
 			  graph.dropVertexType("User");
 		  }catch(Exception e){
-			  e.printStackTrace();
+			  Loggings.getLogs(className).error(e);
 			  }
 		  Loggings.getLogs(className).info("=============User deleted=========");
 		  try{
 			  graph.dropEdgeType("Backlink");
 		  }catch(Exception e){
-			  e.printStackTrace();
+			  Loggings.getLogs(className).error(e);
 			  }
 		  Loggings.getLogs(className).info("=============Backlink deleted=========");
 		  try{
 			  graph.dropEdgeType("PreviousRevision");
 		  }catch(Exception e){
-			  e.printStackTrace();
+			  Loggings.getLogs(className).error(e);
 			  }
 		  Loggings.getLogs(className).info("=============PreviousRevision deleted=========");
 		  try{
 			  graph.dropEdgeType("PreviousVersionOfPage");
 		  }catch(Exception e){
-			  e.printStackTrace();
+			  Loggings.getLogs(className).error(e);
 			  }
 		  Loggings.getLogs(className).info("=============PreviousVersionOfPage deleted=========");
 
 		  try{
 			  graph.dropEdgeType("Contribute");
 		  }catch(Exception e){
-			  e.printStackTrace();
+			  Loggings.getLogs(className).error(e);
 			  }
 		  Loggings.getLogs(className).info("=============Contribute deleted=========");
 		  try{
 			  graph.dropEdgeType("Review");
 		  }catch(Exception e){
-			  e.printStackTrace();
+			  Loggings.getLogs(className).error(e);
 			  }
 		  Loggings.getLogs(className).info("=============Review deleted=========");
 		  //graph.commit();
