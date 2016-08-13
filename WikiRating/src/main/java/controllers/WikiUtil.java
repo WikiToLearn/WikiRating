@@ -36,7 +36,7 @@ public class WikiUtil {
 			reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 		} catch (UnsupportedEncodingException e1) {
 
-			e1.printStackTrace();
+			Loggings.getLogs(className).error(e1);
 		}
 
 		StringBuilder builder = new StringBuilder();

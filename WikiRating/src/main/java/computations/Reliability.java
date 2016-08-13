@@ -64,8 +64,8 @@ public class Reliability {
 
 		double lastReliability=0,phi=0,normalReliability=0,currReliability=0;
 		Vertex revisionNode=graph.getVertices("revid", revid).iterator().next();
-
-		if(latestVoteCheck==false&&(double)revisionNode.getProperty("previousReliability")!=-1){
+		//Since we can't directly check for equality with floating numbers safetly therefore working with inequalities
+		if(latestVoteCheck==false&&(double)revisionNode.getProperty("previousReliability")>-1){
 			Loggings.getLogs(className).info(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+revisionNode.getProperty("previousReliability"));
 			return (double)revisionNode.getProperty("previousReliability");
 		}
@@ -131,8 +131,9 @@ public class Reliability {
 		sizePrev=(int)parentNode.getProperty("size");
 		currSize=(int)revisionNode.getProperty("size");
 		newEdits=Math.abs(sizePrev-currSize);
-		if(sizePrev==0)sizePrev=1;
-		phi=Math.pow(Math.E,-1*(Math.pow(newEdits/sizePrev, PHI_POWER_PARAMETER)));
+		//sizePrev=1;
+		if(sizePrev>0)
+			phi=Math.pow(Math.E,-1*(Math.pow(newEdits/sizePrev, PHI_POWER_PARAMETER)));
 		return phi;
 	}
 

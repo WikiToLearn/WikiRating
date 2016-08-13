@@ -61,7 +61,7 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 		double lastVote=0,phi=0,normalVote=0,currVote=0;
 		Vertex revisionNode=graph.getVertices("revid", revid).iterator().next();
 		
-		//Since we can't directly check for equality with floating numebers safetly therefore working with inequalities
+		//Since we can't directly check for equality with floating numbers safetly therefore working with inequalities
 		if(latestVoteCheck==false&&(double)revisionNode.getProperty("previousVote")>-1){
 			Loggings.getLogs(className).info(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+revisionNode.getProperty("previousVote"));
 			return (double)revisionNode.getProperty("previousVote");
@@ -131,7 +131,7 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 		newEdits=Math.abs(sizePrev-currSize);
 		//sizePrev=1;
 		if(sizePrev>0)
-		phi=Math.pow(Math.E,-1*(Math.pow(newEdits/sizePrev, PHI_POWER_PARAMETER)));
+			phi=Math.pow(Math.E,-1*(Math.pow(newEdits/sizePrev, PHI_POWER_PARAMETER)));
 		return phi;
 	}
 

@@ -3,6 +3,8 @@ package main.java.computations;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import main.java.utilities.Connections;
@@ -88,14 +90,14 @@ public class BadgeGenerator {
 	public void generateBadges(){
 		
 
-		ArrayList<PageRatingData> pageList=new ArrayList<PageRatingData>();
+		ArrayList<PageRatingData> pageList=new ArrayList<>();
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		
-		Vertex currentPageNode=null;
-		int badgeNumber=4;
-		int currentPageID=0,noOfPages=0;
-		double currentPageRating=0,maxPageRating=0;
-		String currentPageName="";
+		Vertex currentPageNode;
+		int badgeNumber;
+		int currentPageID,noOfPages;
+		double currentPageRating,maxPageRating;
+		String currentPageName;
 		
 		for(Vertex pageNode:graph.getVertices("@class","Page")){
 			currentPageID=pageNode.getProperty("pid");
@@ -106,6 +108,7 @@ public class BadgeGenerator {
 		Collections.sort(pageList,new PageRatingComparator());
 		calculateBadgeCutoff(pageList);
 		
+		maxPageRating=0;
 		noOfPages=pageList.size();
 		int noOfPagesCounter=0; 
 		for(PageRatingData currentPage:pageList){
@@ -130,7 +133,7 @@ public class BadgeGenerator {
 	 * This method will calculate the cutoff for the various badges
 	 * @param pageList The ArrayList containing Page Objects
 	 */
-	public static void calculateBadgeCutoff(ArrayList<PageRatingData> pageList){
+	public static void calculateBadgeCutoff(List<PageRatingData> pageList){
 		
 		int noOfPages=pageList.size();
 		int platinumPageIndex;

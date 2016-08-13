@@ -79,7 +79,7 @@ public class UserCredibility {
 			userEdits=(int)userPageContributions.get(contpid);
 			totalEdits=(int)pageEditMap.get(contpid);
 			finalPageVote=graph.getVertices("pid",contpid).iterator().next().getProperty("currentPageVote");
-			if(totalEdits==0)totalEdits=1;
+			if(totalEdits==0)totalEdits=1;	//Not a float comparison
 
 			userPageContributionsTemp=(finalPageVote*userEdits/totalEdits);
 			userPageContributionsTotal+=userPageContributionsTemp;
