@@ -28,7 +28,7 @@ import main.java.utilities.Loggings;
 @Produces("application/json")
 public class CreditSystem {
 	static Class className=CreditSystem.class;
-
+	
 	@GET
 	@Path("users")
 	@Produces("application/json")
@@ -39,7 +39,7 @@ public class CreditSystem {
 	 * @param join	If set true collective user contributions for all the pages will be returned
 	 * @return	JSON string having all the contributions and current version sizes.
 	 */
-	public static String generateCredits(@QueryParam("titles") List<String> pageList,@QueryParam("join") boolean join){
+	public  String generateCredits(@QueryParam("titles") List<String> pageList,@QueryParam("join") boolean join){
 
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 
@@ -47,14 +47,14 @@ public class CreditSystem {
 		if(!join){
 			//This part will be executed when individual contributions are asked for
 
-			Vertex pageNode=null;
+			Vertex pageNode;
 
 			JSONArray responseJson=new JSONArray();
 
 			for(int i=0;i<pageList.size();i++){
 
 				pageNode=graph.getVertices("title",pageList.get(i)).iterator().next();
-				HashMap<String,Integer> userContributions=getUserContributions(graph,pageNode);
+				Map<String,Integer> userContributions=getUserContributions(graph,pageNode);
 
 				JSONArray authorList=new JSONArray();
 				JSONObject pageNodeObject=new JSONObject();
@@ -89,14 +89,15 @@ public class CreditSystem {
 		else{
 			//This part will be executed when collective contributions are asked for
 
-			Vertex pageNode=null;
-			int contributionSize=0;int totalBytes=0;
-			String username="";
-			HashMap<String,Integer> totalUserContributions=new HashMap<String,Integer>();
+			Vertex pageNode;
+			int contributionSize;int totalBytes;
+			String username;
+			totalBytes=0;
+			HashMap<String,Integer> totalUserContributions=new HashMap<>();
 			for(int i=0;i<pageList.size();i++){
 
 				pageNode=graph.getVertices("title",pageList.get(i)).iterator().next();
-				HashMap<String,Integer> userContributions=getUserContributions(graph,pageNode);
+				Map<String,Integer> userContributions=getUserContributions(graph,pageNode);
 
 				Iterator it = userContributions.entrySet().iterator();
 				while (it.hasNext()) {
@@ -149,13 +150,13 @@ public class CreditSystem {
 	 * @param pageNode	The Page Node of whose contribution you want
 	 * @return	HashMap having username as key and contributions as corresponding value
 	 */
-	public static HashMap<String,Integer> getUserContributions(OrientGraph graph,Vertex pageNode){
-		Vertex revisionNode=null,userNode=null;
+	public static Map<String,Integer> getUserContributions(OrientGraph graph,Vertex pageNode){
+		Vertex revisionNode,userNode;
 		revisionNode=pageNode.getEdges(Direction.OUT, "@class", "PreviousVersionOfPage").iterator().next().getVertex(Direction.IN);
 		Edge contribute=null;
 		int contributionSize=0;
 		String username="";
-		HashMap<String,Integer> userContributions=new HashMap<String,Integer>();
+		HashMap<String,Integer> userContributions=new HashMap<>();
 		try{
 		while(true){
 

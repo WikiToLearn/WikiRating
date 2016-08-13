@@ -28,7 +28,7 @@ public class UserCredibility {
 	public static void getUserCredibility(){
 		OrientGraph graph = Connections.getInstance().getDbGraph();
 		double alpha=0,relativeUserContribution=0,voteDeviation=0,credibility=0;
-		HashMap<Integer,Integer> pageEditMap=Contribution.getPageEdits();
+		Map<Integer,Integer> pageEditMap=Contribution.getPageEdits();
 		//To iterate over all the Users for getting their respective Credibility
 		try{
 		for(Vertex userNode:graph.getVertices("@class", "User")){
@@ -53,10 +53,10 @@ public class UserCredibility {
 	 * @param pageEditMap	HashMap containing all the edits and their corresponding pid
 	 * @return	The value of parameter 'a'
 	 */
-	public static double getRelativeUserContribution(Vertex userNode,OrientGraph graph,HashMap<Integer,Integer> pageEditMap){
+	public static double getRelativeUserContribution(Vertex userNode,OrientGraph graph,Map<Integer,Integer> pageEditMap){
 		HashMap<Integer,Integer> userPageContributions=new HashMap<Integer,Integer>();
-		int contpid=0,countContribution=0;
-		double userEdits=0,totalEdits=1,finalPageVote=0;
+		int contpid=0,countContribution=0,totalEdits;
+		double userEdits=0,finalPageVote=0;
 		double userPageContributionsTemp=0,userPageContributionsTotal=0;
 		int contributionSize=0;
 		for(Edge contributeEdge:userNode.getEdges(Direction.OUT,"@class","Contribute")){

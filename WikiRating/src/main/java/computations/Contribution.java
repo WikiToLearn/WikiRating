@@ -15,9 +15,20 @@ import main.java.utilities.Loggings;
  */
 
 public class Contribution {
+	
 	static Class className=Contribution.class;
+	
+	//Private constructor for utility class
+	private  Contribution() {
+		try{
+			throw new IllegalAccessError("Utility class");
+		}catch(Exception e){
+			Loggings.getLogs(className).error(e);
+		}
+	}
+	
 
-	public static HashMap<Integer, Integer> getPageEdits() {
+	public static Map<Integer, Integer> getPageEdits() {
 		/**
 		 * This method is used to calculate the total edits on a page and make a
 		 * HashMap linking pid(PageID) and corresponding edits on the Page
@@ -26,11 +37,12 @@ public class Contribution {
 		 *         with the total number of edits on that page.
 		 */
 		OrientGraph graph = Connections.getInstance().getDbGraph();
-		HashMap<Integer, Integer> totalPageEdits = new HashMap<Integer, Integer>();
-		int pageEdits = 0;
-		Vertex revisionNode = null, nextRevisionNode = null;
-		boolean loopCounter = false;
-
+		HashMap<Integer, Integer> totalPageEdits = new HashMap<>();
+		int pageEdits;
+		Vertex revisionNode , nextRevisionNode ;
+		boolean loopCounter;
+		
+		loopCounter=false;
 		// Iterating over pages to calculate their total edits
 		for (Vertex pageNode : graph.getVertices("@class", "Page")) {
 
