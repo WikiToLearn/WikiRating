@@ -60,8 +60,9 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 
 		double lastVote=0,phi=0,normalVote=0,currVote=0;
 		Vertex revisionNode=graph.getVertices("revid", revid).iterator().next();
-
-		if(latestVoteCheck==false&&(double)revisionNode.getProperty("previousVote")!=-1){
+		
+		//Since we can't directly check for equality with floating numebers safetly therefore working with inequalities
+		if(latestVoteCheck==false&&(double)revisionNode.getProperty("previousVote")>-1){
 			Loggings.getLogs(className).info(revisionNode.getProperty("revid")+" of "+revisionNode.getProperty("Page")+" has--- "+revisionNode.getProperty("previousVote"));
 			return (double)revisionNode.getProperty("previousVote");
 		}
@@ -106,7 +107,8 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 			numerator+=(double)reviewEdge.getProperty("voteCredibility")*(double)reviewEdge.getProperty("vote");
 			denominator+=(double)reviewEdge.getProperty("vote");
 		}
-		if(denominator==0)denominator=1;
+			//denominator=1;
+		if(denominator>0)
 		simpleVote=numerator/denominator;
 		return simpleVote;
 	}
@@ -127,7 +129,8 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 		sizePrev=(int)parentNode.getProperty("size");
 		currSize=(int)revisionNode.getProperty("size");
 		newEdits=Math.abs(sizePrev-currSize);
-		if(sizePrev==0)sizePrev=1;
+		//sizePrev=1;
+		if(sizePrev>0)
 		phi=Math.pow(Math.E,-1*(Math.pow(newEdits/sizePrev, PHI_POWER_PARAMETER)));
 		return phi;
 	}

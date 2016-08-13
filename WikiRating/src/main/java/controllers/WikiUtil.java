@@ -42,9 +42,13 @@ public class WikiUtil {
 		StringBuilder builder = new StringBuilder();
 		String line;
 		try {
+			
+			if(reader!=null){
+				
 			while ((line = reader.readLine()) != null) {
 				builder.append(line);
 			}
+		}
 			result = builder.toString();
 			in.close();
 		} catch (IOException e) {
