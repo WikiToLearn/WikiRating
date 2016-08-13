@@ -108,8 +108,9 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 			denominator+=(double)reviewEdge.getProperty("vote");
 		}
 			//denominator=1;
-		if(denominator>0)
-		simpleVote=numerator/denominator;
+		if(denominator>0){
+			simpleVote=numerator/denominator;
+		}
 		return simpleVote;
 	}
 
@@ -130,8 +131,9 @@ public static double recursiveVotes(OrientGraph graph,int revid){
 		currSize=(int)revisionNode.getProperty("size");
 		newEdits=Math.abs(sizePrev-currSize);
 		//sizePrev=1;
-		if(sizePrev>0)
+		if(sizePrev>0){
 			phi=Math.pow(Math.E,-1*(Math.pow(newEdits/sizePrev, PHI_POWER_PARAMETER)));
+		}
 		return phi;
 	}
 
