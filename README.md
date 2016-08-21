@@ -25,6 +25,7 @@ Therefore we need to develop an extension to  not only show  visitors the rating
 ##Links:
 
  - [Project page:KDE Community](https://community.kde.org/GSoC/2016/StatusReports/AbhimanyuSinghShekhawat)
+ - [Project page:Google](https://summerofcode.withgoogle.com/projects/#6245052963618816)
  - [WikiRating Algorithm](https://drive.google.com/file/d/0B-aEMI94tcY8c1g3SmQzcGtVcXM/view)
  - [MediaWiki API Queries](https://drive.google.com/file/d/0B-aEMI94tcY8T3BGV0pyamhOUGc/view)
  - [WikiRating Extension](https://github.com/WikiToLearn/WikiRatingExtension)
