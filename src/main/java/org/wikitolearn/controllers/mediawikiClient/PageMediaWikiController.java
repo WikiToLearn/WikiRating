@@ -37,7 +37,7 @@ public class PageMediaWikiController {
 	private ObjectMapper mapper;
 	
 	public List<Page> getAllPages(){
-		ApiConnection connection = mediaWikiApiUtils.getApiConnection("https://it.wikitolearn.org/api.php");
+		ApiConnection connection = mediaWikiApiUtils.getApiConnection("https://de.wikitolearn.org/api.php");
 		Map<String, String> parameters = mediaWikiApiUtils.getListAllPagesParamsMap("2800");
 		InputStream response;
 		boolean morePages = true;
