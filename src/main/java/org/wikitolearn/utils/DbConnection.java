@@ -3,6 +3,10 @@
  */
 package org.wikitolearn.utils;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
@@ -12,15 +16,18 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
  * @author alessandro
  *
  */
+@Service
 public class DbConnection {
-
-	private OrientGraphFactory factory ;
+	
+	private OrientGraphFactory factory;
 	private OrientGraphFactory factoryNT;
+	
+	@Autowired
+	public DbConnection(@Value("${DB_URL}") String dbUrl, @Value("${DB_USER}")
+	String dbUser, @Value("${DB_PWD}") String dbPwd){
 
-	public DbConnection(){
-		factory = new OrientGraphFactory("remote:localhost/wikirate",
-				"root", "wikitolearn");
-		factoryNT = new OrientGraphFactory("remote:localhost/wikirate", "root", "wikitolearn");
+		factory = new OrientGraphFactory(dbUrl, dbUser, dbPwd);
+		factoryNT = new OrientGraphFactory(dbUrl, dbUser, dbPwd);
 		factoryNT.declareIntent(new OIntentMassiveInsert());
 	}
 	/**

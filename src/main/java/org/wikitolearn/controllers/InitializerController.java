@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import org.wikitolearn.controllers.mediawikiClient.PageMediaWikiController;
+import org.wikitolearn.dao.PageDAO;
 import org.wikitolearn.models.Page;
 import org.wikitolearn.utils.MediaWikiApiUtils;
 
@@ -32,15 +33,17 @@ public class InitializerController {
 
 	@Autowired
 	private PageMediaWikiController pageController;
-	//@Autowired
-	//private MediaWikiApiUtils mwUtil;
+	@Autowired
+	private PageDAO pageDao;
 	
 	@RequestMapping(value = "/init", method = RequestMethod.GET, produces = "application/json")
 	public List<Page> initialize(){
 
-		List<Page> allPages =  pageController.getAllPages();
+		List<Page> pages =  pageController.getAllPages("https://en.wikitolearn.org/api.php");
+		LOG.info("Fetched all the pages", pages);
+		pageDao.insertPages(pages);
 
-        return allPages;
+        return pages;
 	}
 	
 	/*@RequestMapping(value = "/init", method = RequestMethod.GET, produces = "application/json")

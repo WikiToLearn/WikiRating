@@ -36,22 +36,27 @@ public class PageMediaWikiController {
 	@Autowired
 	private ObjectMapper mapper;
 	
-	public List<Page> getAllPages(){
-		ApiConnection connection = mediaWikiApiUtils.getApiConnection("https://de.wikitolearn.org/api.php");
+	/**
+	 * Get all the pages from a specified namespace of MediaWiki instance through its API.
+	 * @param apiUrl the MediaWiki API url
+	 * @return pages A list that contains all the fetched pages
+	 */
+	public List<Page> getAllPages(String apiUrl){
+		ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
 		Map<String, String> parameters = mediaWikiApiUtils.getListAllPagesParamsMap("2800");
 		InputStream response;
 		boolean morePages = true;
 		JSONArray pagesJson = new JSONArray();
 		List<JSONArray> toBeConcat = new ArrayList<>();
+		List<Page> pages = new ArrayList<>();
+		
 		try {
 			while(morePages){
 				response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
 				JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
-				//JSONArray toBeConcatArray = responseJson.getJSONObject("query").getJSONArray("allpages");
+				
 				toBeConcat.add(responseJson.getJSONObject("query").getJSONArray("allpages"));
-				/*for(int i = 0; i < toBeConcatArray.length(); i++){
-					pagesJson.put(toBeConcatArray.get(i));
-				}*/
+
 				if(responseJson.has("continue")){
 					String continueFrom = responseJson.getJSONObject("continue").getString("apcontinue");
 					parameters.put("apfrom", continueFrom);
@@ -60,15 +65,22 @@ public class PageMediaWikiController {
 					pagesJson = concatArrays(toBeConcat);
 				}
 			}
-			return mapper.readValue(pagesJson.toString(), new TypeReference<List<Page>>(){});
+			pages = mapper.readValue(pagesJson.toString(), new TypeReference<List<Page>>(){});
+			return pages;
 		} catch (JSONException e){
 			LOG.error("An error occurred while a JSONObject or JSONArray", e.getMessage());
 		} catch(IOException e){
 			LOG.error("An error occurred while converting an InputStream to JSONObject", e.getMessage());
 		}
-		return null;
+		return pages;
 	}
 	
+	/**
+	 * This method is an utility. It concatenates the given JSONArrays into one. 
+	 * @param arrays The arrays to be concatenated
+	 * @return result The resulted JSONArray 
+	 * @throws JSONException
+	 */
 	private JSONArray concatArrays(List<JSONArray> arrays) throws JSONException{
 		JSONArray result = new JSONArray();
 	    for (JSONArray arr : arrays) {
