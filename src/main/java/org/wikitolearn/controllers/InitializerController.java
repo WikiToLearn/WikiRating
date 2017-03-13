@@ -37,7 +37,10 @@ public class InitializerController {
 	
 	@RequestMapping(value = "/init", method = RequestMethod.GET, produces = "application/json")
 	public List<Page> initialize(){
-		return pageController.getAllPages();
+
+		List<Page> allPages =  pageController.getAllPages();
+
+        return allPages;
 	}
 	
 	/*@RequestMapping(value = "/init", method = RequestMethod.GET, produces = "application/json")

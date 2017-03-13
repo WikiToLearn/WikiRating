@@ -13,17 +13,22 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
  *
  */
 public class DbConnection {
+
+	private OrientGraphFactory factory ;
+	private OrientGraphFactory factoryNT;
+
+	public DbConnection(){
+		factory = new OrientGraphFactory("remote:localhost/wikirate",
+				"root", "wikitolearn");
+		factoryNT = new OrientGraphFactory("remote:localhost/wikirate", "root", "wikitolearn");
+		factoryNT.declareIntent(new OIntentMassiveInsert());
+	}
 	/**
 	 * This method will return the OreintDB graph instance after connection.
 	 * @return	Transaction enabled OrientGraph object
 	 */
-	public OrientGraph getDbGraph() {
-
-		OrientGraphFactory factory = new OrientGraphFactory("remote:localhost/wikirate",
-		"root", "wikitolearn");
-		OrientGraph graph = factory.getTx();
-
-		return graph;
+	public OrientGraph getGraph() {
+        return factory.getTx();
 	}
 
 	/**
@@ -33,11 +38,6 @@ public class DbConnection {
 	 */
 
 	public OrientGraphNoTx getDbGraphNT() {
-
-		OrientGraphFactory factory = new OrientGraphFactory("remote:localhost/wikirate", "root", "wikitolearn");
-		factory.declareIntent(new OIntentMassiveInsert());
-		OrientGraphNoTx graph =factory.getNoTx();
-
-		return graph;
+        return factoryNT.getNoTx();
 	}
 }
