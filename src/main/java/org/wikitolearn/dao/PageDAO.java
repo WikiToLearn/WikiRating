@@ -5,9 +5,10 @@ package org.wikitolearn.dao;
 
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.wikitolearn.models.Page;
@@ -19,6 +20,7 @@ import org.wikitolearn.utils.DbConnection;
  */
 @Repository
 public class PageDAO {
+	private static final Logger LOG = LoggerFactory.getLogger(PageDAO.class);
 
     @Autowired
     private DbConnection connection;
@@ -29,23 +31,23 @@ public class PageDAO {
      * @return boolean True if insertion was committed, false otherwise
      */
     public Boolean insertPages(List<Page> pages){
-    	System.out.println("Getting the connection");
+    	LOG.info("Getting the connection...");
     	OrientGraph graph = connection.getGraph();
-    	System.out.println("Starting to insert pages");
+    	LOG.info("Starting to insert pages...");
 		try{
-			// Implicitly begins the transaction and create the class too
-			Vertex pageNode = graph.addVertex("class:Page");
-	    	System.out.println("Created vertex class");
-
 			for(Page p : pages){
+				// Implicitly begins the transaction and create the class too
+				Vertex pageNode = graph.addVertex("class:Page");
 				pageNode.setProperty( "title", p.getTitle());
 				pageNode.setProperty("pid", p.getPageid());
 				pageNode.setProperty("pageRank", 0.0);
-				System.out.println("Page inserted");
+				LOG.info("Page inserted " + pageNode.toString());
 			}
 			graph.commit();
+			LOG.info("Pages insertion committed");
 			return true;
 		} catch( Exception e ) {
+			LOG.error("Something went wrong during page insertion. Operation will be rollbacked.", e.getMessage());
 			graph.rollback();
 		}
 		return false;

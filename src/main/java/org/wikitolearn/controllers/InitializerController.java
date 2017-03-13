@@ -40,9 +40,14 @@ public class InitializerController {
 	public List<Page> initialize(){
 
 		List<Page> pages =  pageController.getAllPages("https://en.wikitolearn.org/api.php");
-		LOG.info("Fetched all the pages", pages);
-		pageDao.insertPages(pages);
-
+		LOG.info("Fetched all the pages");
+		boolean insertionResult = pageDao.insertPages(pages);
+		if(insertionResult){
+			LOG.info("Inserted pages");
+		}else{
+			LOG.error("Something went wrong during pages insertion");
+		}
+		
         return pages;
 	}
 	

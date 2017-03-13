@@ -20,15 +20,12 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 public class DbConnection {
 	
 	private OrientGraphFactory factory;
-	private OrientGraphFactory factoryNT;
 	
 	@Autowired
 	public DbConnection(@Value("${DB_URL}") String dbUrl, @Value("${DB_USER}")
 	String dbUser, @Value("${DB_PWD}") String dbPwd){
 
-		factory = new OrientGraphFactory(dbUrl, dbUser, dbPwd);
-		factoryNT = new OrientGraphFactory(dbUrl, dbUser, dbPwd);
-		factoryNT.declareIntent(new OIntentMassiveInsert());
+		factory = new OrientGraphFactory(dbUrl, dbUser, dbPwd).setupPool(1, 20);
 	}
 	/**
 	 * This method will return the OreintDB graph instance after connection.
@@ -45,6 +42,7 @@ public class DbConnection {
 	 */
 
 	public OrientGraphNoTx getDbGraphNT() {
-        return factoryNT.getNoTx();
+		factory.declareIntent(new OIntentMassiveInsert());
+        return factory.getNoTx();
 	}
 }
