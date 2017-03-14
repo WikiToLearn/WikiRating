@@ -18,9 +18,7 @@ public class Page {
 	/**
 	 * 
 	 */
-	public Page() {
-	
-	}
+	public Page() { }
 	
 	/**
 	 * @param title

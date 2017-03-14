@@ -3,11 +3,15 @@
  */
 package org.wikitolearn.dao;
 
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import java.util.List;
 
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,8 @@ import org.wikitolearn.models.Page;
 import org.wikitolearn.utils.DbConnection;
 
 /**
+ *
+ * This class will handles the operations on DB handling the Pages
  * @author alessandro
  *
  */
@@ -28,12 +34,15 @@ public class PageDAO {
 
 	/**
 	 * This method is used to create the class on the DB.
+     * It creates an unique index on pageid to avoid duplicated.
 	 */
 	public void createDBClass() {
 		LOG.info("Getting the connection...");
 		OrientGraphNoTx graph = connection.getDbGraphNT();
 		try{
-			graph.createVertexType("class:Page");
+            OrientVertexType vertex = graph.createVertexType("Page");
+            vertex.createProperty("pageid", OType.LONG).setMandatory(true);
+            vertex.createIndex("pageid", OClass.INDEX_TYPE.UNIQUE, "pageid");
 		} catch( Exception e ) {
 			LOG.error("Something went wrong during class creation. Operation will be rollbacked.", e.getMessage());
 			graph.rollback();
@@ -44,7 +53,8 @@ public class PageDAO {
 
 
     /**
-     * Insert all the given pages in the database as vertexes. 
+     * Insert all the given pages in the database as vertexes.
+     * If there are duplicates all the insertion is rolled back.
      * @param pages List<Page> The pages to be inserted
      * @return boolean True if insertion was committed, false otherwise
      */
@@ -55,15 +65,18 @@ public class PageDAO {
 		try{
 			for(Page p : pages){
 				// Implicitly begins the transaction and create the class too
-				Vertex pageNode = graph.addVertex("class:Page");
+				Vertex pageNode = graph.addVertex("class:Page",
+                        "pageid", p.getPageid());
 				pageNode.setProperty( "title", p.getTitle());
-				pageNode.setProperty("pid", p.getPageid());
 				pageNode.setProperty("pageRank", 0.0);
 				LOG.info("Page inserted " + pageNode.toString());
 			}
 			graph.commit();
 			LOG.info("Pages insertion committed");
 			return true;
+		} catch (ORecordDuplicatedException or) {
+            LOG.error("Some of the pages are duplicates. Operation will be rollbacked.", or.getMessage());
+            graph.rollback();
 		} catch( Exception e ) {
 			LOG.error("Something went wrong during page insertion. Operation will be rollbacked.", e.getMessage());
 			graph.rollback();
