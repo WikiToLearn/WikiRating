@@ -43,7 +43,7 @@ public class RevisionDAO {
             vertex.createProperty("revid", OType.INTEGER).setMandatory(true);
             vertex.createIndex("revid", OClass.INDEX_TYPE.UNIQUE, "revid");
             //Edge type for the created edge from User to Revision
-            graph.createEdgeType("CreatedBy");
+            graph.createEdgeType("Author");
             //Edge type to connect revision to parent revision
             graph.createEdgeType("ParentRevision");
             //Edge type to connect last revision to page vertex
@@ -101,11 +101,10 @@ public class RevisionDAO {
                 try{
                     userCreator = graph.getVertices("User.userid", rev.getUserid()).iterator().next();
                 } catch (NoSuchElementException e){
-                    LOG.error("User creator of the revision not found!", e.getMessage());
-                    return false;
+                    //if the user is not found we link it to the Anonimous user.
+                    userCreator = graph.getVertices("User.userid", "0" ).iterator().next();
                 }
-                graph.addEdge("class:CreatedBy", revNode, userCreator, "CreatedBy");
-
+                graph.addEdge("class:Author", userCreator, revNode, "Author");
             }
 
             //now we have to create the the links between revisions

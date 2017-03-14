@@ -98,6 +98,8 @@ public class InitializerController {
      */
     private boolean addAllUsers(){
         List<User> users =  userController.getAllUsers("https://en.wikitolearn.org/api.php");
+        //adding the Anonimous user
+        users.add(new User("Anonimous", 0, 0, 0, 0));
         LOG.info("Fetched all the users");
         boolean insertionResultUsers = userDao.insertUsers(users);
         if(insertionResultUsers){
