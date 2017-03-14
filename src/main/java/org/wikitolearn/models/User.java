@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class User {
     @JsonProperty("name")
 	private String username;
-	private long userid;
+	private int userid;
 	private double votesReliability;
 	private double contributesReliability;
 	private double totalReliability;
@@ -32,7 +32,7 @@ public class User {
 	 * @param contributesReliability
 	 * @param totalReliability
 	 */
-	public User(String username, long userid, double votesReliability, double contributesReliability,
+	public User(String username, int userid, double votesReliability, double contributesReliability,
 			double totalReliability) {
 		this.username = username;
 		this.userid = userid;
@@ -58,14 +58,14 @@ public class User {
 	/**
 	 * @return the userid
 	 */
-	public long getUserid() {
+	public int getUserid() {
 		return userid;
 	}
 
 	/**
 	 * @param userid the userid to set
 	 */
-	public void setUserId(long userid) {
+	public void setUserId(int userid) {
 		this.userid = userid;
 	}
 

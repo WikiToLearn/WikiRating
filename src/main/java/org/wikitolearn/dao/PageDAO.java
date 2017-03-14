@@ -37,11 +37,11 @@ public class PageDAO {
      * It creates an unique index on pageid to avoid duplicated.
 	 */
 	public void createDBClass() {
-		LOG.info("Getting the connection...");
+		LOG.info("Creating DB classes for PageDAO...");
 		OrientGraphNoTx graph = connection.getDbGraphNT();
 		try{
             OrientVertexType vertex = graph.createVertexType("Page");
-            vertex.createProperty("pageid", OType.LONG).setMandatory(true);
+            vertex.createProperty("pageid", OType.INTEGER).setMandatory(true);
             vertex.createIndex("pageid", OClass.INDEX_TYPE.UNIQUE, "pageid");
 		} catch( Exception e ) {
 			LOG.error("Something went wrong during class creation. Operation will be rollbacked.", e.getMessage());
@@ -59,7 +59,6 @@ public class PageDAO {
      * @return boolean True if insertion was committed, false otherwise
      */
     public Boolean insertPages(List<Page> pages){
-    	LOG.info("Getting the connection...");
     	OrientGraph graph = connection.getGraph();
     	LOG.info("Starting to insert pages...");
 		try{
@@ -68,7 +67,7 @@ public class PageDAO {
 				Vertex pageNode = graph.addVertex("class:Page",
                         "pageid", p.getPageid());
 				pageNode.setProperty( "title", p.getTitle());
-				pageNode.setProperty("pageRank", 0.0);
+				pageNode.setProperty("pageRank", p.getPageRank());
 				LOG.info("Page inserted " + pageNode.toString());
 			}
 			graph.commit();

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Page {
 	private String title;
-	private long pageid;
+	private int pageid;
 	private double pageRank;
 	
 	/**
@@ -25,7 +25,7 @@ public class Page {
 	 * @param pageid
 	 * @param pageRank
 	 */
-	public Page(String title, long pageid, double pageRank) {
+	public Page(String title, int pageid, double pageRank) {
 		this.title = title;
 		this.pageid = pageid;
 		this.pageRank = pageRank;
@@ -45,13 +45,13 @@ public class Page {
 	/**
 	 * @return the pageid
 	 */
-	public long getPageid() {
+	public int getPageid() {
 		return pageid;
 	}
 	/**
 	 * @param pageid the pageid to set
 	 */
-	public void setPageid(long pageid) {
+	public void setPageid(int pageid) {
 		this.pageid = pageid;
 	}
 	/**

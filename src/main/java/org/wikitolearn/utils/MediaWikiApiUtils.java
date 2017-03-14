@@ -29,7 +29,7 @@ public class MediaWikiApiUtils {
 	
 	 /**
 	 * This method creates a MediaWiki Connection object
-	 * @param String apiUrl the url of the API
+	 * @param apiUrl the url of the API
 	 * @return	ApiConnection the API connection object
 	 */
 
@@ -51,6 +51,7 @@ public class MediaWikiApiUtils {
 		queryParameterMap.put("list", "allpages");
 		queryParameterMap.put("aplimit", "max");
 		queryParameterMap.put("apnamespace", namespace);
+		queryParameterMap.put("apfilterredir", "nonredirects");
 		queryParameterMap.put("format", "json");
 		return queryParameterMap;
 	}
@@ -61,12 +62,12 @@ public class MediaWikiApiUtils {
 	 * @param pid	The PageID of the page for which revisions are requested
 	 * @return	Map having parameters
 	 */
-	public Map<String, String> getRevisionParam(String pid) {
+	public Map<String, String> getRevisionParam(int pid) {
 		Map<String, String> queryParameterMap = new HashMap<String, String>();
 		queryParameterMap.put("action", "query");
 		queryParameterMap.put("prop", "revisions");
-		queryParameterMap.put("pageids", pid);
-		queryParameterMap.put("rvprop", "userid|ids|timestamp|user|flags|size");
+		queryParameterMap.put("pageids", Integer.toString(pid));
+		queryParameterMap.put("rvprop", "userid|ids|timestamp|flags|size");
 		queryParameterMap.put("rvlimit", "max");
 		queryParameterMap.put("rvdir", "newer");
 		queryParameterMap.put("format", "json");

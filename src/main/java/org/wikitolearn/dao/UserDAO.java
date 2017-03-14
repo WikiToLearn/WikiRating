@@ -36,11 +36,11 @@ public class UserDAO {
      * Moreover it creates a unique index on the userid property to avoid duplication.
      */
 	public void createDBClass() {
-        LOG.info("Getting the connection...");
+        LOG.info("Creating DB classes for RevisionDAO...");
         OrientGraphNoTx graph = connection.getDbGraphNT();
 	    try{
             OrientVertexType vertex = graph.createVertexType("User");
-            vertex.createProperty("userid", OType.LONG).setMandatory(true);
+            vertex.createProperty("userid", OType.INTEGER).setMandatory(true);
             vertex.createIndex("userid", OClass.INDEX_TYPE.UNIQUE, "userid");
 	    } catch( Exception e ) {
             LOG.error("Something went wrong during class creation. Operation will be rollbacked.", e.getMessage());
@@ -58,7 +58,6 @@ public class UserDAO {
      * @return boolean True if insertion was committed, false otherwise
      */
     public Boolean insertUsers(List<User> users){
-    	LOG.info("Getting the connection...");
     	OrientGraph graph = connection.getGraph();
     	LOG.info("Starting to insert users...");
 		try{
@@ -67,9 +66,9 @@ public class UserDAO {
 				Vertex userNode = graph.addVertex("class:User",
                         "userid", p.getUserid());
 				userNode.setProperty( "username", p.getUsername());
-				userNode.setProperty("votesReliability", 0.0);
-				userNode.setProperty("contributesReliability", 0.0);
-				userNode.setProperty("totalReliability", 0.0);
+				userNode.setProperty("votesReliability", p.getVotesReliability());
+				userNode.setProperty("contributesReliability", p.getContributesReliability());
+				userNode.setProperty("totalReliability", p.getTotalReliability());
 				LOG.info("User inserted " + userNode.toString());
 			}
 			graph.commit();
