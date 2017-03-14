@@ -7,6 +7,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import java.util.List;
 
+import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,24 @@ public class PageDAO {
 
     @Autowired
     private DbConnection connection;
-    
+
+	/**
+	 * This method is used to create the class on the DB.
+	 */
+	public void createDBClass() {
+		LOG.info("Getting the connection...");
+		OrientGraphNoTx graph = connection.getDbGraphNT();
+		try{
+			graph.createVertexType("class:Page");
+		} catch( Exception e ) {
+			LOG.error("Something went wrong during class creation. Operation will be rollbacked.", e.getMessage());
+			graph.rollback();
+		} finally {
+            graph.shutdown();
+        }
+	}
+
+
     /**
      * Insert all the given pages in the database as vertexes. 
      * @param pages List<Page> The pages to be inserted
@@ -49,8 +67,10 @@ public class PageDAO {
 		} catch( Exception e ) {
 			LOG.error("Something went wrong during page insertion. Operation will be rollbacked.", e.getMessage());
 			graph.rollback();
-		}
-		return false;
+		}finally {
+		    graph.shutdown();
+        }
+        return false;
     }
 	
 }

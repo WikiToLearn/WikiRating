@@ -54,10 +54,42 @@ public class MediaWikiApiUtils {
 		queryParameterMap.put("format", "json");
 		return queryParameterMap;
 	}
+
+	/**
+	 * This method constructs the MAP of parameters to attach with the MediaWiki Query to fetch all the revisions
+	 * of the given page
+	 * @param pid	The PageID of the page for which revisions are requested
+	 * @return	Map having parameters
+	 */
+	public Map<String, String> getRevisionParam(String pid) {
+		Map<String, String> queryParameterMap = new HashMap<String, String>();
+		queryParameterMap.put("action", "query");
+		queryParameterMap.put("prop", "revisions");
+		queryParameterMap.put("pageids", pid);
+		queryParameterMap.put("rvprop", "userid|ids|timestamp|user|flags|size");
+		queryParameterMap.put("rvlimit", "max");
+		queryParameterMap.put("rvdir", "newer");
+		queryParameterMap.put("format", "json");
+		return queryParameterMap;
+	}
+
+	/**
+	 * This method constructs the MAP of parameters to attach with the MediaWiki Query to get
+	 * all the users.
+	 * @return	Map having parameters
+	 */
+	public Map<String, String> getUserParam() {
+		Map<String, String> queryParameterMap = new HashMap<String, String>();
+		queryParameterMap.put("action", "query");
+		queryParameterMap.put("list", "allusers");
+		queryParameterMap.put("aulimit", "max");
+		queryParameterMap.put("format", "json");
+		return queryParameterMap;
+	}
 	
 	/**
 	 * This method converts an InputStream object to String
-	 * @param inpuntStream InputStream object to be converted
+	 * @param inputStream InputStream object to be converted
 	 * @return String result the converted stream into a string
 	 */
 	public JSONObject streamToJson(InputStream inputStream) {
@@ -99,9 +131,9 @@ public class MediaWikiApiUtils {
 	
 	/**
 	 * This method sends a request to MediaWiki API and then gets back an InputStream
-	 * @param ApiConnectionconnection the ApiConnection object
-	 * @param String requestMethod the request method (ex: GET, POST, ...)
-	 * @param Map queryParametersMap	the HashMap having all the query parameters
+	 * @param connection onnection the ApiConnection object
+	 * @param requestMethod requestMethod the request method (ex: GET, POST, ...)
+	 * @param queryParametersMap queryParametersMap	the HashMap having all the query parameters
 	 * @return	InputStream object having the requested data
 	 */
 

@@ -3,13 +3,18 @@
  */
 package org.wikitolearn.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * @author alessandro
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
+    @JsonProperty("name")
 	private String username;
-	private long userId;
+	private long userid;
 	private double votesReliability;
 	private double contributesReliability;
 	private double totalReliability;
@@ -22,15 +27,15 @@ public class User {
 	
 	/**
 	 * @param username
-	 * @param userId
+	 * @param userid
 	 * @param votesReliability
 	 * @param contributesReliability
 	 * @param totalReliability
 	 */
-	public User(String username, long userId, double votesReliability, double contributesReliability,
+	public User(String username, long userid, double votesReliability, double contributesReliability,
 			double totalReliability) {
 		this.username = username;
-		this.userId = userId;
+		this.userid = userid;
 		this.votesReliability = votesReliability;
 		this.contributesReliability = contributesReliability;
 		this.totalReliability = totalReliability;
@@ -51,17 +56,17 @@ public class User {
 	}
 
 	/**
-	 * @return the userId
+	 * @return the userid
 	 */
-	public long getUserId() {
-		return userId;
+	public long getUserid() {
+		return userid;
 	}
 
 	/**
-	 * @param userId the userId to set
+	 * @param userid the userid to set
 	 */
-	public void setUserId(long userId) {
-		this.userId = userId;
+	public void setUserId(long userid) {
+		this.userid = userid;
 	}
 
 	/**
@@ -111,7 +116,7 @@ public class User {
 	 */
 	@Override
 	public String toString() {
-		return "User [username=" + username + ", userId=" + userId + ", votesReliability=" + votesReliability
+		return "User [username=" + username + ", userid=" + userid + ", votesReliability=" + votesReliability
 				+ ", contributesReliability=" + contributesReliability + ", totalReliability=" + totalReliability + "]";
 	}
 	
