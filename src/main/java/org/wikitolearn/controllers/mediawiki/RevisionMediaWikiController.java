@@ -1,4 +1,4 @@
-package org.wikitolearn.controllers.mediawikiClient;
+package org.wikitolearn.controllers.mediawiki;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

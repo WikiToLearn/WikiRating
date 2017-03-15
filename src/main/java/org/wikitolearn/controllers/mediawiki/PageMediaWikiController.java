@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.wikitolearn.controllers.mediawikiClient;
+package org.wikitolearn.controllers.mediawiki;
 
 import java.io.IOException;
 import java.io.InputStream;
