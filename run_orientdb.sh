@@ -1,3 +1,6 @@
+docker stop orientdb
+docker rm orientdb
+
 docker run -d  -p 2424:2424 -p 2480:2480   \
         -v orientdb_config:/orientdb/config \
         -v orient_database:/orientdb/databases \

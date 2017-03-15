@@ -20,13 +20,14 @@ public class Revision {
     private double totalMeanVote;
     private double totalVotesReliability;
     private double totalNormalisesVotesReliability;
+    private boolean validated;
 
     public Revision() {   }
 
     public Revision(int revid, int userid, int parentid, long length, double changeCoefficient,
                     double currentMeanVote, double currentVotesReliability,
                     double currentNormalisesVotesReliability, double totalMeanVote,
-                    double totalVotesReliability, double totalNormalisesVotesReliability) {
+                    double totalVotesReliability, double totalNormalisesVotesReliability, boolean validated) {
         this.revid = revid;
         this.userid = userid;
         this.parentid = parentid;
@@ -38,6 +39,7 @@ public class Revision {
         this.totalMeanVote = totalMeanVote;
         this.totalVotesReliability = totalVotesReliability;
         this.totalNormalisesVotesReliability = totalNormalisesVotesReliability;
+        this.validated = validated;
     }
 
     public int getRevid() {
@@ -126,5 +128,13 @@ public class Revision {
 
     public void setTotalNormalisesVotesReliability(double totalNormalisesVotesReliability) {
         this.totalNormalisesVotesReliability = totalNormalisesVotesReliability;
+    }
+
+    public boolean isValidated() {
+        return validated;
+    }
+
+    public void setValidated(boolean validated) {
+        this.validated = validated;
     }
 }

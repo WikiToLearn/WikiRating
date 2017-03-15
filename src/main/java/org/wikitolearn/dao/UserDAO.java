@@ -18,7 +18,9 @@ import org.wikitolearn.models.Page;
 import org.wikitolearn.models.User;
 import org.wikitolearn.utils.DbConnection;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author alessandro
@@ -62,13 +64,14 @@ public class UserDAO {
     	LOG.info("Starting to insert users...");
 		try{
 			for(User p : users){
-				// Implicitly begins the transaction and create the class too
-				Vertex userNode = graph.addVertex("class:User",
-                        "userid", p.getUserid());
-				userNode.setProperty( "username", p.getUsername());
-				userNode.setProperty("votesReliability", p.getVotesReliability());
-				userNode.setProperty("contributesReliability", p.getContributesReliability());
-				userNode.setProperty("totalReliability", p.getTotalReliability());
+                Map<String, Object> props = new HashMap<>();
+				props.put("userid", p.getUserid());
+				props.put( "username", p.getUsername());
+				props.put("votesReliability", p.getVotesReliability());
+				props.put("contributesReliability", p.getContributesReliability());
+				props.put("totalReliability", p.getTotalReliability());
+
+                Vertex userNode = graph.addVertex("class:User", props);
 				LOG.info("User inserted " + userNode.toString());
 			}
 			graph.commit();

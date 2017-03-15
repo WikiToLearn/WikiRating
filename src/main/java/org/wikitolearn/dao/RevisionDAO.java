@@ -17,6 +17,7 @@ import org.wikitolearn.utils.DbConnection;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -76,16 +77,19 @@ public class RevisionDAO {
         Vertex lastRev = null;
         try{
             for(Revision rev : revs){
-                Vertex revNode = graph.addVertex("class:Revision",
-                        "revid", rev.getRevid());
-                revNode.setProperty("length", rev.getLength());
-                revNode.setProperty("changeCoefficient", rev.getChangeCoefficient());
-                revNode.setProperty( "currentMeanVote", rev.getCurrentMeanVote());
-                revNode.setProperty( "currentVotesReliability", rev.getCurrentVotesReliability());
-                revNode.setProperty( "currentNormalizedVotesReliability", rev.getCurrentNormalisesVotesReliability());
-                revNode.setProperty( "totalMeanVote", rev.getTotalMeanVote());
-                revNode.setProperty( "totalVotesReliability", rev.getTotalVotesReliability());
-                revNode.setProperty( "totalNormalizedVotesReliability", rev.getTotalNormalisesVotesReliability());
+                Map<String, Object> props = new HashMap<>();
+                props.put("revid", rev.getRevid());
+                props.put("length", rev.getLength());
+                props.put("changeCoefficient", rev.getChangeCoefficient());
+                props.put( "currentMeanVote", rev.getCurrentMeanVote());
+                props.put( "currentVotesReliability", rev.getCurrentVotesReliability());
+                props.put( "currentNormalizedVotesReliability", rev.getCurrentNormalisesVotesReliability());
+                props.put( "totalMeanVote", rev.getTotalMeanVote());
+                props.put( "totalVotesReliability", rev.getTotalVotesReliability());
+                props.put( "totalNormalizedVotesReliability", rev.getTotalNormalisesVotesReliability());
+                props.put("validated", rev.isValidated());
+
+                Vertex revNode = graph.addVertex("class:Revision", props);
                 LOG.info("Revision inserted " + revNode.toString());
                 revsNodes.put(Integer.toString(rev.getRevid()), revNode);
 

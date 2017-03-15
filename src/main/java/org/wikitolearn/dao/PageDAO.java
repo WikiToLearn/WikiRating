@@ -8,7 +8,10 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
@@ -63,11 +66,12 @@ public class PageDAO {
     	LOG.info("Starting to insert pages...");
 		try{
 			for(Page p : pages){
-				// Implicitly begins the transaction and create the class too
-				Vertex pageNode = graph.addVertex("class:Page",
-                        "pageid", p.getPageid());
-				pageNode.setProperty( "title", p.getTitle());
-				pageNode.setProperty("pageRank", p.getPageRank());
+				Map<String, Object> props = new HashMap<>();
+				props.put("pageid", p.getPageid());
+				props.put( "title", p.getTitle());
+				props.put("pageRank", p.getPageRank());
+
+				Vertex pageNode = graph.addVertex("class:Page", props);
 				LOG.info("Page inserted " + pageNode.toString());
 			}
 			graph.commit();
