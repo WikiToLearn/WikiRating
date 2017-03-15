@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
-import org.wikitolearn.models.Page;
 import org.wikitolearn.models.Revision;
 import org.wikitolearn.utils.MediaWikiApiUtils;
 
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class will handle the query on mediawiki about revisions.
+ * This class will handle the query on MediaWiki about revisions.
  * Created by valsdav on 14/03/17.
  */
 @Service
@@ -35,7 +34,7 @@ public class RevisionMediaWikiController {
     private ObjectMapper mapper;
 
     /**
-     * Get all the revisions for a specific page quering mediawiki api
+     * Get all the revisions for a specific page querying MediaWiki API
      * @param apiUrl the MediaWiki API url
      * @param pageid Pageid of the page of which getting the revisions.      *
      * @return revisions A list that contains all the fetched revisions

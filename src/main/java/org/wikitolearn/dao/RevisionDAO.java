@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.wikitolearn.models.Revision;
-import org.wikitolearn.models.User;
 import org.wikitolearn.utils.DbConnection;
 
 import java.util.HashMap;
@@ -39,17 +38,17 @@ public class RevisionDAO {
         LOG.info("Creating DB classes for RevisionDAO...");
         OrientGraphNoTx graph = connection.getDbGraphNT();
         try{
-            //Vertex type for the revision
+            // Vertex type for the revision
             OrientVertexType vertex = graph.createVertexType("Revision");
             vertex.createProperty("revid", OType.INTEGER).setMandatory(true);
             vertex.createIndex("revid", OClass.INDEX_TYPE.UNIQUE, "revid");
-            //Edge type for the created edge from User to Revision
+            // Edge type for the created edge from User to Revision
             graph.createEdgeType("Author");
-            //Edge type to connect revision to parent revision
+            // Edge type to connect revision to parent revision
             graph.createEdgeType("ParentRevision");
-            //Edge type to connect last revision to page vertex
+            // Edge type to connect last revision to page vertex
             graph.createEdgeType("LastRevision");
-            //Edge type to connect the first revision of a page
+            // Edge type to connect the first revision of a page
             graph.createEdgeType("FirstRevision");
         } catch( Exception e ) {
             LOG.error("Something went wrong during class creation. Operation will be rollbacked.", e.getMessage());
@@ -64,7 +63,7 @@ public class RevisionDAO {
      * This method will insert the revisions of one page, creating the link ParentRevision between them and
      * the link FirstRevision and LastRevision with the Page vertex.  Moreover it connects the Users to
      * the revisions they have created.
-     * This method must be used only for the firt INIT import, NOT for incremental inserction.
+     * This method must be used only for the first INIT import, NOT for incremental insertion.
      * @param pageid
      * @param revs
      * @return
@@ -100,7 +99,7 @@ public class RevisionDAO {
                     lastRev = revNode;
                 }
 
-                //connecting the creator of the revisions
+                // Connecting the creator of the revisions
                 Vertex userCreator = null;
                 try{
                     userCreator = graph.getVertices("User.userid", rev.getUserid()).iterator().next();
@@ -111,7 +110,7 @@ public class RevisionDAO {
                 graph.addEdge("class:Author", userCreator, revNode, "Author");
             }
 
-            //now we have to create the the links between revisions
+            // Now we have to create the the links between revisions
             for (Revision r : revs){
                 if (r.getParentid() != 0){
                     graph.addEdge("class:ParentRevision", revsNodes.get(Integer.toString(r.getRevid())),
@@ -119,7 +118,7 @@ public class RevisionDAO {
                 }
             }
 
-            //now let's create the LastRevision and FirstRevision edges
+            // Now let's create the LastRevision and FirstRevision edges
             Vertex page = graph.getVertices("Page.pageid", pageid).iterator().next();
             graph.addEdge("class:LastRevision", page, lastRev, "LastRevision");
             graph.addEdge("class:FirstRevision", page, firstRev, "FirstRevision");

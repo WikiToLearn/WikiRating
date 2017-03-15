@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
-import org.wikitolearn.models.Page;
 import org.wikitolearn.models.User;
 import org.wikitolearn.utils.MediaWikiApiUtils;
 
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class used to query Mediawiki about Users
+ * Class used to query MediaWiki about Users
  * Created by valsdav on 14/03/17.
  */
 @Service
