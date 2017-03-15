@@ -4,8 +4,9 @@
 package org.wikitolearn.controllers;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-import com.orientechnologies.orient.core.Orient;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import org.slf4j.Logger;
@@ -51,17 +52,21 @@ public class InitializerController {
     private DbConnection dbConnection;
 	
 	@RequestMapping(value = "/init", method = RequestMethod.GET, produces = "application/json")
-	public String initialize(){
+	public boolean initialize(){
 
-	    //Inizitializing the DB schema, only the first time
+	    // Initializing the DB schema, only the first time
         initializeDbClasses();
-
-        boolean resultPages = addAllPages();
-        boolean resultUsers = addAllUsers();
-        boolean resultRevs = addAllRevisions();
-        return "Pages: " + Boolean.toString(resultPages) +
-                "\nUsers: "+ Boolean.toString(resultUsers) +
-                "\nRevisions: "+ Boolean.toString(resultRevs);
+        
+        CompletableFuture<Boolean> parallelInsertions = 
+        		CompletableFuture.allOf(addAllPages(), addAllUsers())
+        		.thenCompose(s -> addAllRevisions());
+        
+        try {
+			return parallelInsertions.get();
+		} catch (InterruptedException | ExecutionException e) {
+			LOG.error("Something went wrong during database initialization.", e.getMessage());
+			return false;
+		}
 	}
 
 
@@ -69,19 +74,22 @@ public class InitializerController {
      * This methods initializes all the DAO Classes, creating the right types on the DB.
      */
     private void initializeDbClasses(){
-        LOG.info("Create DB Classes...");
+        LOG.info("Creating DB lasses...");
         pageDao.createDBClass();
         userDao.createDBClass();
         revisionDAO.createDBClass();
-        LOG.info("Create DB Classes...DONE");
+        LOG.info("Completed creation of DB classes.");
 
     }
 
 
 	/**
-     * This methods inserts all the pages inside the DB quering the mediawiki api.
+     * This methods inserts all the pages inside the DB querying the MediaWiki API.
+     * 
+     * @return CompletableFuture<Boolean>
      */
-    private boolean addAllPages(){
+    @Async
+    private CompletableFuture<Boolean> addAllPages(){
         List<Page> pages =  pageController.getAllPages("https://en.wikitolearn.org/api.php");
         LOG.info("Fetched all the pages");
         boolean insertionResultPages = pageDao.insertPages(pages);
@@ -90,15 +98,18 @@ public class InitializerController {
         }else{
             LOG.error("Something went wrong during pages insertion");
         }
-        return insertionResultPages;
+        return CompletableFuture.completedFuture(insertionResultPages);
     }
 
     /**
-     * This methods inserts all the users inside the DB quering the mediawiki api.
+     * This methods inserts all the users inside the DB querying the MediaWiki API.
+     *
+     * @return CompletableFuture<Boolean>
      */
-    private boolean addAllUsers(){
+    @Async
+    private CompletableFuture<Boolean> addAllUsers(){
         List<User> users =  userController.getAllUsers("https://en.wikitolearn.org/api.php");
-        //adding the Anonimous user
+        // Adding the Anonymous user
         users.add(new User("Anonimous", 0, 0, 0, 0));
         LOG.info("Fetched all the users");
         boolean insertionResultUsers = userDao.insertUsers(users);
@@ -107,35 +118,35 @@ public class InitializerController {
         }else{
             LOG.error("Something went wrong during users insertion");
         }
-        return insertionResultUsers;
+        return CompletableFuture.completedFuture(insertionResultUsers);
     }
 
     /**
      * This method inserts all the revisions for every page, creating the connections between them
      * and between the users that have written them.
-     * @return
+     * 
+     * @return CompletableFuture<Boolean>
      */
-    private boolean addAllRevisions(){
+    private CompletableFuture<Boolean> addAllRevisions(){
         OrientGraph graph = dbConnection.getGraph();
-
+        boolean revInsertionResult = false;
         try {
             for (Vertex page : graph.getVerticesOfClass("Page")) {
                 int pageid = page.getProperty("pageid");
                 LOG.info("Processing page: " + pageid);
                 List<Revision> revs = revsController.getAllRevisionForPage("https://en.wikitolearn.org/api.php", pageid);
-                boolean revInsertionResult = revisionDAO.insertRevisions(pageid, revs);
+                revInsertionResult = revisionDAO.insertRevisions(pageid, revs);
                 if(!revInsertionResult){
                     LOG.error("Something was wrong during the insertion of the revisions of page "+ pageid);
                 }
             }
-            return true;
         } catch (Exception e){
             LOG.error("Something bad has appended getting revisions", e.getMessage());
             graph.rollback();
         } finally {
             graph.shutdown();
         }
-        return false;
+        return CompletableFuture.completedFuture(revInsertionResult);
     }
 
 
