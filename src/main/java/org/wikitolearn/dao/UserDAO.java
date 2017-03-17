@@ -85,8 +85,7 @@ public class UserDAO {
         } catch( Exception e ) {
             LOG.error("Something went wrong during user insertion. Operation will be rollbacked.", e.getMessage());
             graph.rollback();
-        } finally {
-		    graph.shutdown();
+            graph.shutdown();
         }
         return false;
     }
