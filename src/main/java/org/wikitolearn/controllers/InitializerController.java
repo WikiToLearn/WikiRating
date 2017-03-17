@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.wikitolearn.controllers.mediawiki.PageMediaWikiController;
-import org.wikitolearn.controllers.mediawiki.RevisionMediaWikiController;
-import org.wikitolearn.controllers.mediawiki.UserMediaWikiController;
 import org.wikitolearn.dao.PageDAO;
 import org.wikitolearn.dao.RevisionDAO;
 import org.wikitolearn.dao.UserDAO;
 import org.wikitolearn.models.Page;
 import org.wikitolearn.models.Revision;
 import org.wikitolearn.models.User;
+import org.wikitolearn.services.mediawiki.PageMediaWikiController;
+import org.wikitolearn.services.mediawiki.RevisionMediaWikiController;
+import org.wikitolearn.services.mediawiki.UserMediaWikiController;
 import org.wikitolearn.utils.DbConnection;
 
 /**

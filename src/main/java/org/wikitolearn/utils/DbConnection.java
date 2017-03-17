@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
@@ -18,7 +18,7 @@ import org.wikitolearn.dao.UserDAO;
  * @author alessandro
  *
  */
-@Service
+@Component
 public class DbConnection {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UserDAO.class);

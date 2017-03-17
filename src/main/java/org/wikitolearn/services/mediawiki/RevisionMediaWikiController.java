@@ -1,4 +1,4 @@
-package org.wikitolearn.controllers.mediawiki;
+package org.wikitolearn.services.mediawiki;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
-import org.wikitolearn.models.User;
+import org.wikitolearn.models.Revision;
 import org.wikitolearn.utils.MediaWikiApiUtils;
 
 import java.io.IOException;
@@ -20,12 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class used to query MediaWiki about Users
+ * This class will handle the query on MediaWiki about revisions.
  * Created by valsdav on 14/03/17.
  */
 @Service
-public class UserMediaWikiController {
-    private static final Logger LOG = LoggerFactory.getLogger(UserMediaWikiController.class);
+public class RevisionMediaWikiController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RevisionMediaWikiController.class);
 
     @Autowired
     private MediaWikiApiUtils mediaWikiApiUtils;
@@ -33,42 +34,44 @@ public class UserMediaWikiController {
     private ObjectMapper mapper;
 
     /**
-     * Get all the users from MediaWiki instance through its API.
+     * Get all the revisions for a specific page querying MediaWiki API
      * @param apiUrl the MediaWiki API url
-     * @return users A list that contains all the fetched users
+     * @param pageid Pageid of the page of which getting the revisions.      *
+     * @return revisions A list that contains all the fetched revisions
      */
-    public List<User> getAllUsers(String apiUrl){
+    public List<Revision> getAllRevisionForPage(String apiUrl, int pageid){
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
-        Map<String, String> parameters = mediaWikiApiUtils.getUserParam();
+        Map<String, String> parameters = mediaWikiApiUtils.getRevisionParam(pageid);
         InputStream response;
-        boolean moreUsers = true;
-        JSONArray usersJson = new JSONArray();
+        boolean moreRevs = true;
+        JSONArray revsJson = new JSONArray();
         List<JSONArray> toBeConcat = new ArrayList<>();
-        List<User> users = new ArrayList<>();
+        List<Revision> revs = new ArrayList<>();
 
         try {
-            while(moreUsers){
+            while(moreRevs){
                 response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
                 JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
 
-                toBeConcat.add(responseJson.getJSONObject("query").getJSONArray("allusers"));
+                toBeConcat.add(responseJson.getJSONObject("query").getJSONObject("pages").
+                        getJSONObject(Integer.toString(pageid)).getJSONArray("revisions"));
 
                 if(responseJson.has("continue")){
-                    String continueFrom = responseJson.getJSONObject("continue").getString("aufrom");
-                    parameters.put("aufrom", continueFrom);
+                    String continueFrom = responseJson.getJSONObject("continue").getString("rvcontinue");
+                    parameters.put("rvcontinue", continueFrom);
                 }else{
-                    moreUsers = false;
-                    usersJson = concatArrays(toBeConcat);
+                    moreRevs = false;
+                    revsJson = concatArrays(toBeConcat);
                 }
             }
-            users = mapper.readValue(usersJson.toString(), new TypeReference<List<User>>(){});
-            return users;
+            revs = mapper.readValue(revsJson.toString(), new TypeReference<List<Revision>>(){});
+            return revs;
         } catch (JSONException e){
             LOG.error("An error occurred while a JSONObject or JSONArray", e.getMessage());
         } catch(IOException e){
             LOG.error("An error occurred while converting an InputStream to JSONObject", e.getMessage());
         }
-        return users;
+        return revs;
     }
 
     /**
@@ -86,5 +89,5 @@ public class UserMediaWikiController {
         }
         return result;
     }
-}
 
+}
