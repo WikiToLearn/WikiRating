@@ -26,7 +26,6 @@ import org.springframework.stereotype.Component;
 public class MaintenanceFilter implements Filter {
 	
 	private @Value("${maintenance.uri}") String MAINTENANCE_URI;
-	//private boolean isMaintenanceActive = false;
 
 	/*
 	 * (non-Javadoc)
@@ -34,10 +33,7 @@ public class MaintenanceFilter implements Filter {
 	 * @see javax.servlet.Filter#destroy()
 	 */
 	@Override
-	public void destroy() {
-		// TODO Auto-generated method stub
-
-	}
+	public void destroy() {}
 
 	/*
 	 * (non-Javadoc)
@@ -50,7 +46,9 @@ public class MaintenanceFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
+		// Maintenance lock file to be checked
 		File lockFile = new File("maintenance.lock");
+		// Allow any maintenance URI request, otherwise check if maintenance mode is set and allow GET requests only
 		if(MAINTENANCE_URI.equals(request.getRequestURI())){
 			filterChain.doFilter(servletRequest, servletResponse);
 		}else if(!HttpMethod.GET.matches(request.getMethod()) && lockFile.exists()){
@@ -67,8 +65,6 @@ public class MaintenanceFilter implements Filter {
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
 	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-
-	}
+	public void init(FilterConfig filterConfig) throws ServletException {}
 
 }
