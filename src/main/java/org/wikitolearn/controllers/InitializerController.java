@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import org.slf4j.Logger;
@@ -138,7 +139,8 @@ public class InitializerController {
         OrientGraph graph = dbConnection.getGraph();
         boolean revInsertionResult = false;
         try {
-            for (Vertex page : graph.getVertices("Page", new String[] {"lang"},new Object[] {lang})) {
+            for (Vertex page : (Iterable<Vertex>) graph.command(new OCommandSQL(
+                    "SELECT FROM cluster:Pages_"+ lang)).execute()) {
                 int pageid = page.getProperty("pageid");
                 LOG.info("Processing page: " + pageid);
                 List<Revision> revs = revsController.getAllRevisionForPage(apiUrl, pageid);

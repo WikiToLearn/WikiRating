@@ -5,6 +5,7 @@ package org.wikitolearn.dao;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
@@ -44,9 +45,15 @@ public class PageDAO {
 		LOG.info("Creating DB classes for PageDAO...");
 		OrientGraphNoTx graph = connection.getDbGraphNT();
 		try{
-            OrientVertexType vertex = graph.createVertexType("Page");
+            OrientVertexType vertex = graph.createVertexType("Page",1);
             vertex.createProperty("pageid", OType.INTEGER).setMandatory(true);
-            vertex.createIndex("pageid", OClass.INDEX_TYPE.UNIQUE, "pageid");
+            vertex.createProperty("lang", OType.STRING).setMandatory(true);
+            vertex.createIndex("page_lang", OClass.INDEX_TYPE.UNIQUE, "pageid", "lang");
+			//now we want to add clusters
+			graph.command(new OCommandSQL("ALTER CLASS Page ADDCLUSTER Pages_it")).execute();
+			graph.command(new OCommandSQL("ALTER CLASS Page ADDCLUSTER Pages_en")).execute();
+			//adding the clusters to the class Page
+			//graph.getRawGraph().getMetadata().getSchema().reload();
 		} catch( Exception e ) {
 			LOG.error("Something went wrong during class creation. Operation will be rollbacked.", e.getMessage());
 			graph.rollback();
@@ -73,7 +80,7 @@ public class PageDAO {
 				props.put("lang", lang);
 				props.put("pageRank", p.getPageRank());
 
-				OrientVertex pageNode = graph.addVertex("class:Page", props);
+				OrientVertex pageNode = graph.addVertex("class:Page,cluster:Pages_"+lang, props);
 				LOG.info("Page inserted " + pageNode.toString());
 			}
 			graph.commit();

@@ -75,7 +75,7 @@ public class UserDAO {
                     graph.commit();
                     LOG.info("User inserted " + userNode.toString());
                 } catch (ORecordDuplicatedException or) {
-                    LOG.error("Some of the pages are duplicates. Operation will be rollbacked.", or.getMessage());
+                    LOG.error("The user is already in the DB. Operation will be rollbacked.", or.getMessage());
                     graph.rollback();
                 }
             }
