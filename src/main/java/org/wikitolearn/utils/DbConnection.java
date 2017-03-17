@@ -25,8 +25,8 @@ public class DbConnection {
 	private OrientGraphFactory factory;
 	
 	@Autowired
-	public DbConnection(@Value("${DB_URL}") String dbUrl, @Value("${DB_USER}")
-	String dbUser, @Value("${DB_PWD}") String dbPwd){
+	public DbConnection(@Value("${db.url}") String dbUrl, @Value("${db.user}")
+	String dbUser, @Value("${db.password}") String dbPwd){
 
 		factory = new OrientGraphFactory(dbUrl, dbUser, dbPwd).setupPool(1, 20);
 	}
