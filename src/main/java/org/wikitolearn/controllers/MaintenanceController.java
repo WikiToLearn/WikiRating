@@ -12,7 +12,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.DefaultPropertiesPersister;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,7 +28,6 @@ public class MaintenanceController {
 	private static final Logger LOG = LoggerFactory.getLogger(MaintenanceController.class);
 
 	@RequestMapping(value = "${maintenance.uri}", method = RequestMethod.POST, produces = "application/json")
-	@Secured("ROLE_ADMIN")
 	public String maintenanceMode(@RequestParam(value = "active") String active) {
 		JSONObject response = new JSONObject();
 		int mode = Integer.parseInt(active);
