@@ -62,23 +62,26 @@ public class UserDAO {
     	OrientGraph graph = connection.getGraph();
     	LOG.info("Starting to insert users...");
 		try{
-			for(User p : users){
-                Map<String, Object> props = new HashMap<>();
-				props.put("userid", p.getUserid());
-				props.put( "username", p.getUsername());
-				props.put("votesReliability", p.getVotesReliability());
-				props.put("contributesReliability", p.getContributesReliability());
-				props.put("totalReliability", p.getTotalReliability());
+			for(User p : users) {
+                try {
+                    Map<String, Object> props = new HashMap<>();
+                    props.put("userid", p.getUserid());
+                    props.put("username", p.getUsername());
+                    props.put("votesReliability", p.getVotesReliability());
+                    props.put("contributesReliability", p.getContributesReliability());
+                    props.put("totalReliability", p.getTotalReliability());
 
-                Vertex userNode = graph.addVertex("class:User", props);
-				LOG.info("User inserted " + userNode.toString());
-			}
-			graph.commit();
-			LOG.info("Users insertion committed");
+                    Vertex userNode = graph.addVertex("class:User", props);
+                    graph.commit();
+                    LOG.info("User inserted " + userNode.toString());
+                } catch (ORecordDuplicatedException or) {
+                    LOG.error("Some of the pages are duplicates. Operation will be rollbacked.", or.getMessage());
+                    graph.rollback();
+                }
+            }
+			LOG.info("Users insertion ended");
+			graph.shutdown();
 			return true;
-        } catch (ORecordDuplicatedException or) {
-            LOG.error("Some of the pages are duplicates. Operation will be rollbacked.", or.getMessage());
-            graph.rollback();
         } catch( Exception e ) {
             LOG.error("Something went wrong during user insertion. Operation will be rollbacked.", e.getMessage());
             graph.rollback();
