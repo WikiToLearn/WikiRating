@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class PageDAO {
      * @param pages List<Page> The pages to be inserted
      * @return boolean True if insertion was committed, false otherwise
      */
-    public Boolean insertPages(List<Page> pages){
+    public Boolean insertPages(List<Page> pages, String lang){
     	OrientGraph graph = connection.getGraph();
     	LOG.info("Starting to insert pages...");
 		try{
@@ -69,9 +70,10 @@ public class PageDAO {
 				Map<String, Object> props = new HashMap<>();
 				props.put("pageid", p.getPageid());
 				props.put( "title", p.getTitle());
+				props.put("lang", lang);
 				props.put("pageRank", p.getPageRank());
 
-				Vertex pageNode = graph.addVertex("class:Page", props);
+				OrientVertex pageNode = graph.addVertex("class:Page", props);
 				LOG.info("Page inserted " + pageNode.toString());
 			}
 			graph.commit();

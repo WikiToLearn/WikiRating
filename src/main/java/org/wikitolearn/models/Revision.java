@@ -20,7 +20,7 @@ public class Revision {
     private double totalMeanVote;
     private double totalVotesReliability;
     private double totalNormalisesVotesReliability;
-    private boolean validated;
+    private boolean validated = false;
 
     public Revision() {   }
 

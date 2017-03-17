@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wikitolearn.controllers.mediawiki.PageMediaWikiController;
 import org.wikitolearn.controllers.mediawiki.RevisionMediaWikiController;
@@ -50,16 +51,22 @@ public class InitializerController {
     private RevisionDAO revisionDAO;
     @Autowired
     private DbConnection dbConnection;
+
+    private boolean initializedDB = false;
 	
 	@RequestMapping(value = "/init", method = RequestMethod.GET, produces = "application/json")
-	public boolean initialize(){
+	public boolean initialize(@RequestParam("lang") String lang){
+	    String apiUrl = "https://" + lang + ".wikitolearn.org/api.php";
 
-	    // Initializing the DB schema, only the first time
-        initializeDbClasses();
+        // Initializing the DB schema, only the first time
+        if (! initializedDB){
+            initializeDbClasses();
+            initializedDB = true;
+        }
         
         CompletableFuture<Boolean> parallelInsertions = 
-        		CompletableFuture.allOf(addAllPages(), addAllUsers())
-        		.thenCompose(s -> addAllRevisions());
+        		CompletableFuture.allOf(addAllPages(lang, apiUrl), addAllUsers(apiUrl))
+        		.thenCompose(s -> addAllRevisions(lang, apiUrl));
         
         try {
 			return parallelInsertions.get();
@@ -89,10 +96,10 @@ public class InitializerController {
      * @return CompletableFuture<Boolean>
      */
     @Async
-    private CompletableFuture<Boolean> addAllPages(){
-        List<Page> pages =  pageController.getAllPages("https://en.wikitolearn.org/api.php");
+    private CompletableFuture<Boolean> addAllPages( String lang, String apiUrl ){
+        List<Page> pages =  pageController.getAllPages(apiUrl);
         LOG.info("Fetched all the pages");
-        boolean insertionResultPages = pageDao.insertPages(pages);
+        boolean insertionResultPages = pageDao.insertPages(pages, lang);
         if(insertionResultPages){
             LOG.info("Inserted pages");
         }else{
@@ -107,8 +114,8 @@ public class InitializerController {
      * @return CompletableFuture<Boolean>
      */
     @Async
-    private CompletableFuture<Boolean> addAllUsers(){
-        List<User> users =  userController.getAllUsers("https://en.wikitolearn.org/api.php");
+    private CompletableFuture<Boolean> addAllUsers(String apiUrl){
+        List<User> users =  userController.getAllUsers(apiUrl);
         // Adding the Anonymous user
         users.add(new User("Anonimous", 0, 0, 0, 0));
         LOG.info("Fetched all the users");
@@ -127,14 +134,14 @@ public class InitializerController {
      * 
      * @return CompletableFuture<Boolean>
      */
-    private CompletableFuture<Boolean> addAllRevisions(){
+    private CompletableFuture<Boolean> addAllRevisions(String lang, String apiUrl){
         OrientGraph graph = dbConnection.getGraph();
         boolean revInsertionResult = false;
         try {
-            for (Vertex page : graph.getVerticesOfClass("Page")) {
+            for (Vertex page : graph.getVertices("Page", new String[] {"lang"},new Object[] {lang})) {
                 int pageid = page.getProperty("pageid");
                 LOG.info("Processing page: " + pageid);
-                List<Revision> revs = revsController.getAllRevisionForPage("https://en.wikitolearn.org/api.php", pageid);
+                List<Revision> revs = revsController.getAllRevisionForPage(apiUrl, pageid);
                 revInsertionResult = revisionDAO.insertRevisions(pageid, revs);
                 if(!revInsertionResult){
                     LOG.error("Something was wrong during the insertion of the revisions of page "+ pageid);
