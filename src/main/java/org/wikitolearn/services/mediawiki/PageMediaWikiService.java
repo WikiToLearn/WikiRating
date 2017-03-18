@@ -28,8 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Service
-public class PageMediaWikiController {
-	private static final Logger LOG = LoggerFactory.getLogger(PageMediaWikiController.class);
+public class PageMediaWikiService {
+	private static final Logger LOG = LoggerFactory.getLogger(PageMediaWikiService.class);
 	
 	@Autowired
 	private MediaWikiApiUtils mediaWikiApiUtils;
@@ -68,9 +68,9 @@ public class PageMediaWikiController {
 			pages = mapper.readValue(pagesJson.toString(), new TypeReference<List<Page>>(){});
 			return pages;
 		} catch (JSONException e){
-			LOG.error("An error occurred while a JSONObject or JSONArray", e.getMessage());
+			LOG.error("An error occurred while a JSONObject or JSONArray. {}", e.getMessage());
 		} catch(IOException e){
-			LOG.error("An error occurred while converting an InputStream to JSONObject", e.getMessage());
+			LOG.error("An error occurred while converting an InputStream to JSONObject. {}", e.getMessage());
 		}
 		return pages;
 	}

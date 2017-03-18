@@ -24,8 +24,8 @@ import java.util.Map;
  * Created by valsdav on 14/03/17.
  */
 @Service
-public class UserMediaWikiController {
-    private static final Logger LOG = LoggerFactory.getLogger(UserMediaWikiController.class);
+public class UserMediaWikiService {
+    private static final Logger LOG = LoggerFactory.getLogger(UserMediaWikiService.class);
 
     @Autowired
     private MediaWikiApiUtils mediaWikiApiUtils;
@@ -64,9 +64,9 @@ public class UserMediaWikiController {
             users = mapper.readValue(usersJson.toString(), new TypeReference<List<User>>(){});
             return users;
         } catch (JSONException e){
-            LOG.error("An error occurred while a JSONObject or JSONArray", e.getMessage());
+            LOG.error("An error occurred while a JSONObject or JSONArray. {}", e.getMessage());
         } catch(IOException e){
-            LOG.error("An error occurred while converting an InputStream to JSONObject", e.getMessage());
+            LOG.error("An error occurred while converting an InputStream to JSONObject. {}", e.getMessage());
         }
         return users;
     }

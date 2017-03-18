@@ -55,7 +55,7 @@ public class PageDAO {
 			//adding the clusters to the class Page
 			//graph.getRawGraph().getMetadata().getSchema().reload();
 		} catch( Exception e ) {
-			LOG.error("Something went wrong during class creation. Operation will be rollbacked.", e.getMessage());
+			LOG.error("Something went wrong during class creation. {}. Operation will be rollbacked.", e.getMessage());
 			graph.rollback();
 		} finally {
             graph.shutdown();
@@ -87,10 +87,10 @@ public class PageDAO {
 			LOG.info("Pages insertion committed");
 			return true;
 		} catch (ORecordDuplicatedException or) {
-            LOG.error("Some of the pages are duplicates. Operation will be rollbacked.", or.getMessage());
+            LOG.error("Some of the pages are duplicates. {}. Operation will be rollbacked.", or.getMessage());
             graph.rollback();
 		} catch( Exception e ) {
-			LOG.error("Something went wrong during page insertion. Operation will be rollbacked.", e.getMessage());
+			LOG.error("Something went wrong during page insertion. {}. Operation will be rollbacked.", e.getMessage());
 			graph.rollback();
 		}finally {
 		    graph.shutdown();
@@ -110,7 +110,7 @@ public class PageDAO {
 		    result = (Iterable<OrientVertex>)  graph.command(new OCommandSQL(
                     "SELECT FROM cluster:Pages_"+ lang)).execute();
         } catch (Exception e){
-		    LOG.error("Something went wrong during quering for pages.", e.getMessage());
+		    LOG.error("Something went wrong during quering for pages. {}", e.getMessage());
         }
         return result;
 	}

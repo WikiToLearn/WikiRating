@@ -8,8 +8,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import com.orientechnologies.orient.core.exception.ODatabaseException;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import org.slf4j.Logger;
@@ -26,11 +24,10 @@ import org.wikitolearn.dao.UserDAO;
 import org.wikitolearn.models.Page;
 import org.wikitolearn.models.Revision;
 import org.wikitolearn.models.User;
-import org.wikitolearn.services.mediawiki.PageMediaWikiController;
-import org.wikitolearn.services.mediawiki.RevisionMediaWikiController;
-import org.wikitolearn.services.mediawiki.UserMediaWikiController;
+import org.wikitolearn.services.mediawiki.PageMediaWikiService;
+import org.wikitolearn.services.mediawiki.RevisionMediaWikiService;
+import org.wikitolearn.services.mediawiki.UserMediaWikiService;
 import org.wikitolearn.utils.DbConnection;
-import sun.reflect.generics.reflectiveObjects.LazyReflectiveObjectGenerator;
 
 /**
  * @author alessandro
@@ -42,11 +39,11 @@ public class InitializerController {
 	private static final Logger LOG = LoggerFactory.getLogger(InitializerController.class);
 
 	@Autowired
-	private PageMediaWikiController pageController;
+	private PageMediaWikiService pageService;
 	@Autowired
-	private UserMediaWikiController userController;
+	private UserMediaWikiService userService;
 	@Autowired
-    private RevisionMediaWikiController revsController;
+    private RevisionMediaWikiService revisionService;
 	@Autowired
 	private PageDAO pageDao;
     @Autowired
@@ -75,7 +72,7 @@ public class InitializerController {
         try {
 			return parallelInsertions.get();
 		} catch (InterruptedException | ExecutionException e) {
-			LOG.error("Something went wrong during database initialization.", e.getMessage());
+			LOG.error("Something went wrong during database initialization. {}", e.getMessage());
 			return false;
 		}
 	}
@@ -101,7 +98,7 @@ public class InitializerController {
      */
     @Async
     private CompletableFuture<Boolean> addAllPages( String lang, String apiUrl ){
-        List<Page> pages =  pageController.getAllPages(apiUrl);
+        List<Page> pages =  pageService.getAllPages(apiUrl);
         LOG.info("Fetched all the pages");
         boolean insertionResultPages = pageDao.insertPages(pages, lang);
         if(insertionResultPages){
@@ -119,9 +116,9 @@ public class InitializerController {
      */
     @Async
     private CompletableFuture<Boolean> addAllUsers(String apiUrl){
-        List<User> users =  userController.getAllUsers(apiUrl);
+        List<User> users =  userService.getAllUsers(apiUrl);
         // Adding the Anonymous user
-        users.add(new User("Anonimous", 0, 0, 0, 0));
+        users.add(new User("Anonymous", 0, 0, 0, 0));
         LOG.info("Fetched all the users");
         boolean insertionResultUsers = userDao.insertUsers(users);
         if(insertionResultUsers){
@@ -144,18 +141,18 @@ public class InitializerController {
         try{
             for (OrientVertex page : pageDao.getPagesIteratorFromCluster(graph, lang)) {
                 int pageid = page.getProperty("pageid");
-                LOG.info("Processing page: " + pageid);
-                List<Revision> revs = revsController.getAllRevisionForPage(apiUrl, pageid);
+                LOG.info("Processing page: {}", pageid);
+                List<Revision> revs = revisionService.getAllRevisionForPage(apiUrl, pageid);
                 revInsertionResult = revisionDAO.insertRevisions(pageid, revs, lang);
                 if(!revInsertionResult){
-                    LOG.error("Something was wrong during the insertion of the revisions of page "+ pageid);
+                    LOG.error("Something was wrong during the insertion of the revisions of page {}", pageid);
                 }
             }
         } catch ( ODatabaseException e){
-            LOG.error("DB Error during insertion of Revisions.", e.getMessage());
+            LOG.error("DB Error during insertion of Revisions. {}", e.getMessage());
             graph.rollback();
         } catch (Exception e){
-            LOG.error("Something went wrong during Revisions insertion. ", e.getMessage());
+            LOG.error("Something went wrong during Revisions insertion. {}", e.getMessage());
             graph.rollback();
         } finally {
             graph.shutdown();

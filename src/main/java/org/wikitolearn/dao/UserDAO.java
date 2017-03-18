@@ -44,7 +44,7 @@ public class UserDAO {
             vertex.createProperty("userid", OType.INTEGER).setMandatory(true);
             vertex.createIndex("userid", OClass.INDEX_TYPE.UNIQUE, "userid");
 	    } catch( Exception e ) {
-            LOG.error("Something went wrong during class creation. Operation will be rollbacked.", e.getMessage());
+            LOG.error("Something went wrong during class creation. {}. Operation will be rollbacked.", e.getMessage());
             graph.rollback();
         } finally {
 	        graph.shutdown();
@@ -75,7 +75,7 @@ public class UserDAO {
                     graph.commit();
                     LOG.info("User inserted " + userNode.toString());
                 } catch (ORecordDuplicatedException or) {
-                    LOG.error("The user is already in the DB. Operation will be rollbacked.", or.getMessage());
+                    LOG.error("The user is already in the DB. {}. Operation will be rollbacked.", or.getMessage());
                     graph.rollback();
                 }
             }
@@ -83,7 +83,7 @@ public class UserDAO {
 			graph.shutdown();
 			return true;
         } catch( Exception e ) {
-            LOG.error("Something went wrong during user insertion. Operation will be rollbacked.", e.getMessage());
+            LOG.error("Something went wrong during user insertion. {}. Operation will be rollbacked.", e.getMessage());
             graph.rollback();
             graph.shutdown();
         }
