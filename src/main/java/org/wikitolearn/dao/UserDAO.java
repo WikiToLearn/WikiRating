@@ -38,7 +38,7 @@ public class UserDAO {
      */
 	public void createDBClass() {
         LOG.info("Creating DB classes for RevisionDAO...");
-        OrientGraphNoTx graph = connection.getDbGraphNT();
+        OrientGraphNoTx graph = connection.getGraphNT();
 	    try{
             OrientVertexType vertex = graph.createVertexType("User");
             vertex.createProperty("userid", OType.INTEGER).setMandatory(true);

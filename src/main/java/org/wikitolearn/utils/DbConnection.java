@@ -45,7 +45,7 @@ public class DbConnection {
 	 * @return	Transaction disabled OrientGraph object
 	 */
 
-	public OrientGraphNoTx getDbGraphNT() {
+	public OrientGraphNoTx getGraphNT() {
 		LOG.info("Getting a NoTX instance of OrientDB....");
 		factory.declareIntent(new OIntentMassiveInsert());
         return factory.getNoTx();

@@ -10,7 +10,6 @@ import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +42,7 @@ public class PageDAO {
 	 */
 	public void createDBClass() {
 		LOG.info("Creating DB classes for PageDAO...");
-		OrientGraphNoTx graph = connection.getDbGraphNT();
+		OrientGraphNoTx graph = connection.getGraphNT();
 		try{
             OrientVertexType vertex = graph.createVertexType("Page",1);
             vertex.createProperty("pageid", OType.INTEGER).setMandatory(true);
@@ -70,7 +69,7 @@ public class PageDAO {
      * @return boolean True if insertion was committed, false otherwise
      */
     public Boolean insertPages(List<Page> pages, String lang){
-    	OrientGraph graph = connection.getGraph();
+    	OrientGraphNoTx graph = connection.getGraphNT();
     	LOG.info("Starting to insert pages...");
 		try{
 			for(Page p : pages){
@@ -83,15 +82,12 @@ public class PageDAO {
 				OrientVertex pageNode = graph.addVertex("class:Page,cluster:Pages_"+lang, props);
 				LOG.info("Page inserted " + pageNode.toString());
 			}
-			graph.commit();
 			LOG.info("Pages insertion committed");
 			return true;
 		} catch (ORecordDuplicatedException or) {
             LOG.error("Some of the pages are duplicates. Operation will be rollbacked.", or.getMessage());
-            graph.rollback();
 		} catch( Exception e ) {
 			LOG.error("Something went wrong during page insertion. Operation will be rollbacked.", e.getMessage());
-			graph.rollback();
 		}finally {
 		    graph.shutdown();
         }

@@ -38,7 +38,7 @@ public class RevisionDAO {
      */
     public void createDBClass() {
         LOG.info("Creating DB classes for RevisionDAO...");
-        OrientGraphNoTx graph = connection.getDbGraphNT();
+        OrientGraphNoTx graph = connection.getGraphNT();
         try{
             // Vertex type for the revision
             OrientVertexType vertex = graph.createVertexType("Revision");
@@ -75,7 +75,7 @@ public class RevisionDAO {
      * @return
      */
     public Boolean insertRevisions(int pageid, List<Revision> revs, String lang){
-        OrientGraph graph = connection.getGraph();
+        OrientGraphNoTx graph = connection.getGraphNT();
         LOG.info("Starting to insert revisions...");
         HashMap<String, Vertex> revsNodes = new HashMap<String, Vertex>();
         Vertex firstRev = null;
@@ -130,15 +130,12 @@ public class RevisionDAO {
             graph.addEdge("class:LastRevision", page, lastRev, "LastRevision");
             graph.addEdge("class:FirstRevision", page, firstRev, "FirstRevision");
 
-            graph.commit();
             LOG.info(String.format("Revisions of page %s insertion committed", pageid));
             return true;
         } catch (ORecordDuplicatedException or) {
             LOG.error("Some of the pages are duplicates. Operation will be rollbacked.", or.getMessage());
-            graph.rollback();
         } catch( Exception e ) {
             LOG.error("Something went wrong during user insertion. Operation will be rollbacked.", e.getMessage());
-            graph.rollback();
         } finally {
             graph.shutdown();
         }
