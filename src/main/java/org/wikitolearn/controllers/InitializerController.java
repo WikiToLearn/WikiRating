@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import com.orientechnologies.orient.core.exception.ODatabaseException;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import org.wikitolearn.services.mediawiki.PageMediaWikiController;
 import org.wikitolearn.services.mediawiki.RevisionMediaWikiController;
 import org.wikitolearn.services.mediawiki.UserMediaWikiController;
 import org.wikitolearn.utils.DbConnection;
+import sun.reflect.generics.reflectiveObjects.LazyReflectiveObjectGenerator;
 
 /**
  * @author alessandro
@@ -136,15 +139,26 @@ public class InitializerController {
      * @return CompletableFuture<Boolean>
      */
     private CompletableFuture<Boolean> addAllRevisions(String lang, String apiUrl){
+        OrientGraph graph = dbConnection.getGraph();
         boolean revInsertionResult = false;
-        for (Vertex page : pageDao.getPagesIteratorFromCluster(lang)) {
-            int pageid = page.getProperty("pageid");
-            LOG.info("Processing page: " + pageid);
-            List<Revision> revs = revsController.getAllRevisionForPage(apiUrl, pageid);
-            revInsertionResult = revisionDAO.insertRevisions(pageid, revs);
-            if(!revInsertionResult){
-                LOG.error("Something was wrong during the insertion of the revisions of page "+ pageid);
+        try{
+            for (OrientVertex page : pageDao.getPagesIteratorFromCluster(graph, lang)) {
+                int pageid = page.getProperty("pageid");
+                LOG.info("Processing page: " + pageid);
+                List<Revision> revs = revsController.getAllRevisionForPage(apiUrl, pageid);
+                revInsertionResult = revisionDAO.insertRevisions(pageid, revs, lang);
+                if(!revInsertionResult){
+                    LOG.error("Something was wrong during the insertion of the revisions of page "+ pageid);
+                }
             }
+        } catch ( ODatabaseException e){
+            LOG.error("DB Error during insertion of Revisions.", e.getMessage());
+            graph.rollback();
+        } catch (Exception e){
+            LOG.error("Something went wrong during Revisions insertion. ", e.getMessage());
+            graph.rollback();
+        } finally {
+            graph.shutdown();
         }
         return CompletableFuture.completedFuture(revInsertionResult);
     }

@@ -2,10 +2,12 @@ package org.wikitolearn.dao;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +43,11 @@ public class RevisionDAO {
             // Vertex type for the revision
             OrientVertexType vertex = graph.createVertexType("Revision");
             vertex.createProperty("revid", OType.INTEGER).setMandatory(true);
-            vertex.createIndex("revid", OClass.INDEX_TYPE.UNIQUE, "revid");
+            vertex.createProperty("lang", OType.STRING).setMandatory(true);
+            vertex.createIndex("revid", OClass.INDEX_TYPE.UNIQUE, "revid", "lang");
+            //creating clusters for Reviosion class
+            graph.command(new OCommandSQL("ALTER CLASS Revision ADDCLUSTER Revs_it")).execute();
+            graph.command(new OCommandSQL("ALTER CLASS Revision ADDCLUSTER Revs_en")).execute();
             // Edge type for the created edge from User to Revision
             graph.createEdgeType("Author");
             // Edge type to connect revision to parent revision
@@ -68,7 +74,7 @@ public class RevisionDAO {
      * @param revs
      * @return
      */
-    public Boolean insertRevisions(int pageid, List<Revision> revs){
+    public Boolean insertRevisions(int pageid, List<Revision> revs, String lang){
         OrientGraph graph = connection.getGraph();
         LOG.info("Starting to insert revisions...");
         HashMap<String, Vertex> revsNodes = new HashMap<String, Vertex>();
@@ -78,6 +84,7 @@ public class RevisionDAO {
             for(Revision rev : revs){
                 Map<String, Object> props = new HashMap<>();
                 props.put("revid", rev.getRevid());
+                props.put("lang", lang);
                 props.put("length", rev.getLength());
                 props.put("changeCoefficient", rev.getChangeCoefficient());
                 props.put( "currentMeanVote", rev.getCurrentMeanVote());
@@ -88,7 +95,7 @@ public class RevisionDAO {
                 props.put( "totalNormalizedVotesReliability", rev.getTotalNormalisesVotesReliability());
                 props.put("validated", rev.isValidated());
 
-                Vertex revNode = graph.addVertex("class:Revision", props);
+                Vertex revNode = graph.addVertex("class:Revision,cluster:Revs_"+lang, props);
                 LOG.info("Revision inserted " + revNode.toString());
                 revsNodes.put(Integer.toString(rev.getRevid()), revNode);
 
@@ -136,6 +143,23 @@ public class RevisionDAO {
             graph.shutdown();
         }
         return false;
+    }
+
+    /**
+     * This methods returns an Iterable over all the Revisions belonging to a certain cluster,
+     * so coming from the same lang domain.
+     * @param lang lang of the cluster
+     * @return Iterable with all the revisions of the cluster
+     */
+    public Iterable<OrientVertex> getRevisionsIteratorFromCluster(OrientGraph graph, String lang){
+        Iterable<OrientVertex> result = null;
+        try {
+            result = (Iterable<OrientVertex>)  graph.command(new OCommandSQL(
+                    "SELECT FROM cluster:Revs_"+ lang)).execute();
+        } catch (Exception e){
+            LOG.error("Something went wrong during quering for revisions.", e.getMessage());
+        }
+        return result;
     }
 
 }

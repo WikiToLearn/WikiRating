@@ -104,16 +104,13 @@ public class PageDAO {
      * @param lang lang of the cluster
      * @return Iterable with all the pages of the cluster
      */
-    public Iterable<OrientVertex> getPagesIteratorFromCluster(String lang){
-		OrientGraph graph = connection.getGraph();
+    public Iterable<OrientVertex> getPagesIteratorFromCluster(OrientGraph graph, String lang){
 		Iterable<OrientVertex> result = null;
 		try {
 		    result = (Iterable<OrientVertex>)  graph.command(new OCommandSQL(
                     "SELECT FROM cluster:Pages_"+ lang)).execute();
         } catch (Exception e){
 		    LOG.error("Something went wrong during quering for pages.", e.getMessage());
-        } finally{
-            graph.shutdown();
         }
         return result;
 	}
