@@ -54,8 +54,7 @@ public class PageDAO {
 			//adding the clusters to the class Page
 			//graph.getRawGraph().getMetadata().getSchema().reload();
 		} catch( Exception e ) {
-			LOG.error("Something went wrong during class creation. {}. Operation will be rollbacked.", e.getMessage());
-			graph.rollback();
+			LOG.error("Something went wrong during class creation. {}.", e.getMessage());
 		} finally {
             graph.shutdown();
         }

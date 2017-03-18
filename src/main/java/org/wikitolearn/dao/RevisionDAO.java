@@ -57,8 +57,7 @@ public class RevisionDAO {
             // Edge type to connect the first revision of a page
             graph.createEdgeType("FirstRevision");
         } catch( Exception e ) {
-            LOG.error("Something went wrong during class creation. {}. Operation will be rollbacked.", e.getMessage());
-            graph.rollback();
+            LOG.error("Something went wrong during class creation. {}.", e.getMessage());
         } finally {
             graph.shutdown();
         }
@@ -133,9 +132,9 @@ public class RevisionDAO {
             LOG.info(String.format("Revisions of page %s insertion committed", pageid));
             return true;
         } catch (ORecordDuplicatedException or) {
-            LOG.error("Some of the pages are duplicates. Operation will be rollbacked.", or.getMessage());
+            LOG.error("Some of the pages are duplicates.", or.getMessage());
         } catch( Exception e ) {
-            LOG.error("Something went wrong during user insertion. Operation will be rollbacked.", e.getMessage());
+            LOG.error("Something went wrong during user insertion.", e.getMessage());
         } finally {
             graph.shutdown();
         }

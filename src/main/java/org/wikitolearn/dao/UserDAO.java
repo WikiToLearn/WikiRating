@@ -44,8 +44,7 @@ public class UserDAO {
             vertex.createProperty("userid", OType.INTEGER).setMandatory(true);
             vertex.createIndex("userid", OClass.INDEX_TYPE.UNIQUE, "userid");
 	    } catch( Exception e ) {
-            LOG.error("Something went wrong during class creation. {}. Operation will be rollbacked.", e.getMessage());
-            graph.rollback();
+            LOG.error("Something went wrong during class creation. {}", e.getMessage());
         } finally {
 	        graph.shutdown();
         }
