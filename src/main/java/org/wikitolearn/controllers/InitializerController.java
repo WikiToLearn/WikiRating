@@ -136,24 +136,15 @@ public class InitializerController {
      * @return CompletableFuture<Boolean>
      */
     private CompletableFuture<Boolean> addAllRevisions(String lang, String apiUrl){
-        OrientGraph graph = dbConnection.getGraph();
         boolean revInsertionResult = false;
-        try {
-            for (Vertex page : (Iterable<Vertex>) graph.command(new OCommandSQL(
-                    "SELECT FROM cluster:Pages_"+ lang)).execute()) {
-                int pageid = page.getProperty("pageid");
-                LOG.info("Processing page: " + pageid);
-                List<Revision> revs = revsController.getAllRevisionForPage(apiUrl, pageid);
-                revInsertionResult = revisionDAO.insertRevisions(pageid, revs);
-                if(!revInsertionResult){
-                    LOG.error("Something was wrong during the insertion of the revisions of page "+ pageid);
-                }
+        for (Vertex page : pageDao.getPagesIteratorFromCluster(lang)) {
+            int pageid = page.getProperty("pageid");
+            LOG.info("Processing page: " + pageid);
+            List<Revision> revs = revsController.getAllRevisionForPage(apiUrl, pageid);
+            revInsertionResult = revisionDAO.insertRevisions(pageid, revs);
+            if(!revInsertionResult){
+                LOG.error("Something was wrong during the insertion of the revisions of page "+ pageid);
             }
-        } catch (Exception e){
-            LOG.error("Something bad has appended getting revisions", e.getMessage());
-            graph.rollback();
-        } finally {
-            graph.shutdown();
         }
         return CompletableFuture.completedFuture(revInsertionResult);
     }

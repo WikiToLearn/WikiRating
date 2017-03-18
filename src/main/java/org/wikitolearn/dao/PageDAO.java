@@ -10,6 +10,7 @@ import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -96,5 +97,24 @@ public class PageDAO {
         }
         return false;
     }
-	
+
+    /**
+     * This methods returns an Iterable over all the pages belonging to a certain cluster,
+     * so coming from the same lang domain.
+     * @param lang lang of the cluster
+     * @return Iterable with all the pages of the cluster
+     */
+    public Iterable<OrientVertex> getPagesIteratorFromCluster(String lang){
+		OrientGraph graph = connection.getGraph();
+		Iterable<OrientVertex> result = null;
+		try {
+		    result = (Iterable<OrientVertex>)  graph.command(new OCommandSQL(
+                    "SELECT FROM cluster:Pages_"+ lang)).execute();
+        } catch (Exception e){
+		    LOG.error("Something went wrong during quering for pages.", e.getMessage());
+        } finally{
+            graph.shutdown();
+        }
+        return result;
+	}
 }
