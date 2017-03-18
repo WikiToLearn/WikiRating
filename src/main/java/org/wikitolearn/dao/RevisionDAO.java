@@ -45,7 +45,7 @@ public class RevisionDAO {
             vertex.createProperty("revid", OType.INTEGER).setMandatory(true);
             vertex.createProperty("lang", OType.STRING).setMandatory(true);
             vertex.createIndex("revid", OClass.INDEX_TYPE.UNIQUE, "revid", "lang");
-            //creating clusters for Reviosion class
+            //creating clusters for Revision class
             graph.command(new OCommandSQL("ALTER CLASS Revision ADDCLUSTER Revs_it")).execute();
             graph.command(new OCommandSQL("ALTER CLASS Revision ADDCLUSTER Revs_en")).execute();
             // Edge type for the created edge from User to Revision
@@ -57,7 +57,7 @@ public class RevisionDAO {
             // Edge type to connect the first revision of a page
             graph.createEdgeType("FirstRevision");
         } catch( Exception e ) {
-            LOG.error("Something went wrong during class creation. Operation will be rollbacked.", e.getMessage());
+            LOG.error("Something went wrong during class creation. {}. Operation will be rollbacked.", e.getMessage());
             graph.rollback();
         } finally {
             graph.shutdown();
@@ -96,7 +96,7 @@ public class RevisionDAO {
                 props.put("validated", rev.isValidated());
 
                 Vertex revNode = graph.addVertex("class:Revision,cluster:Revs_"+lang, props);
-                LOG.info("Revision inserted " + revNode.toString());
+                LOG.info("Revision inserted {}.", revNode.toString());
                 revsNodes.put(Integer.toString(rev.getRevid()), revNode);
 
                 if (rev.getParentid() == 0){
@@ -111,7 +111,7 @@ public class RevisionDAO {
                 try{
                     userCreator = graph.getVertices("User.userid", rev.getUserid()).iterator().next();
                 } catch (NoSuchElementException e){
-                    //if the user is not found we link it to the Anonimous user.
+                    //if the user is not found we link it to the Anonymous user.
                     userCreator = graph.getVertices("User.userid", "0" ).iterator().next();
                 }
                 graph.addEdge("class:Author", userCreator, revNode, "Author");
@@ -154,7 +154,7 @@ public class RevisionDAO {
             result = (Iterable<OrientVertex>)  graph.command(new OCommandSQL(
                     "SELECT FROM cluster:Revs_"+ lang)).execute();
         } catch (Exception e){
-            LOG.error("Something went wrong during quering for revisions.", e.getMessage());
+            LOG.error("Something went wrong during quering for revisions. {}", e.getMessage());
         }
         return result;
     }

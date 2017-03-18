@@ -64,7 +64,7 @@ public class MaintenanceController {
 					LOG.debug("Created maintenance lock file.");
 					LOG.info("Application is in maintenance mode now.");
 				} catch (Exception e) {
-					LOG.error("Something went wrong.", e.getMessage());
+					LOG.error("Something went wrong. {}", e.getMessage());
 				}
 
 			} else {
@@ -73,7 +73,7 @@ public class MaintenanceController {
 				response.put("message", "Parameter value not supported");
 			}
 		} catch (JSONException e) {
-			LOG.error("Something went wrong using JSON API.", e.getMessage());
+			LOG.error("Something went wrong using JSON API. {}", e.getMessage());
 		}
 		return response.toString();
 	}

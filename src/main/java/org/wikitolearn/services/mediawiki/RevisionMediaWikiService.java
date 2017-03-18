@@ -24,9 +24,9 @@ import java.util.Map;
  * Created by valsdav on 14/03/17.
  */
 @Service
-public class RevisionMediaWikiController {
+public class RevisionMediaWikiService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RevisionMediaWikiController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RevisionMediaWikiService.class);
 
     @Autowired
     private MediaWikiApiUtils mediaWikiApiUtils;
@@ -67,9 +67,9 @@ public class RevisionMediaWikiController {
             revs = mapper.readValue(revsJson.toString(), new TypeReference<List<Revision>>(){});
             return revs;
         } catch (JSONException e){
-            LOG.error("An error occurred while a JSONObject or JSONArray", e.getMessage());
+            LOG.error("An error occurred while a JSONObject or JSONArray. {}", e.getMessage());
         } catch(IOException e){
-            LOG.error("An error occurred while converting an InputStream to JSONObject", e.getMessage());
+            LOG.error("An error occurred while converting an InputStream to JSONObject. {}", e.getMessage());
         }
         return revs;
     }
