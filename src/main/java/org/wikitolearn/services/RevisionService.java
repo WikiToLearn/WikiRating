@@ -51,12 +51,12 @@ public class RevisionService {
         boolean revInsertionResult = false;
         try{
             for (OrientVertex page : pageDao.getPagesIteratorFromCluster(graph, lang)) {
-                int pageid = page.getProperty("pageid");
-                LOG.info("Processing page: {}", pageid);
-                List<Revision> revs = revisionMediaWikiService.getAllRevisionForPage(apiUrl, pageid);
-                revInsertionResult = revisionDao.insertRevisions(pageid, revs, lang);
+                int pageId = page.getProperty("pageid");
+                LOG.info("Processing page: {}", pageId);
+                List<Revision> revs = revisionMediaWikiService.getAllRevisionByPageId(apiUrl, pageId);
+                revInsertionResult = revisionDao.insertRevisions(pageId, revs, lang);
                 if(!revInsertionResult){
-                    LOG.error("Something was wrong during the insertion of the revisions of page {}", pageid);
+                    LOG.error("Something was wrong during the insertion of the revisions of page {}", pageId);
                 }
             }
         } catch ( ODatabaseException e){

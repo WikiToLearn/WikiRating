@@ -35,7 +35,7 @@ public class UserService {
      */
     @Async
     public CompletableFuture<Boolean> addAllUsers(String apiUrl){
-        List<User> users =  userMediaWikiService.getAllUsers(apiUrl);
+        List<User> users =  userMediaWikiService.getAll(apiUrl);
         // Adding the Anonymous user
         users.add(new User("Anonymous", 0, 0, 0, 0));
         LOG.info("Fetched all the users");

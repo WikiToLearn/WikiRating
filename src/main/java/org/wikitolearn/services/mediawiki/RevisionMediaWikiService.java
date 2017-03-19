@@ -1,19 +1,13 @@
 package org.wikitolearn.services.mediawiki;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import org.wikitolearn.models.Revision;
-import org.wikitolearn.utils.MediaWikiApiUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -26,24 +20,18 @@ import java.util.Map;
  *
  */
 @Service
-public class RevisionMediaWikiService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(RevisionMediaWikiService.class);
-
-    @Autowired
-    private MediaWikiApiUtils mediaWikiApiUtils;
-    @Autowired
-    private ObjectMapper mapper;
+public class RevisionMediaWikiService extends MediaWikiService<Revision>{
+	
+	private Map<String, String> parameters;
 
     /**
-     * Get all the revisions for a specific page querying MediaWiki API
+     * Get all the revisions of a page.
      * @param apiUrl String The MediaWiki API url
-     * @param pageid int Pageid of the page of which getting the revisions.
      * @return revisions List<Revision> A list that contains all the fetched revisions
      */
-    public List<Revision> getAllRevisionForPage(String apiUrl, int pageid){
+	@Override
+    public List<Revision> getAll(String apiUrl){
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
-        Map<String, String> parameters = mediaWikiApiUtils.getRevisionParam(pageid);
         InputStream response;
         boolean moreRevs = true;
         JSONArray revsJson = new JSONArray();
@@ -56,7 +44,7 @@ public class RevisionMediaWikiService {
                 JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
 
                 toBeConcat.add(responseJson.getJSONObject("query").getJSONObject("pages").
-                        getJSONObject(Integer.toString(pageid)).getJSONArray("revisions"));
+                        getJSONObject(parameters.get("pageids")).getJSONArray("revisions"));
 
                 if(responseJson.has("continue")){
                     String continueFrom = responseJson.getJSONObject("continue").getString("rvcontinue");
@@ -75,21 +63,16 @@ public class RevisionMediaWikiService {
         }
         return revs;
     }
-
-	/**
-	 * This method is an utility. It concatenates the given JSONArrays into one. 
-	 * @param arrays List<JSONArray> The arrays to be concatenated
-	 * @return result JSONArray The resulted JSONArray 
-	 * @throws JSONException
-	 */
-    private JSONArray concatArrays(List<JSONArray> arrays) throws JSONException{
-        JSONArray result = new JSONArray();
-        for (JSONArray arr : arrays) {
-            for (int i = 0; i < arr.length(); i++) {
-                result.put(arr.get(i));
-            }
-        }
-        return result;
-    }
+	
+    /**
+     * Get all the revisions for a specific page querying MediaWiki API
+     * @param apiUrl String The MediaWiki API url
+     * @param pageid int The id the page of which getting the revisions
+     * @return revisions List<Revision> A list that contains all the fetched revisions
+     */
+	public List<Revision> getAllRevisionByPageId(String apiUrl, int pageId) {
+		parameters = mediaWikiApiUtils.getRevisionParam(pageId);
+		return getAll(apiUrl);
+	}
 
 }

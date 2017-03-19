@@ -64,11 +64,11 @@ public class RevisionDAO extends GenericDAO{
      * the link FirstRevision and LastRevision with the Page vertex.  Moreover it connects the Users to
      * the revisions they have created.
      * This method must be used only for the first INIT import, NOT for incremental insertion.
-     * @param pageid
+     * @param pageId
      * @param revs
      * @return
      */
-    public Boolean insertRevisions(int pageid, List<Revision> revs, String lang){
+    public Boolean insertRevisions(int pageId, List<Revision> revs, String lang){
         OrientGraphNoTx graph = connection.getGraphNT();
         LOG.info("Starting to insert revisions...");
         HashMap<String, Vertex> revsNodes = new HashMap<String, Vertex>();
@@ -120,11 +120,11 @@ public class RevisionDAO extends GenericDAO{
             }
 
             // Now let's create the LastRevision and FirstRevision edges
-            Vertex page = graph.getVertices("Page.pageid", pageid).iterator().next();
+            Vertex page = graph.getVertices("Page.pageid", pageId).iterator().next();
             graph.addEdge("class:LastRevision", page, lastRev, "LastRevision");
             graph.addEdge("class:FirstRevision", page, firstRev, "FirstRevision");
 
-            //LOG.info("Revisions of page {} insertion committed", pageid);
+            LOG.info("Revisions of page {} insertion committed", pageId);
             return true;
         } catch (ORecordDuplicatedException or) {
             LOG.error("Some of the pages are duplicates. {}", or.getMessage());

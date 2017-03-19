@@ -36,7 +36,7 @@ public class PageService {
      */
     @Async
     public CompletableFuture<Boolean> addAllPages( String lang, String apiUrl ){
-        List<Page> pages =  pageMediaWikiService.getAllPages(apiUrl);
+        List<Page> pages =  pageMediaWikiService.getAll(apiUrl);
         LOG.info("Fetched all the pages");
         boolean insertionResultPages = pageDao.insertPages(pages, lang);
         if(insertionResultPages){
