@@ -100,7 +100,7 @@ public class MediaWikiApiUtils {
 		try {
 			reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 		} catch (UnsupportedEncodingException e1) {
-			LOG.error("Unsupported enconding.", e1.getMessage());
+			LOG.error("Unsupported enconding. {}", e1.getMessage());
 		}
 
 		StringBuilder builder = new StringBuilder();
@@ -117,14 +117,14 @@ public class MediaWikiApiUtils {
 			inputStream.close();
 		} catch (IOException e) {
 
-			LOG.error("An error occurs while reading the inputStraem", e.getMessage());
+			LOG.error("An error occurs while reading the inputStream. {}", e.getMessage());
 		}
 		
 		JSONObject jsonResponse = null;
 		try {
 			jsonResponse = new JSONObject(result);
 		} catch (JSONException e) {
-			LOG.error("An error occurs while converting string to JSONObject", e.getMessage());
+			LOG.error("An error occurs while converting string to JSONObject. {}", e.getMessage());
 		}
 		
 		return jsonResponse;
@@ -144,7 +144,7 @@ public class MediaWikiApiUtils {
 			response = connection.sendRequest(requestMethod, queryParametersMap);
 		} catch (IOException e) {
 
-			LOG.error("Failed to send a request to MediaWiki API", e.getMessage());
+			LOG.error("Failed to send a request to MediaWiki API. {}", e.getMessage());
 		}
 
 		return response;
