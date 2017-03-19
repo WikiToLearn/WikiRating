@@ -20,8 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class used to query MediaWiki about Users
- * Created by valsdav on 14/03/17.
+ * 
+ * @author aletundo, valsdav
+ *
  */
 @Service
 public class UserMediaWikiService {
@@ -34,8 +35,8 @@ public class UserMediaWikiService {
 
     /**
      * Get all the users from MediaWiki instance through its API.
-     * @param apiUrl the MediaWiki API url
-     * @return users A list that contains all the fetched users
+     * @param apiUrl String The MediaWiki API url
+     * @return users List<User> A list that contains all the fetched users
      */
     public List<User> getAllUsers(String apiUrl){
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
@@ -71,12 +72,12 @@ public class UserMediaWikiService {
         return users;
     }
 
-    /**
-     * This method is an utility. It concatenates the given JSONArrays into one.
-     * @param arrays The arrays to be concatenated
-     * @return result The resulted JSONArray
-     * @throws JSONException
-     */
+	/**
+	 * This method is an utility. It concatenates the given JSONArrays into one. 
+	 * @param arrays List<JSONArray> The arrays to be concatenated
+	 * @return result JSONArray The resulted JSONArray 
+	 * @throws JSONException
+	 */
     private JSONArray concatArrays(List<JSONArray> arrays) throws JSONException{
         JSONArray result = new JSONArray();
         for (JSONArray arr : arrays) {

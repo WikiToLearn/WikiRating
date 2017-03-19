@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 
 /**
- * @author alessandro
+ * @author aletundo, valsdav
  *
  */
 @Component
@@ -132,10 +132,10 @@ public class MediaWikiApiUtils {
 	
 	/**
 	 * This method sends a request to MediaWiki API and then gets back an InputStream
-	 * @param connection onnection the ApiConnection object
-	 * @param requestMethod requestMethod the request method (ex: GET, POST, ...)
-	 * @param queryParametersMap queryParametersMap	the HashMap having all the query parameters
-	 * @return	InputStream object having the requested data
+	 * @param connection ApiConnection The ApiConnection object
+	 * @param requestMethod RequestMethod The request method (ex: GET, POST, ...)
+	 * @param queryParametersMap Map<String, String> The HashMap having all the query parameters
+	 * @return response InputStream The result data
 	 */
 
 	public InputStream sendRequest(ApiConnection connection, String requestMethod, Map<String, String> queryParametersMap) {

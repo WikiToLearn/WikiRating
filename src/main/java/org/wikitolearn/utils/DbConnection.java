@@ -15,7 +15,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import org.wikitolearn.dao.UserDAO;
 /**
- * @author alessandro
+ * @author aletundo, valsdav
  *
  */
 @Component

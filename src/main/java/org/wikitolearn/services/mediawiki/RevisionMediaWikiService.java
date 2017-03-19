@@ -2,6 +2,7 @@ package org.wikitolearn.services.mediawiki;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,8 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class will handle the query on MediaWiki about revisions.
- * Created by valsdav on 14/03/17.
+ * 
+ * @author aletundo, valsdav
+ *
  */
 @Service
 public class RevisionMediaWikiService {
@@ -35,9 +37,9 @@ public class RevisionMediaWikiService {
 
     /**
      * Get all the revisions for a specific page querying MediaWiki API
-     * @param apiUrl the MediaWiki API url
-     * @param pageid Pageid of the page of which getting the revisions.      *
-     * @return revisions A list that contains all the fetched revisions
+     * @param apiUrl String The MediaWiki API url
+     * @param pageid int Pageid of the page of which getting the revisions.
+     * @return revisions List<Revision> A list that contains all the fetched revisions
      */
     public List<Revision> getAllRevisionForPage(String apiUrl, int pageid){
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
@@ -74,12 +76,12 @@ public class RevisionMediaWikiService {
         return revs;
     }
 
-    /**
-     * This method is an utility. It concatenates the given JSONArrays into one.
-     * @param arrays The arrays to be concatenated
-     * @return result The resulted JSONArray
-     * @throws JSONException
-     */
+	/**
+	 * This method is an utility. It concatenates the given JSONArrays into one. 
+	 * @param arrays List<JSONArray> The arrays to be concatenated
+	 * @return result JSONArray The resulted JSONArray 
+	 * @throws JSONException
+	 */
     private JSONArray concatArrays(List<JSONArray> arrays) throws JSONException{
         JSONArray result = new JSONArray();
         for (JSONArray arr : arrays) {

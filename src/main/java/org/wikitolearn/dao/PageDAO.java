@@ -16,31 +16,24 @@ import java.util.Map;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Repository;
 import org.wikitolearn.models.Page;
-import org.wikitolearn.utils.DbConnection;
-
 /**
- *
- * This class will handles the operations on DB handling the Pages
- * @author alessandro
+ * 
+ * @author aletundo, valsdav
  *
  */
 @Repository
-public class PageDAO {
-	private static final Logger LOG = LoggerFactory.getLogger(PageDAO.class);
-
-    @Autowired
-    private DbConnection connection;
+public class PageDAO extends GenericDAO{
 
 	/**
 	 * This method is used to create the class on the DB.
      * It creates an unique index on pageid to avoid duplicated.
+     * @return void
 	 */
-	public void createDBClass() {
+    @Override
+	public void createDatabaseClass() {
 		LOG.info("Creating DB classes for PageDAO...");
 		OrientGraphNoTx graph = connection.getGraphNT();
 		try{
@@ -65,6 +58,7 @@ public class PageDAO {
      * Insert all the given pages in the database as vertexes.
      * If there are duplicates all the insertion is rolled back.
      * @param pages List<Page> The pages to be inserted
+     * @param lang String 
      * @return boolean True if insertion was committed, false otherwise
      */
     public Boolean insertPages(List<Page> pages, String lang){
@@ -84,9 +78,9 @@ public class PageDAO {
 			LOG.info("Pages insertion committed");
 			return true;
 		} catch (ORecordDuplicatedException or) {
-            LOG.error("Page not inserted because it's duplicated. ", or.getMessage());
+            LOG.error("Page not inserted because it's duplicated. {}", or.getMessage());
 		} catch( Exception e ) {
-			LOG.error("Something went wrong during page insertion.", e.getMessage());
+			LOG.error("Something went wrong during page insertion. {}", e.getMessage());
 		}finally {
 		    graph.shutdown();
         }
@@ -95,9 +89,10 @@ public class PageDAO {
 
     /**
      * This methods returns an Iterable over all the pages belonging to a certain cluster,
-     * so coming from the same lang domain.
-     * @param lang lang of the cluster
-     * @return Iterable with all the pages of the cluster
+     * so coming from the same language domain.
+     * @param graph OrientGraph An OrientGraph instance
+     * @param lang String The language of the cluster
+     * @return result Iterable<OrientVertex> with all the pages of the cluster
      */
     public Iterable<OrientVertex> getPagesIteratorFromCluster(OrientGraph graph, String lang){
 		Iterable<OrientVertex> result = null;

@@ -24,7 +24,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * @author alessandro
+ * 
+ * @author aletundo, valsdav
  *
  */
 @Service
@@ -38,8 +39,8 @@ public class PageMediaWikiService {
 	
 	/**
 	 * Get all the pages from a specified namespace of MediaWiki instance through its API.
-	 * @param apiUrl the MediaWiki API url
-	 * @return pages A list that contains all the fetched pages
+	 * @param apiUrl String The MediaWiki API url
+	 * @return pages List<Page> A list that contains all the fetched pages
 	 */
 	public List<Page> getAllPages(String apiUrl){
 		ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
@@ -77,8 +78,8 @@ public class PageMediaWikiService {
 	
 	/**
 	 * This method is an utility. It concatenates the given JSONArrays into one. 
-	 * @param arrays The arrays to be concatenated
-	 * @return result The resulted JSONArray 
+	 * @param arrays List<JSONArray> The arrays to be concatenated
+	 * @return result JSONArray The resulted JSONArray 
 	 * @throws JSONException
 	 */
 	private JSONArray concatArrays(List<JSONArray> arrays) throws JSONException{

@@ -18,8 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+
 /**
- * @author alessandro
+ * 
+ * @author aletundo
  *
  */
 @Component

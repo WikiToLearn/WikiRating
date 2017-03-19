@@ -3,17 +3,12 @@
  */
 package org.wikitolearn.controllers;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import com.orientechnologies.orient.core.exception.ODatabaseException;
-import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,16 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wikitolearn.dao.PageDAO;
 import org.wikitolearn.dao.RevisionDAO;
 import org.wikitolearn.dao.UserDAO;
-import org.wikitolearn.models.Page;
-import org.wikitolearn.models.Revision;
-import org.wikitolearn.models.User;
-import org.wikitolearn.services.mediawiki.PageMediaWikiService;
-import org.wikitolearn.services.mediawiki.RevisionMediaWikiService;
-import org.wikitolearn.services.mediawiki.UserMediaWikiService;
-import org.wikitolearn.utils.DbConnection;
+import org.wikitolearn.services.PageService;
+import org.wikitolearn.services.RevisionService;
+import org.wikitolearn.services.UserService;
 
 /**
- * @author alessandro
+ * 
+ * @author aletundo, valsdav
  *
  */
 @RestController
@@ -39,19 +31,17 @@ public class InitializerController {
 	private static final Logger LOG = LoggerFactory.getLogger(InitializerController.class);
 
 	@Autowired
-	private PageMediaWikiService pageService;
+	private PageService pageService;
 	@Autowired
-	private UserMediaWikiService userService;
+	private UserService userService;
 	@Autowired
-    private RevisionMediaWikiService revisionService;
+    private RevisionService revisionService;
 	@Autowired
 	private PageDAO pageDao;
     @Autowired
     private UserDAO userDao;
     @Autowired
     private RevisionDAO revisionDAO;
-    @Autowired
-    private DbConnection dbConnection;
 
     private boolean initializedDB = false;
 	
@@ -66,8 +56,8 @@ public class InitializerController {
         }
         
         CompletableFuture<Boolean> parallelInsertions = 
-        		CompletableFuture.allOf(addAllPages(lang, apiUrl), addAllUsers(apiUrl))
-        		.thenCompose(s -> addAllRevisions(lang, apiUrl));
+        		CompletableFuture.allOf(pageService.addAllPages(lang, apiUrl), userService.addAllUsers(apiUrl))
+        		.thenCompose(s -> revisionService.addAllRevisions(lang, apiUrl));
         
         try {
 			return parallelInsertions.get();
@@ -80,85 +70,14 @@ public class InitializerController {
 
     /**
      * This methods initializes all the DAO Classes, creating the right types on the DB.
+     * @return void
      */
     private void initializeDbClasses(){
-        LOG.info("Creating DB lasses...");
-        pageDao.createDBClass();
-        userDao.createDBClass();
-        revisionDAO.createDBClass();
-        LOG.info("Completed creation of DB classes.");
-
+        LOG.info("Creating Database classes...");
+        pageDao.createDatabaseClass();
+        userDao.createDatabaseClass();
+        revisionDAO.createDatabaseClass();
+        LOG.info("Completed creation of database classes.");
     }
-
-
-	/**
-     * This methods inserts all the pages inside the DB querying the MediaWiki API.
-     * 
-     * @return CompletableFuture<Boolean>
-     */
-    @Async
-    private CompletableFuture<Boolean> addAllPages( String lang, String apiUrl ){
-        List<Page> pages =  pageService.getAllPages(apiUrl);
-        LOG.info("Fetched all the pages");
-        boolean insertionResultPages = pageDao.insertPages(pages, lang);
-        if(insertionResultPages){
-            LOG.info("Inserted pages");
-        }else{
-            LOG.error("Something went wrong during pages insertion");
-        }
-        return CompletableFuture.completedFuture(insertionResultPages);
-    }
-
-    /**
-     * This methods inserts all the users inside the DB querying the MediaWiki API.
-     *
-     * @return CompletableFuture<Boolean>
-     */
-    @Async
-    private CompletableFuture<Boolean> addAllUsers(String apiUrl){
-        List<User> users =  userService.getAllUsers(apiUrl);
-        // Adding the Anonymous user
-        users.add(new User("Anonymous", 0, 0, 0, 0));
-        LOG.info("Fetched all the users");
-        boolean insertionResultUsers = userDao.insertUsers(users);
-        if(insertionResultUsers){
-            LOG.info("Inserted users");
-        }else{
-            LOG.error("Something went wrong during users insertion");
-        }
-        return CompletableFuture.completedFuture(insertionResultUsers);
-    }
-
-    /**
-     * This method inserts all the revisions for every page, creating the connections between them
-     * and between the users that have written them.
-     * 
-     * @return CompletableFuture<Boolean>
-     */
-    private CompletableFuture<Boolean> addAllRevisions(String lang, String apiUrl){
-        OrientGraph graph = dbConnection.getGraph();
-        boolean revInsertionResult = false;
-        try{
-            for (OrientVertex page : pageDao.getPagesIteratorFromCluster(graph, lang)) {
-                int pageid = page.getProperty("pageid");
-                LOG.info("Processing page: {}", pageid);
-                List<Revision> revs = revisionService.getAllRevisionForPage(apiUrl, pageid);
-                revInsertionResult = revisionDAO.insertRevisions(pageid, revs, lang);
-                if(!revInsertionResult){
-                    LOG.error("Something was wrong during the insertion of the revisions of page {}", pageid);
-                }
-            }
-        } catch ( ODatabaseException e){
-            LOG.error("DB Error during insertion of Revisions. {}", e.getMessage());
-            graph.rollback();
-        } catch (Exception e){
-            LOG.error("Something went wrong during Revisions insertion. {}", e.getMessage());
-            graph.rollback();
-        } finally {
-            graph.shutdown();
-        }
-        return CompletableFuture.completedFuture(revInsertionResult);
-    }
-
 
 }

@@ -9,12 +9,8 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.wikitolearn.models.Revision;
-import org.wikitolearn.utils.DbConnection;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,21 +18,20 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * This class will handle the Revision data processing on the OrientDB.
- * Created by valsdav on 14/03/17.
+ * 
+ * @author aletundo, valsdav
+ *
  */
 @Repository
-public class RevisionDAO {
-    private static final Logger LOG = LoggerFactory.getLogger(RevisionDAO.class);
-
-    @Autowired
-    private DbConnection connection;
+public class RevisionDAO extends GenericDAO{
 
     /**
      * This method is used to create the classes on the DB.
      * Moreover it creates a unique index on the userid property to avoid duplication.
+     * @return void
      */
-    public void createDBClass() {
+    @Override
+    public void createDatabaseClass() {
         LOG.info("Creating DB classes for RevisionDAO...");
         OrientGraphNoTx graph = connection.getGraphNT();
         try{
@@ -45,7 +40,7 @@ public class RevisionDAO {
             vertex.createProperty("revid", OType.INTEGER).setMandatory(true);
             vertex.createProperty("lang", OType.STRING).setMandatory(true);
             vertex.createIndex("revid", OClass.INDEX_TYPE.UNIQUE, "revid", "lang");
-            //creating clusters for Revision class
+            // Creating clusters for Revision class
             graph.command(new OCommandSQL("ALTER CLASS Revision ADDCLUSTER Revs_it")).execute();
             graph.command(new OCommandSQL("ALTER CLASS Revision ADDCLUSTER Revs_en")).execute();
             // Edge type for the created edge from User to Revision
@@ -95,7 +90,7 @@ public class RevisionDAO {
                 props.put("validated", rev.isValidated());
 
                 Vertex revNode = graph.addVertex("class:Revision,cluster:Revs_"+lang, props);
-                LOG.info("Revision inserted {}.", revNode.toString());
+                //LOG.info("Revision inserted {}.", revNode.toString());
                 revsNodes.put(Integer.toString(rev.getRevid()), revNode);
 
                 if (rev.getParentid() == 0){
@@ -129,12 +124,12 @@ public class RevisionDAO {
             graph.addEdge("class:LastRevision", page, lastRev, "LastRevision");
             graph.addEdge("class:FirstRevision", page, firstRev, "FirstRevision");
 
-            LOG.info(String.format("Revisions of page %s insertion committed", pageid));
+            //LOG.info("Revisions of page {} insertion committed", pageid);
             return true;
         } catch (ORecordDuplicatedException or) {
-            LOG.error("Some of the pages are duplicates.", or.getMessage());
+            LOG.error("Some of the pages are duplicates. {}", or.getMessage());
         } catch( Exception e ) {
-            LOG.error("Something went wrong during user insertion.", e.getMessage());
+            LOG.error("Something went wrong during user insertion. {}", e.getMessage());
         } finally {
             graph.shutdown();
         }
@@ -143,9 +138,9 @@ public class RevisionDAO {
 
     /**
      * This methods returns an Iterable over all the Revisions belonging to a certain cluster,
-     * so coming from the same lang domain.
-     * @param lang lang of the cluster
-     * @return Iterable with all the revisions of the cluster
+     * so coming from the same language domain.
+     * @param lang String The language of the cluster
+     * @return result Iterable<OrientVertex> with all the revisions of the cluster
      */
     public Iterable<OrientVertex> getRevisionsIteratorFromCluster(OrientGraph graph, String lang){
         Iterable<OrientVertex> result = null;

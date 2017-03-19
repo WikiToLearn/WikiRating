@@ -4,7 +4,7 @@
 package org.wikitolearn.models;
 
 /**
- * @author alessandro
+ * @author aletundo, valsdav
  *
  */
 public class Vote {

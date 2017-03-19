@@ -6,7 +6,8 @@ package org.wikitolearn.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * @author alessandro
+ * 
+ * @author aletundo, valsdav
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

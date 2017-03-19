@@ -10,34 +10,29 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.wikitolearn.models.User;
-import org.wikitolearn.utils.DbConnection;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author alessandro
+ * 
+ * @author aletundo, valsdav
  *
  */
 @Repository
-public class UserDAO {
-	private static final Logger LOG = LoggerFactory.getLogger(UserDAO.class);
-
-    @Autowired
-    private DbConnection connection;
+public class UserDAO extends GenericDAO{
 
     /**
      * This method is used to create the class on the DB.
      * Moreover it creates a unique index on the userid property to avoid duplication.
+     * @return void
      */
-	public void createDBClass() {
-        LOG.info("Creating DB classes for RevisionDAO...");
+    @Override
+	public void createDatabaseClass() {
+        LOG.info("Creating DB classes for UserDAO...");
         OrientGraphNoTx graph = connection.getGraphNT();
 	    try{
             OrientVertexType vertex = graph.createVertexType("User");
@@ -72,7 +67,7 @@ public class UserDAO {
 
                     Vertex userNode = graph.addVertex("class:User", props);
                     graph.commit();
-                    LOG.info("User inserted " + userNode.toString());
+                    LOG.info("User inserted {}", userNode.toString());
                 } catch (ORecordDuplicatedException or) {
                     LOG.error("The user is already in the DB. {}. Operation will be rollbacked.", or.getMessage());
                     graph.rollback();
