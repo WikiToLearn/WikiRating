@@ -1,1 +1,1 @@
-docker build -t wikirating/orientdb . 
+docker build -t wikitolearn/orientdb . 
