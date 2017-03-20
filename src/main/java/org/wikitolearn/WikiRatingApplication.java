@@ -8,13 +8,13 @@ import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-@SpringBootApplication
-@EnableAsync
 /**
  * 
  * @author aletundo
  *
  */
+@SpringBootApplication
+@EnableAsync
 public class WikiRatingApplication extends AsyncConfigurerSupport{
 
 	public static void main(String[] args) {
