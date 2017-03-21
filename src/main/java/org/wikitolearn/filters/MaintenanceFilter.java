@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MaintenanceFilter implements Filter {
 	
-	private @Value("${maintenance.uri}") String MAINTENANCE_URI;
+	private @Value("${maintenance.readonlymode.uri}") String MAINTENANCE_URI;
 
 	/*
 	 * (non-Javadoc)
