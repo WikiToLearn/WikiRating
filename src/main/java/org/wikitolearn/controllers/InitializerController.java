@@ -17,6 +17,9 @@ import org.wikitolearn.dao.MetadataDAO;
 import org.wikitolearn.dao.PageDAO;
 import org.wikitolearn.dao.RevisionDAO;
 import org.wikitolearn.dao.UserDAO;
+import org.wikitolearn.models.Process;
+import org.wikitolearn.utils.enums.ProcessResult;
+import org.wikitolearn.utils.enums.ProcessType;
 import org.wikitolearn.services.PageService;
 import org.wikitolearn.services.RevisionService;
 import org.wikitolearn.services.UserService;
@@ -51,6 +54,8 @@ public class InitializerController {
 	@RequestMapping(value = "/init", method = RequestMethod.GET, produces = "application/json")
 	public boolean initialize(@RequestParam("lang") String lang){
 	    String apiUrl = "https://" + lang + ".wikitolearn.org/api.php";
+	    //starting a new Process
+        Process initializeProcess = new Process(ProcessType.INIT);
 
         // Initializing the DB schema, only the first time
         if (! initializedDB){
@@ -63,7 +68,15 @@ public class InitializerController {
         		.thenCompose(s -> revisionService.addAllRevisions(lang, apiUrl));
         
         try {
-			return parallelInsertions.get();
+			boolean result =  parallelInsertions.get();
+			//saving the result of the process
+			if (result){
+			    initializeProcess.setProcessResult(ProcessResult.DONE);
+            }else{
+                initializeProcess.setProcessResult(ProcessResult.ERROR);
+            }
+			metadataDAO.addProcess(initializeProcess);
+            return result;
 		} catch (InterruptedException | ExecutionException e) {
 			LOG.error("Something went wrong during database initialization. {}", e.getMessage());
 			return false;

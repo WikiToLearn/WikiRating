@@ -1,5 +1,6 @@
 package org.wikitolearn.dao;
 
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
@@ -16,6 +17,7 @@ import org.wikitolearn.models.Process;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -27,8 +29,6 @@ import java.util.Map;
  */
 @Repository
 public class MetadataDAO extends GenericDAO {
-
-    private String metadataNodeID;
 
     /**
      * This method creates the classes Metadata and Process in the DB.
@@ -49,7 +49,6 @@ public class MetadataDAO extends GenericDAO {
 
             //We want also to create the singleton node for Metadata.
             OrientVertex metadata_main = graph.addVertex("class:Metadata");
-            metadataNodeID = (String) metadata_main.getId();
             metadata_main.setProperty("creation_date", new Date());
         } catch( Exception e ) {
             LOG.error("Something went wrong during class creation. {}.", e.getMessage());
@@ -69,10 +68,15 @@ public class MetadataDAO extends GenericDAO {
         OrientGraph graph = connection.getGraph();
         try {
             //getting last Process
-            Vertex metadataNode = graph.getVertex(metadataNodeID);
-            Edge lastProcessEdge = metadataNode.getEdges(Direction.OUT, "LastProcess").iterator().next();
-            Vertex lastProcess = lastProcessEdge.getVertex(Direction.OUT);
-            graph.removeEdge(lastProcessEdge);
+            Vertex metadataNode = graph.getVerticesOfClass("Metadata").iterator().next();
+            Iterator<Edge> it = metadataNode.getEdges(Direction.OUT, "LastProcess").iterator();
+            Edge lastProcessEdge = null;
+            Vertex lastProcess = null;
+            if (it.hasNext()) {
+                lastProcessEdge = it.next();
+                lastProcess = lastProcessEdge.getVertex(Direction.OUT);
+                graph.removeEdge(lastProcessEdge);
+            }
             //adding new Process
             Map<String, Object> props = new HashMap<>();
             props.put("timestamp", process.getTimestamp());
@@ -80,8 +84,10 @@ public class MetadataDAO extends GenericDAO {
             props.put("processResult", process.getProcessResult());
             Vertex newProcess = graph.addVertex("class:Process", props);
             //linking the node
-            metadataNode.addEdge("class:LastProcess", newProcess);
-            newProcess.addEdge("class:PreviousProcess", lastProcess);
+            graph.addEdge("class:LastProcess", metadataNode, newProcess, "LastProcess");
+            if (lastProcess != null){
+                graph.addEdge("class:PreviousProcess", newProcess, lastProcess, "PreviousProcess");
+            }
             graph.commit();
         } catch (Exception e){
             LOG.error("Something went wrong during the insertion of the process. {}.", e.getMessage());

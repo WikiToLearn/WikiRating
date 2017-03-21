@@ -1,5 +1,8 @@
 package org.wikitolearn.models;
 
+import org.wikitolearn.utils.enums.ProcessResult;
+import org.wikitolearn.utils.enums.ProcessType;
+
 import java.util.Date;
 
 /**
@@ -51,12 +54,4 @@ public class Process {
     public void setProcessResult(ProcessResult processResult) {
         this.processResult = processResult;
     }
-}
-
-enum ProcessType{
-    INIT, FETCH, UPDATE_RANKING_PAGES, UPDATE_RANKING_USERS
-}
-
-enum ProcessResult{
-    DONE, ERROR, EXCEPTION, ONGOING
 }
