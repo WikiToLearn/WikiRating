@@ -26,13 +26,13 @@ import java.util.Map;
 public class UserDAO extends GenericDAO{
 
     /**
-     * This method is used to create the class on the DB.
+     * This method is used to create the User class on the database.
      * Moreover it creates a unique index on the userid property to avoid duplication.
      * @return void
      */
     @Override
 	public void createDatabaseClass() {
-        LOG.info("Creating DB classes for UserDAO...");
+        LOG.info("Creating database User class...");
         OrientGraphNoTx graph = connection.getGraphNT();
 	    try{
             OrientVertexType vertex = graph.createVertexType("User");

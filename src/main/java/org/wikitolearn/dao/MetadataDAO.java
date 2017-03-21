@@ -1,10 +1,6 @@
 package org.wikitolearn.dao;
 
-import com.orientechnologies.orient.core.id.ORecordId;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -25,7 +21,7 @@ import java.util.Map;
  * as a entrypoint, and a chain of Process nodes, saving some useful information at every
  * process in the rating engine. For example we can save the number of fetched pages or
  * saved user votes.
- * Created by valsdav on 21/03/17.
+ * @author valsdav, aletundo
  */
 @Repository
 public class MetadataDAO extends GenericDAO {
@@ -47,7 +43,7 @@ public class MetadataDAO extends GenericDAO {
             graph.createEdgeType("PreviousProcess");
             graph.createEdgeType("SubProcess");
 
-            //We want also to create the singleton node for Metadata.
+            // Create Metadata vertex
             OrientVertex metadata_main = graph.addVertex("class:Metadata");
             metadata_main.setProperty("creation_date", new Date());
         } catch( Exception e ) {
@@ -67,7 +63,7 @@ public class MetadataDAO extends GenericDAO {
         LOG.info("Inserting process...");
         OrientGraph graph = connection.getGraph();
         try {
-            //getting last Process
+            // Getting latest Process
             Vertex metadataNode = graph.getVerticesOfClass("Metadata").iterator().next();
             Iterator<Edge> it = metadataNode.getEdges(Direction.OUT, "LastProcess").iterator();
             Edge lastProcessEdge = null;
@@ -77,13 +73,13 @@ public class MetadataDAO extends GenericDAO {
                 lastProcess = lastProcessEdge.getVertex(Direction.OUT);
                 graph.removeEdge(lastProcessEdge);
             }
-            //adding new Process
+            // Adding a new Process vertex
             Map<String, Object> props = new HashMap<>();
             props.put("timestamp", process.getTimestamp());
             props.put("processType", process.getProcessType());
             props.put("processResult", process.getProcessResult());
             Vertex newProcess = graph.addVertex("class:Process", props);
-            //linking the node
+            // Linking the node
             graph.addEdge("class:LastProcess", metadataNode, newProcess, "LastProcess");
             if (lastProcess != null){
                 graph.addEdge("class:PreviousProcess", newProcess, lastProcess, "PreviousProcess");

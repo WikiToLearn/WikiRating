@@ -34,18 +34,18 @@ public class PageDAO extends GenericDAO{
 	 */
     @Override
 	public void createDatabaseClass() {
-		LOG.info("Creating DB classes for PageDAO...");
+		LOG.info("Creating database Page class...");
 		OrientGraphNoTx graph = connection.getGraphNT();
 		try{
             OrientVertexType vertex = graph.createVertexType("Page",1);
             vertex.createProperty("pageid", OType.INTEGER).setMandatory(true);
             vertex.createProperty("lang", OType.STRING).setMandatory(true);
             vertex.createIndex("page_lang", OClass.INDEX_TYPE.UNIQUE, "pageid", "lang");
-			//now we want to add clusters
-			graph.command(new OCommandSQL("ALTER CLASS Page ADDCLUSTER Pages_it")).execute();
-			graph.command(new OCommandSQL("ALTER CLASS Page ADDCLUSTER Pages_en")).execute();
-			//adding the clusters to the class Page
-			//graph.getRawGraph().getMetadata().getSchema().reload();
+			// Add a cluster for each language
+            for(String lang : langs){
+            	graph.command(new OCommandSQL("ALTER CLASS Page ADDCLUSTER Pages_" + lang)).execute();
+            }
+            //graph.getRawGraph().getMetadata().getSchema().reload();
 		} catch( Exception e ) {
 			LOG.error("Something went wrong during class creation. {}.", e.getMessage());
 		} finally {
@@ -98,7 +98,7 @@ public class PageDAO extends GenericDAO{
 		Iterable<OrientVertex> result = null;
 		try {
 		    result = (Iterable<OrientVertex>)  graph.command(new OCommandSQL(
-                    "SELECT FROM cluster:Pages_"+ lang)).execute();
+                    "SELECT * FROM cluster:Pages_"+ lang)).execute();
         } catch (Exception e){
 		    LOG.error("Something went wrong during quering for pages. {}", e.getMessage());
         }
