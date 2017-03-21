@@ -20,7 +20,7 @@ public abstract class GenericDAO {
 	protected final Logger LOG = LoggerFactory.getLogger(getClass());
 	@Autowired
 	protected DbConnection connection;
-	@Value("#{'${mediawiki.langs}'.split(',')}")
+	@Value("#{'${mediawiki.langs}'.trim().split(',')}")
 	protected List<String> langs;
 
 	/**
