@@ -129,9 +129,9 @@ public class RevisionDAO extends GenericDAO {
 			LOG.info("Revisions of page {} insertion committed", pageId);
 			return true;
 		} catch (ORecordDuplicatedException or) {
-			LOG.error("Some of the pages are duplicates. {}", or.getMessage());
+			LOG.error("Some of the revisions are duplicates. {}", or.getMessage());
 		} catch (Exception e) {
-			LOG.error("Something went wrong during user insertion. {}", e.getMessage());
+			LOG.error("Something went wrong during revisions insertion. {}", e.getMessage());
 		} finally {
 			graph.shutdown();
 		}
