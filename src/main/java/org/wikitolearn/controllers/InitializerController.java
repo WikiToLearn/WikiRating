@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.wikitolearn.dao.MetadataDAO;
 import org.wikitolearn.dao.PageDAO;
 import org.wikitolearn.dao.RevisionDAO;
 import org.wikitolearn.dao.UserDAO;
@@ -36,6 +37,8 @@ public class InitializerController {
 	private UserService userService;
 	@Autowired
     private RevisionService revisionService;
+    @Autowired
+    private MetadataDAO metadataDAO;
 	@Autowired
 	private PageDAO pageDao;
     @Autowired
@@ -74,6 +77,7 @@ public class InitializerController {
      */
     private void initializeDbClasses(){
         LOG.info("Creating Database classes...");
+        metadataDAO.createDatabaseClass();
         pageDao.createDatabaseClass();
         userDao.createDatabaseClass();
         revisionDAO.createDatabaseClass();

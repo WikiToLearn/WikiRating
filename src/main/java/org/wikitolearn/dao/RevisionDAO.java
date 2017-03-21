@@ -36,7 +36,7 @@ public class RevisionDAO extends GenericDAO{
         OrientGraphNoTx graph = connection.getGraphNT();
         try{
             // Vertex type for the revision
-            OrientVertexType vertex = graph.createVertexType("Revision");
+            OrientVertexType vertex = graph.createVertexType("Revision", 1);
             vertex.createProperty("revid", OType.INTEGER).setMandatory(true);
             vertex.createProperty("lang", OType.STRING).setMandatory(true);
             vertex.createIndex("revid", OClass.INDEX_TYPE.UNIQUE, "revid", "lang");
