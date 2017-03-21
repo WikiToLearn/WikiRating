@@ -22,6 +22,12 @@ public class Process {
         this.processResult = processResult;
     }
 
+    public Process(ProcessType processType){
+        this.timestamp = new Date();
+        this.processType = processType;
+        this.processResult = ProcessResult.ONGOING;
+    }
+
     public Date getTimestamp() {
         return timestamp;
     }
@@ -52,5 +58,5 @@ enum ProcessType{
 }
 
 enum ProcessResult{
-    DONE, ERROR, EXCEPTION
+    DONE, ERROR, EXCEPTION, ONGOING
 }
