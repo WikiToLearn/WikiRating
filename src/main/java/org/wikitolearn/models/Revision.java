@@ -28,7 +28,7 @@ public class Revision {
     private double totalNormalisesVotesReliability;
     private boolean validated;
     private String lang;
-    @Index(unique = true)
+    @Index(unique = true, primary=true)
     private String langRevId;
     
 	/**

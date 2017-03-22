@@ -4,6 +4,7 @@
 package org.wikitolearn.models;
 
 import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.Index;
 import org.neo4j.ogm.annotation.NodeEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,6 +20,7 @@ public class User {
     @GraphId private long graphId;
     @JsonProperty("name")
 	private String username;
+    @Index(unique=true,primary = true)
 	private int userid;
 	private double votesReliability;
 	private double contributesReliability;

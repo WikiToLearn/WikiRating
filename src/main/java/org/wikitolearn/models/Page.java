@@ -21,7 +21,7 @@ public class Page {
 	private int pageid;
 	private String title;
 	private String lang;
-	@Index(unique = true)
+	@Index(unique = true, primary=true)
 	private String langPageId;
 	private double pageRank;
 	
