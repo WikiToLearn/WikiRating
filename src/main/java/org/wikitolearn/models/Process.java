@@ -1,5 +1,7 @@
 package org.wikitolearn.models;
 
+import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.NodeEntity;
 import org.wikitolearn.utils.enums.ProcessResult;
 import org.wikitolearn.utils.enums.ProcessType;
 
@@ -9,10 +11,12 @@ import java.util.Date;
  * This class represents a Process happened in the engine.
  * It has a definite type and can have different results. It is saved in the DB
  * as a Process vertex.
- * Created by valsdav on 21/03/17.
+ * @author aletundo
+ * @author valsdav
  */
+@NodeEntity( label = "Process")
 public class Process {
-
+	@GraphId private long graphId;
     private Date timestamp;
     private ProcessType processType;
     private ProcessResult processResult;

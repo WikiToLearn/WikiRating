@@ -3,6 +3,10 @@
  */
 package org.wikitolearn.models;
 
+import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.Index;
+import org.neo4j.ogm.annotation.NodeEntity;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -11,9 +15,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NodeEntity( label = "Page")
 public class Page {
-	private String title;
+	@GraphId private long graphId;
 	private int pageid;
+	private String title;
+	private String lang;
+	@Index(unique = true)
+	private String langPageId;
 	private double pageRank;
 	
 	/**
@@ -30,7 +39,8 @@ public class Page {
 		this.title = title;
 		this.pageid = pageid;
 		this.pageRank = pageRank;
-	}
+	} 
+	
 	/**
 	 * @return the title
 	 */
@@ -67,6 +77,34 @@ public class Page {
 	public void setPageRank(double pageRank) {
 		this.pageRank = pageRank;
 	}
+	/**
+	 * @return the lang
+	 */
+	public String getLang() {
+		return lang;
+	}
+
+	/**
+	 * @param lang the lang to set
+	 */
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
+	/**
+	 * @return the langPageId
+	 */
+	public String getLangPageId() {
+		return langPageId;
+	}
+
+	/**
+	 * @param langPageId the langPageId to set
+	 */
+	public void setLangPageId(String langPageId) {
+		this.langPageId = langPageId;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

@@ -55,6 +55,10 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-neo4j</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.wikidata.wdtk</groupId>
 			<artifactId>wdtk-wikibaseapi</artifactId>
 			<version>0.7.0</version>
@@ -63,7 +67,7 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.orientechnologies</groupId>
 			<artifactId>orientdb-core</artifactId>
 			<version>2.2.17</version>
@@ -82,7 +86,7 @@
 			<groupId>com.tinkerpop.blueprints</groupId>
 			<artifactId>blueprints-core</artifactId>
 			<version>2.6.0</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>

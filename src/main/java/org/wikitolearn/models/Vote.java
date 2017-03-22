@@ -3,20 +3,23 @@
  */
 package org.wikitolearn.models;
 
+import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.NodeEntity;
+
 /**
  * @author aletundo, valsdav
  *
  */
+@NodeEntity( label = "Vote")
 public class Vote {
-
+	@GraphId private long graphId;
 	private double value;
 	private double reliability;
 	
 	/**
 	 * 
 	 */
-	public Vote() {
-	}
+	public Vote() {}
 	
 	/**
 	 * @param value

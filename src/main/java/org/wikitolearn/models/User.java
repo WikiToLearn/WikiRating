@@ -3,6 +3,9 @@
  */
 package org.wikitolearn.models;
 
+import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.NodeEntity;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,8 +13,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author aletundo, valsdav
  *
  */
+@NodeEntity( label = "User")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
+    @GraphId private long graphId;
     @JsonProperty("name")
 	private String username;
 	private int userid;
@@ -22,8 +27,7 @@ public class User {
 	/**
 	 * 
 	 */
-	public User() {
-	}
+	public User() {}
 	
 	/**
 	 * @param username

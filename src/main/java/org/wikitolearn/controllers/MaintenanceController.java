@@ -21,10 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.wikitolearn.dao.MetadataDAO;
-import org.wikitolearn.dao.PageDAO;
-import org.wikitolearn.dao.RevisionDAO;
-import org.wikitolearn.dao.UserDAO;
 import org.wikitolearn.models.Process;
 import org.wikitolearn.services.PageService;
 import org.wikitolearn.services.RevisionService;
@@ -48,14 +44,6 @@ public class MaintenanceController {
 	private UserService userService;
 	@Autowired
     private RevisionService revisionService;
-    @Autowired
-    private MetadataDAO metadataDAO;
-	@Autowired
-	private PageDAO pageDao;
-    @Autowired
-    private UserDAO userDao;
-    @Autowired
-    private RevisionDAO revisionDAO;
 
     private boolean initializedDB = false;
 	
@@ -139,7 +127,7 @@ public class MaintenanceController {
             }else{
                 initializeProcess.setProcessResult(ProcessResult.ERROR);
             }
-			metadataDAO.addProcess(initializeProcess);
+			//metadataDAO.addProcess(initializeProcess);
             return result;
 		} catch (InterruptedException | ExecutionException e) {
 			LOG.error("Something went wrong during database initialization. {}", e.getMessage());
@@ -153,10 +141,10 @@ public class MaintenanceController {
      */
     private void initializeDbClasses(){
         LOG.info("Creating Database classes...");
-        metadataDAO.createDatabaseClass();
-        pageDao.createDatabaseClass();
-        userDao.createDatabaseClass();
-        revisionDAO.createDatabaseClass();
+        //metadataDAO.createDatabaseClass();
+        //pageDao.createDatabaseClass();
+        //userDao.createDatabaseClass();
+        //revisionDAO.createDatabaseClass();
         LOG.info("Completed creation of database classes.");
     }
 	
