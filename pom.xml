@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<name>WikiRating</name>
-	<description>A Spring Boot application that relies on a OrientDb instance to serve a rating engine for a MediaWiki installation</description>
+	<description>A Spring Boot application that relies on Neo4j to serve a rating engine for a MediaWiki installation</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
