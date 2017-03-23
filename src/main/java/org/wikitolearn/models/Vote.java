@@ -12,7 +12,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
  */
 @NodeEntity( label = "Vote")
 public class Vote {
-	@GraphId private long graphId;
+	@GraphId private Long graphId;
 	private double value;
 	private double reliability;
 	

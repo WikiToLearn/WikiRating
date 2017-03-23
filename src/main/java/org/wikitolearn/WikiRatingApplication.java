@@ -4,9 +4,12 @@ import java.util.concurrent.Executor;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * 
@@ -15,6 +18,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 @SpringBootApplication
 @EnableAsync
+@EntityScan("org.wikitolearn.models")
+@EnableNeo4jRepositories(basePackages = "org.wikitolearn..repository")
+@EnableTransactionManagement
 public class WikiRatingApplication extends AsyncConfigurerSupport{
 
 	public static void main(String[] args) {

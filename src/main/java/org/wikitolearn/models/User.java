@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NodeEntity( label = "User")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
-    @GraphId private long graphId;
+    @GraphId private Long graphId;
     @JsonProperty("name")
 	private String username;
     @Index(unique=true,primary = true)

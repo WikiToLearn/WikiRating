@@ -16,7 +16,7 @@ import java.util.Date;
  */
 @NodeEntity( label = "Process")
 public class Process {
-	@GraphId private long graphId;
+	@GraphId private Long graphId;
     private Date timestamp;
     private ProcessType processType;
     private ProcessResult processResult;

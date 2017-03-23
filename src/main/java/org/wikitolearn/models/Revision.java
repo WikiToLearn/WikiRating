@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NodeEntity( label = "Revision" )
 public class Revision {
-	@GraphId private long graphId;
+	@GraphId private Long graphId;
     private int revid;
     private int userid;
     private int parentid;

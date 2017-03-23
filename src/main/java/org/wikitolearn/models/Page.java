@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NodeEntity( label = "Page")
 public class Page {
-	@GraphId private long graphId;
+	@GraphId private Long graphId;
 	private int pageid;
 	private String title;
 	private String lang;
