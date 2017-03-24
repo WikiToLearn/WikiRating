@@ -4,7 +4,6 @@
 package org.wikitolearn.wikirating.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
@@ -47,15 +46,21 @@ public class RevisionService {
 	public CompletableFuture<Boolean> addAllRevisions(String lang, String apiUrl) {
 		Iterable<Page> pages = pageRepository.findAll();
 		pages.forEach(page -> {
-			/*List<Revision> revisions = revisionMediaWikiService.getAllRevisionByPageId(apiUrl, page.getPageid());
+			List<Revision> revisions = revisionMediaWikiService.getAllRevisionByPageId(apiUrl, page.getPageid());
+			// Set the first and the last revisions for the current page
+			page.setFistRevision(revisions.get(0));
+			page.setLastRevision(revisions.get(revisions.size() - 1));
 			revisions.forEach(revision -> {
 				revision.setLangRevId(lang + "_" + revision.getRevid());
 				// Get the previous revision filtering the collection
-				Optional<Revision> previousRevision = revisions.stream()
-						.filter(r -> r.getRevid() == revision.getParentid()).findFirst();
-				revision.setPreviousRevision(previousRevision.get());
+				for(Revision r : revisions){
+					if(r.getRevid() == revision.getParentid()){
+						revision.setPreviousRevision(r);
+					}
+				}
 			});
-			revisionRepository.save(revisions);*/
+			revisionRepository.save(revisions);
+			pageRepository.save(page);
 			LOG.info("Inserted revisions for page {}", page.getLangPageId());
 		});
 		return CompletableFuture.completedFuture(true);
