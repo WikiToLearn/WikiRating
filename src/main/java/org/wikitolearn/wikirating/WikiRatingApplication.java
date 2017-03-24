@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @SpringBootApplication
 @EnableAsync
-@EntityScan("org.wikitolearn.wikirating.wikirating.model")
-@EnableNeo4jRepositories(basePackages = "org.wikitolearn.wikirating.wikirating..repository")
+@EntityScan("org.wikitolearn.wikirating.model")
+@EnableNeo4jRepositories(basePackages = "org.wikitolearn.wikirating.repository")
 @EnableTransactionManagement
 public class WikiRatingApplication extends AsyncConfigurerSupport{
 
