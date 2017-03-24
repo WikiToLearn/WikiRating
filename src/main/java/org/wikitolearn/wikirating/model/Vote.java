@@ -3,19 +3,20 @@
  */
 package org.wikitolearn.wikirating.model;
 
-import org.neo4j.ogm.annotation.GraphId;
-import org.neo4j.ogm.annotation.NodeEntity;
+import com.oracle.webservices.internal.api.EnvelopeStyle;
+import org.neo4j.ogm.annotation.*;
 
 /**
  * @author aletundo, valsdav
  *
  */
-@NodeEntity( label = "Vote")
+@RelationshipEntity( type = "VOTE")
 public class Vote {
 	@GraphId private Long graphId;
 	private double value;
 	private double reliability;
-	
+	@StartNode private User user;
+	@EndNode private Revision revision;
 	/**
 	 * 
 	 */
@@ -58,9 +59,25 @@ public class Vote {
 		this.reliability = reliability;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Revision getRevision() {
+		return revision;
+	}
+
+	public void setRevision(Revision revision) {
+		this.revision = revision;
+	}
+
 	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+         * @see java.lang.Object#toString()
+         */
 	@Override
 	public String toString() {
 		return "Vote [value=" + value + ", reliability=" + reliability + "]";

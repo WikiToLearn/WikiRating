@@ -7,6 +7,8 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.neo4j.ogm.annotation.Relationship;
 
+import java.util.Set;
+
 /**
  * This class handles the data of the Revision of a page.
  * Created by valsdav on 14/03/17.
@@ -33,6 +35,8 @@ public class Revision {
     private String langRevId;
     @Relationship(type="PREVIOUS_REVISION", direction = Relationship.OUTGOING)
 	private Revision previousRevision;
+    @Relationship(type="VOTE", direction = Relationship.INCOMING)
+	private Set<Vote> votes;
     
 	/**
 	 * 
@@ -284,9 +288,17 @@ public class Revision {
 		this.previousRevision = previousRevision;
 	}
 
+	public Set<Vote> getVotes() {
+		return votes;
+	}
+
+	public void setVotes(Set<Vote> votes) {
+		this.votes = votes;
+	}
+
 	/* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
+             * @see java.lang.Object#toString()
+             */
 	@Override
 	public String toString() {
 		return "Revision [graphId=" + graphId + ", revid=" + revid + ", userid=" + userid + ", parentid=" + parentid

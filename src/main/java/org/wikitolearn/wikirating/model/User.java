@@ -29,7 +29,9 @@ public class User {
 	private double contributesReliability;
 	private double totalReliability;
 	@Relationship( type="AUTHOR", direction = Relationship.OUTGOING)
-	private Set<Page> pagesAuthored;
+	private Set<Revision> revisionsAuthored;
+	@Relationship( type="VOTE", direction = Relationship.OUTGOING)
+	private Set<Vote> votes;
 	
 	/**
 	 * 
@@ -126,21 +128,29 @@ public class User {
 	 *
 	 * @return
 	 */
-	public Set<Page> getPagesAuthored() {
-		return pagesAuthored;
+	public Set<Revision> getRevisionsAuthored() {
+		return revisionsAuthored;
 	}
 
 	/**
 	 *
-	 * @param pagesAuthored
+	 * @param revisionsAuthored
 	 */
-	public void setPagesAuthored(Set<Page> pagesAuthored) {
-		this.pagesAuthored = pagesAuthored;
+	public void setRevisionsAuthored(Set<Revision> revisionsAuthored) {
+		this.revisionsAuthored = revisionsAuthored;
+	}
+
+	public Set<Vote> getVotes() {
+		return votes;
+	}
+
+	public void setVotes(Set<Vote> votes) {
+		this.votes = votes;
 	}
 
 	/* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
+             * @see java.lang.Object#toString()
+             */
 	@Override
 	public String toString() {
 		return "User [username=" + username + ", userid=" + userid + ", votesReliability=" + votesReliability

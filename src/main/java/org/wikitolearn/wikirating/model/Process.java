@@ -2,6 +2,7 @@ package org.wikitolearn.wikirating.model;
 
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
 import org.wikitolearn.wikirating.util.enums.ProcessResult;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
 
@@ -20,6 +21,8 @@ public class Process {
     private Date timestamp;
     private ProcessType processType;
     private ProcessResult processResult;
+    @Relationship(type="PREVIOUS_PROCESS", direction = Relationship.OUTGOING)
+    private Process previousProcess;
 
     public Process() {}
 
@@ -57,5 +60,13 @@ public class Process {
 
     public void setProcessResult(ProcessResult processResult) {
         this.processResult = processResult;
+    }
+
+    public Process getPreviousProcess() {
+        return previousProcess;
+    }
+
+    public void setPreviousProcess(Process previousProcess) {
+        this.previousProcess = previousProcess;
     }
 }
