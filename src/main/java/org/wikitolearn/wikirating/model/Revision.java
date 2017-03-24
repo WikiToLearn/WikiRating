@@ -6,7 +6,9 @@ import org.neo4j.ogm.annotation.NodeEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.neo4j.ogm.annotation.Relationship;
+import org.neo4j.ogm.annotation.typeconversion.DateLong;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -19,8 +21,11 @@ import java.util.Set;
 public class Revision {
 	@GraphId private Long graphId;
     private int revid;
+    private String lang;
     private int userid;
     private int parentid;
+    @DateLong
+    private Date timestamp;
     private long length;
     private double changeCoefficient;
     private double currentMeanVote;
@@ -30,7 +35,6 @@ public class Revision {
     private double totalVotesReliability;
     private double totalNormalisesVotesReliability;
     private boolean validated;
-    private String lang;
     @Index(unique = true, primary=true)
     private String langRevId;
     @Relationship(type="PREVIOUS_REVISION", direction = Relationship.OUTGOING)
@@ -44,23 +48,24 @@ public class Revision {
 	public Revision() {}
 
 	/**
-	 * @param revid
-	 * @param userid
-	 * @param parentid
-	 * @param length
-	 * @param changeCoefficient
-	 * @param currentMeanVote
-	 * @param currentVotesReliability
-	 * @param currentNormalisesVotesReliability
-	 * @param totalMeanVote
-	 * @param totalVotesReliability
-	 * @param totalNormalisesVotesReliability
-	 * @param validated
-	 * @param lang
-	 */
+     * @param revid
+     * @param userid
+     * @param parentid
+     * @param length
+     * @param changeCoefficient
+     * @param currentMeanVote
+     * @param currentVotesReliability
+     * @param currentNormalisesVotesReliability
+     * @param totalMeanVote
+     * @param totalVotesReliability
+     * @param totalNormalisesVotesReliability
+     * @param validated
+     * @param lang
+     * @param timestamp
+     */
 	public Revision(int revid, int userid, int parentid, long length, double changeCoefficient, double currentMeanVote,
-			double currentVotesReliability, double currentNormalisesVotesReliability, double totalMeanVote,
-			double totalVotesReliability, double totalNormalisesVotesReliability, boolean validated, String lang) {
+                    double currentVotesReliability, double currentNormalisesVotesReliability, double totalMeanVote,
+                    double totalVotesReliability, double totalNormalisesVotesReliability, boolean validated, String lang, Date timestamp) {
 		this.revid = revid;
 		this.userid = userid;
 		this.parentid = parentid;
@@ -74,7 +79,8 @@ public class Revision {
 		this.totalNormalisesVotesReliability = totalNormalisesVotesReliability;
 		this.validated = validated;
 		this.lang = lang;
-	}
+        this.timestamp = timestamp;
+    }
 
 	/**
 	 * @return the revid
@@ -296,9 +302,17 @@ public class Revision {
 		this.votes = votes;
 	}
 
-	/* (non-Javadoc)
-             * @see java.lang.Object#toString()
-             */
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    /* (non-Javadoc)
+                 * @see java.lang.Object#toString()
+                 */
 	@Override
 	public String toString() {
 		return "Revision [graphId=" + graphId + ", revid=" + revid + ", userid=" + userid + ", parentid=" + parentid

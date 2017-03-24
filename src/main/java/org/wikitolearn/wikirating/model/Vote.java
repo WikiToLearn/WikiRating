@@ -3,8 +3,10 @@
  */
 package org.wikitolearn.wikirating.model;
 
-import com.oracle.webservices.internal.api.EnvelopeStyle;
 import org.neo4j.ogm.annotation.*;
+import org.neo4j.ogm.annotation.typeconversion.DateLong;
+
+import java.util.Date;
 
 /**
  * @author aletundo, valsdav
@@ -15,8 +17,11 @@ public class Vote {
 	@GraphId private Long graphId;
 	private double value;
 	private double reliability;
+	@DateLong
+	private Date timestamp;
 	@StartNode private User user;
 	@EndNode private Revision revision;
+
 	/**
 	 * 
 	 */
@@ -25,10 +30,12 @@ public class Vote {
 	/**
 	 * @param value
 	 * @param reliability
+	 * @param timestamp
 	 */
-	public Vote(double value, double reliability) {
+	public Vote(double value, double reliability, Date timestamp) {
 		this.value = value;
 		this.reliability = reliability;
+		this.timestamp = timestamp;
 	}
 
 	/**
@@ -75,9 +82,17 @@ public class Vote {
 		this.revision = revision;
 	}
 
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
+	}
+
 	/* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
+             * @see java.lang.Object#toString()
+             */
 	@Override
 	public String toString() {
 		return "Vote [value=" + value + ", reliability=" + reliability + "]";

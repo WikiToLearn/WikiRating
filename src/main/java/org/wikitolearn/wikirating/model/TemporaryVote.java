@@ -1,8 +1,10 @@
 package org.wikitolearn.wikirating.model;
 
-import org.neo4j.ogm.annotation.EndNode;
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.typeconversion.DateLong;
+
+import java.util.Date;
 
 /**
  * This entity represents a Vote that has to be validating,
@@ -17,13 +19,16 @@ public class TemporaryVote {
     private int userid;
     private int revid;
     private String langRevId;
+    @DateLong
+    private Date timestamp;
 
-    public TemporaryVote(double value, double reliability, int userid, int revid, String langRevId) {
+    public TemporaryVote(double value, double reliability, int userid, int revid, String langRevId, Date timestamp) {
         this.value = value;
         this.reliability = reliability;
         this.userid = userid;
         this.revid = revid;
         this.langRevId = langRevId;
+        this.timestamp = timestamp;
     }
 
     public double getValue() {
@@ -64,5 +69,13 @@ public class TemporaryVote {
 
     public void setLangRevId(String langRevId) {
         this.langRevId = langRevId;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 }
