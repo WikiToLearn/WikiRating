@@ -8,6 +8,7 @@ import org.neo4j.ogm.annotation.Index;
 import org.neo4j.ogm.annotation.NodeEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.neo4j.ogm.annotation.Relationship;
 
 /**
  * 
@@ -24,6 +25,10 @@ public class Page {
 	@Index(unique = true, primary=true)
 	private String langPageId;
 	private double pageRank;
+	@Relationship(type = "LAST_REVISION", direction = Relationship.OUTGOING)
+	private Revision lastRevision;
+	@Relationship(type = "FIRST_REVISION", direction= Relationship.OUTGOING)
+    private Revision fistRevision;
 	
 	/**
 	 * 
@@ -105,12 +110,43 @@ public class Page {
 		this.langPageId = langPageId;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Page [title=" + title + ", pageid=" + pageid + ", pageRank=" + pageRank + "]";
-	}
+    /**
+     *
+     * @return
+     */
+    public Revision getLastRevision() {
+        return lastRevision;
+    }
 
+    /**
+     *
+     * @param lastRevision
+     */
+    public void setLastRevision(Revision lastRevision) {
+        this.lastRevision = lastRevision;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Revision getFistRevision() {
+        return fistRevision;
+    }
+
+    /**
+     *
+     * @param fistRevision
+     */
+    public void setFistRevision(Revision fistRevision) {
+        this.fistRevision = fistRevision;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Page [title=" + title + ", pageid=" + pageid + ", pageRank=" + pageRank + "]";
+    }
 }

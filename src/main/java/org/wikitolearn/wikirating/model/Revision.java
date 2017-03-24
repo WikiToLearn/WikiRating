@@ -5,6 +5,7 @@ import org.neo4j.ogm.annotation.Index;
 import org.neo4j.ogm.annotation.NodeEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.neo4j.ogm.annotation.Relationship;
 
 /**
  * This class handles the data of the Revision of a page.
@@ -30,6 +31,8 @@ public class Revision {
     private String lang;
     @Index(unique = true, primary=true)
     private String langRevId;
+    @Relationship(type="PREVIOUS_REVISION", direction = Relationship.OUTGOING)
+	private Revision previousRevision;
     
 	/**
 	 * 
@@ -265,9 +268,25 @@ public class Revision {
 		this.langRevId = langRevId;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	/**
+	 *
+	 * @return
 	 */
+	public Revision getPreviousRevision() {
+		return previousRevision;
+	}
+
+	/**
+	 *
+	 * @param previousRevision
+	 */
+	public void setPreviousRevision(Revision previousRevision) {
+		this.previousRevision = previousRevision;
+	}
+
+	/* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
 	@Override
 	public String toString() {
 		return "Revision [graphId=" + graphId + ", revid=" + revid + ", userid=" + userid + ", parentid=" + parentid

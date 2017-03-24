@@ -9,6 +9,9 @@ import org.neo4j.ogm.annotation.NodeEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.neo4j.ogm.annotation.Relationship;
+
+import java.util.Set;
 
 /**
  * @author aletundo, valsdav
@@ -25,6 +28,8 @@ public class User {
 	private double votesReliability;
 	private double contributesReliability;
 	private double totalReliability;
+	@Relationship( type="AUTHOR", direction = Relationship.OUTGOING)
+	private Set<Page> pagesAuthored;
 	
 	/**
 	 * 
@@ -117,9 +122,25 @@ public class User {
 		this.totalReliability = totalReliability;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	/**
+	 *
+	 * @return
 	 */
+	public Set<Page> getPagesAuthored() {
+		return pagesAuthored;
+	}
+
+	/**
+	 *
+	 * @param pagesAuthored
+	 */
+	public void setPagesAuthored(Set<Page> pagesAuthored) {
+		this.pagesAuthored = pagesAuthored;
+	}
+
+	/* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
 	@Override
 	public String toString() {
 		return "User [username=" + username + ", userid=" + userid + ", votesReliability=" + votesReliability
