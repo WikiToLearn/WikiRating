@@ -11,7 +11,17 @@ import org.wikitolearn.wikirating.model.Page;
  *
  */
 public interface PageRepository extends GraphRepository<Page> {
+	/**
+	 * 
+	 * @param title
+	 * @return
+	 */
 	Page findByTitle(String title);
 	
+	/**
+	 * 
+	 * @param langPageId
+	 * @return
+	 */
 	Page findByLangPageId(String langPageId);
 }
