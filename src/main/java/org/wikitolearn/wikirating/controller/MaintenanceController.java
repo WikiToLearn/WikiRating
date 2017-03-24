@@ -44,8 +44,6 @@ public class MaintenanceController {
 	private UserService userService;
 	@Autowired
     private RevisionService revisionService;
-
-    private boolean initializedDB = false;
 	
 	/**
 	 * Secured endpoint to enable or disable read only mode. When read only mode is enabled only GET requests are
@@ -106,21 +104,14 @@ public class MaintenanceController {
 	@RequestMapping(value = "${maintenance.init.uri}", method = RequestMethod.POST, produces = "application/json")
 	public boolean initialize(@RequestParam("lang") String lang, @Value("${mediawiki.protocol}") String protocol, @Value("${mediawiki.api.url}") String apiUrl){
 	    String url = protocol + lang + "." + apiUrl;
-	    //starting a new Process
-        Process initializeProcess = new Process(ProcessType.INIT);
-
-        // Initializing the DB schema, only the first time
-        if (! initializedDB){
-            initializeDbClasses();
-            initializedDB = true;
-        }
+	    // Starting a new Process
+        //Process initializeProcess = new Process(ProcessType.INIT);
         
         CompletableFuture<Boolean> parallelInsertions = 
         		CompletableFuture.allOf(pageService.addAllPages(lang, url), userService.addAllUsers(url))
-        		.thenCompose(s -> revisionService.addAllRevisions(lang, url));
-        
+        		.thenCompose(result -> revisionService.addAllRevisions(lang, url));
         try {
-			boolean result =  parallelInsertions.get();
+			/*boolean result =  parallelInsertions.get();
 			//saving the result of the process
 			if (result){
 			    initializeProcess.setProcessResult(ProcessResult.DONE);
@@ -128,25 +119,13 @@ public class MaintenanceController {
                 initializeProcess.setProcessResult(ProcessResult.ERROR);
             }
 			//metadataDAO.addProcess(initializeProcess);
-            return result;
+            return result;*/
+        	return parallelInsertions.get();
 		} catch (InterruptedException | ExecutionException e) {
 			LOG.error("Something went wrong during database initialization. {}", e.getMessage());
 			return false;
 		}
 	}
-	
-	/**
-     * This methods initializes all the DAO Classes, creating the right types on the DB.
-     * @return void
-     */
-    private void initializeDbClasses(){
-        LOG.info("Creating Database classes...");
-        //metadataDAO.createDatabaseClass();
-        //pageDao.createDatabaseClass();
-        //userDao.createDatabaseClass();
-        //revisionDAO.createDatabaseClass();
-        LOG.info("Completed creation of database classes.");
-    }
 	
 	/**
 	 * 

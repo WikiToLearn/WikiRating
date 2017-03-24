@@ -1,5 +1,6 @@
 package org.wikitolearn.wikirating.model;
 
+import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
@@ -10,6 +11,7 @@ import org.neo4j.ogm.annotation.Relationship;
  */
 @NodeEntity(label="Metadata")
 public class Metadata {
+	@GraphId private Long id;
     @Relationship(type="LAST_PROCESS", direction = Relationship.OUTGOING)
     private Process lastProcess;
     private int currentnumberOfPages;

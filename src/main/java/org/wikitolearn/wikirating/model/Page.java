@@ -25,10 +25,10 @@ public class Page {
 	@Index(unique = true, primary=true)
 	private String langPageId;
 	private double pageRank;
-	@Relationship(type = "LAST_REVISION", direction = Relationship.OUTGOING)
+	/*@Relationship(type = "LAST_REVISION", direction = Relationship.OUTGOING)
 	private Revision lastRevision;
 	@Relationship(type = "FIRST_REVISION", direction= Relationship.OUTGOING)
-    private Revision fistRevision;
+    private Revision fistRevision;*/
 	
 	/**
 	 * 
@@ -114,33 +114,33 @@ public class Page {
      *
      * @return
      */
-    public Revision getLastRevision() {
-        return lastRevision;
-    }
-
-    /**
-     *
-     * @param lastRevision
-     */
-    public void setLastRevision(Revision lastRevision) {
-        this.lastRevision = lastRevision;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public Revision getFistRevision() {
-        return fistRevision;
-    }
-
-    /**
-     *
-     * @param fistRevision
-     */
-    public void setFistRevision(Revision fistRevision) {
-        this.fistRevision = fistRevision;
-    }
+//    public Revision getLastRevision() {
+//        return lastRevision;
+//    }
+//
+//    /**
+//     *
+//     * @param lastRevision
+//     */
+//    public void setLastRevision(Revision lastRevision) {
+//        this.lastRevision = lastRevision;
+//    }
+//
+//    /**
+//     *
+//     * @return
+//     */
+//    public Revision getFistRevision() {
+//        return fistRevision;
+//    }
+//
+//    /**
+//     *
+//     * @param fistRevision
+//     */
+//    public void setFistRevision(Revision fistRevision) {
+//        this.fistRevision = fistRevision;
+//    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
