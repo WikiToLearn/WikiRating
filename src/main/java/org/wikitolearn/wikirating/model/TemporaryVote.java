@@ -15,12 +15,14 @@ public class TemporaryVote {
     private double value;
     private double reliability;
     private int userid;
-    private int langRevId;
+    private int revid;
+    private String langRevId;
 
-    public TemporaryVote(double value, double reliability, int userid, int langRevId) {
+    public TemporaryVote(double value, double reliability, int userid, int revid, String langRevId) {
         this.value = value;
         this.reliability = reliability;
         this.userid = userid;
+        this.revid = revid;
         this.langRevId = langRevId;
     }
 
@@ -48,11 +50,19 @@ public class TemporaryVote {
         this.userid = userid;
     }
 
-    public int getLangRevId() {
+    public int getRevid() {
+        return revid;
+    }
+
+    public void setRevid(int revid) {
+        this.revid = revid;
+    }
+
+    public String getLangRevId() {
         return langRevId;
     }
 
-    public void setLangRevId(int langRevId) {
+    public void setLangRevId(String langRevId) {
         this.langRevId = langRevId;
     }
 }
