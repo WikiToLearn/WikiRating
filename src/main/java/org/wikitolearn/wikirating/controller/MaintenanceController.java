@@ -6,6 +6,8 @@ package org.wikitolearn.wikirating.controller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -21,12 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.wikitolearn.wikirating.model.Process;
+//import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.service.PageService;
 import org.wikitolearn.wikirating.service.RevisionService;
 import org.wikitolearn.wikirating.service.UserService;
-import org.wikitolearn.wikirating.util.enums.ProcessResult;
-import org.wikitolearn.wikirating.util.enums.ProcessType;
+//import org.wikitolearn.wikirating.util.MediaWikiApiUtils;
+//import org.wikitolearn.wikirating.util.enums.ProcessResult;
+//import org.wikitolearn.wikirating.util.enums.ProcessType;
 
 /**
  * 
@@ -37,18 +40,28 @@ import org.wikitolearn.wikirating.util.enums.ProcessType;
 public class MaintenanceController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MaintenanceController.class);
-	
+
 	@Autowired
 	private PageService pageService;
 	@Autowired
 	private UserService userService;
 	@Autowired
-    private RevisionService revisionService;
-	
+	private RevisionService revisionService;
+	@Value("#{'${mediawiki.langs}'.split(',')}")
+	private List<String> langs;
+	@Value("${mediawiki.protocol}")
+	private String protocol;
+	@Value("${mediawiki.api.url}")
+	private String apiUrl;
+
 	/**
-	 * Secured endpoint to enable or disable read only mode. When read only mode is enabled only GET requests are
-	 * allowed. To change this behavior @see org.wikitolearn.wikirating.wikirating.filter.MaintenanceFilter.
-	 * @param active String requested parameter that toggle the re. Binary values are accepted.
+	 * Secured endpoint to enable or disable read only mode. When read only mode
+	 * is enabled only GET requests are allowed. To change this behavior @see
+	 * org.wikitolearn.wikirating.wikirating.filter.MaintenanceFilter.
+	 * 
+	 * @param active
+	 *            String requested parameter that toggle the re. Binary values
+	 *            are accepted.
 	 * @return a JSON object with the response
 	 */
 	@RequestMapping(value = "${maintenance.readonlymode.uri}", method = RequestMethod.POST, produces = "application/json")
@@ -71,14 +84,15 @@ public class MaintenanceController {
 				try {
 					response.put("status", "success");
 					response.put("message", "Application is in maintenance mode now.");
-					// Create maintenance lock file with a maintenance.active property setted to true
+					// Create maintenance lock file with a maintenance.active
+					// property setted to true
 					Properties props = new Properties();
 					props.setProperty("maintenance.active", "true");
 					File lockFile = new File("maintenance.lock");
 					OutputStream out = new FileOutputStream(lockFile);
 					DefaultPropertiesPersister p = new DefaultPropertiesPersister();
 					p.store(props, out, "Maintenance mode lock file");
-					
+
 					LOG.debug("Created maintenance lock file.");
 					LOG.info("Application is in maintenance mode now.");
 				} catch (Exception e) {
@@ -95,44 +109,89 @@ public class MaintenanceController {
 		}
 		return response.toString();
 	}
-	
+
 	/**
-	 * Secured endpoint that handles initialization request for the given language
+	 * Secured endpoint that handles initialization request for the given
+	 * language
+	 * 
 	 * @param lang
-	 * @return true if the initialization is completed without errors, false otherwise
+	 * @return true if the initialization is completed without errors, false
+	 *         otherwise
 	 */
 	@RequestMapping(value = "${maintenance.init.uri}", method = RequestMethod.POST, produces = "application/json")
-	public boolean initialize(@RequestParam("lang") String lang, @Value("${mediawiki.protocol}") String protocol, @Value("${mediawiki.api.url}") String apiUrl){
-	    String url = protocol + lang + "." + apiUrl;
-	    // Starting a new Process
-        //Process initializeProcess = new Process(ProcessType.INIT);
-        
-        CompletableFuture<Boolean> parallelInsertions = 
-        		CompletableFuture.allOf(pageService.addAllPages(lang, url), userService.addAllUsers(url))
-        		.thenCompose(result -> revisionService.addAllRevisions(lang, url))
-        		.thenCompose(result -> userService.setAllUsersAuthorship());
-        try {
-			/*boolean result =  parallelInsertions.get();
-			//saving the result of the process
-			if (result){
-			    initializeProcess.setProcessResult(ProcessResult.DONE);
-            }else{
-                initializeProcess.setProcessResult(ProcessResult.ERROR);
-            }
-			//metadataDAO.addProcess(initializeProcess);
-            return result;*/
-        	return parallelInsertions.get();
+	public boolean initialize() {
+		// Starting a new Process
+		// Process initializeProcess = new Process(ProcessType.INIT);
+
+		CompletableFuture<Boolean> initFuture = CompletableFuture
+				.allOf(buildUsersAndPagesFutersList().toArray(new CompletableFuture[langs.size() + 1]))
+				.thenCompose(result -> CompletableFuture
+						.allOf(buildRevisionsFuturesList().toArray(new CompletableFuture[langs.size()])))
+				.thenCompose(result -> userService.setAllUsersAuthorship());
+
+		/*
+		 * CompletableFuture<Boolean> parallelInsertions =
+		 * CompletableFuture.allOf(pageService.addAllPages(lang, url),
+		 * userService.addAllUsers(url)) .thenCompose(result ->
+		 * revisionService.addAllRevisions(lang, url)) .thenCompose(result ->
+		 * userService.setAllUsersAuthorship());
+		 */
+		try {
+			/*
+			 * boolean result = parallelInsertions.get(); //saving the result of
+			 * the process if (result){
+			 * initializeProcess.setProcessResult(ProcessResult.DONE); }else{
+			 * initializeProcess.setProcessResult(ProcessResult.ERROR); }
+			 * //metadataDAO.addProcess(initializeProcess); return result;
+			 */
+			return initFuture.get();
 		} catch (InterruptedException | ExecutionException e) {
-			LOG.error("Something went wrong during database initialization. {}", e.getMessage());
+			LOG.error("Something went wrong. {}", e.getMessage());
 			return false;
 		}
 	}
-	
+
 	/**
 	 * 
 	 */
 	@RequestMapping(value = "${maintenance.wipe.uri}", method = RequestMethod.DELETE, produces = "application/json")
-	public void wipeDatabase(){
+	public void wipeDatabase() {
 		// TODO
+	}
+
+	/**
+	 * Build a list of CompletableFuture. The elements are the fetches of pages'
+	 * revisions from each domain language.
+	 * 
+	 * @return a list of CompletableFuture
+	 */
+	private List<CompletableFuture<Boolean>> buildRevisionsFuturesList() {
+		List<CompletableFuture<Boolean>> parallelRevisionsFutures = new ArrayList<>();
+		// Add revisions fetch for each domain language
+		for (String lang : langs) {
+			String url = protocol + lang + "." + apiUrl;
+			parallelRevisionsFutures.add(revisionService.addAllRevisions(lang, url));
+		}
+		return parallelRevisionsFutures;
+	}
+
+	/**
+	 * Build a list of CompletableFuture. The first one is the fetch of the
+	 * users from the first domain in mediawiki.langs list. The rest of the
+	 * elements are the fetches of the pages for each language. This
+	 * implementation assumes that the users are shared among domains.
+	 * 
+	 * @return a list of CompletableFuture
+	 */
+	private List<CompletableFuture<Boolean>> buildUsersAndPagesFutersList() {
+		List<CompletableFuture<Boolean>> usersAndPagesInsertion = new ArrayList<>();
+		// Add users fetch as fist operation
+		usersAndPagesInsertion.add(userService.addAllUsers(protocol + langs.get(0) + "." + apiUrl));
+		// Add pages fetch for each domain language
+		for (String lang : langs) {
+			String url = protocol + lang + "." + apiUrl;
+			usersAndPagesInsertion.add(pageService.addAllPages(lang, url));
+		}
+		return usersAndPagesInsertion;
 	}
 }

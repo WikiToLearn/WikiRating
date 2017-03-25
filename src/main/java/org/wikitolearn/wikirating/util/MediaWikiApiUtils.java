@@ -15,8 +15,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
+import org.wikidata.wdtk.wikibaseapi.LoginFailedException;
 
 /**
  * @author aletundo, valsdav
@@ -26,6 +28,10 @@ import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 public class MediaWikiApiUtils {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(MediaWikiApiUtils.class);
+	@Value("${mediawiki.api.user}")
+	private String apiUser;
+	@Value("${mediawiki.api.password}")
+	private String apiPassword;
 	
 	 /**
 	 * This method creates a MediaWiki Connection object
@@ -35,7 +41,17 @@ public class MediaWikiApiUtils {
 
 	public ApiConnection getApiConnection(String apiUrl) {
 		ApiConnection connection = new ApiConnection(apiUrl);
-		return connection;
+		if(connection.isLoggedIn()){
+			return connection;
+		}else{
+			try {
+				connection.login(apiUser, apiPassword);
+			} catch (LoginFailedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return connection;
+		}
 	}
 	
 	/**
