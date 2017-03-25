@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import org.wikidata.wdtk.wikibaseapi.LoginFailedException;
+import org.wikitolearn.wikirating.exception.GenericException;
 
 /**
  * @author aletundo, valsdav
@@ -47,8 +48,9 @@ public class MediaWikiApiUtils {
 			try {
 				connection.login(apiUser, apiPassword);
 			} catch (LoginFailedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error("MediaWiki login failed. {}", e.getMessage());
+				// TODO change exception
+				throw new GenericException(e.getMessage());
 			}
 			return connection;
 		}
