@@ -109,7 +109,8 @@ public class MaintenanceController {
         
         CompletableFuture<Boolean> parallelInsertions = 
         		CompletableFuture.allOf(pageService.addAllPages(lang, url), userService.addAllUsers(url))
-        		.thenCompose(result -> revisionService.addAllRevisions(lang, url));
+        		.thenCompose(result -> revisionService.addAllRevisions(lang, url))
+        		.thenCompose(result -> userService.setAllUsersAuthorship());
         try {
 			/*boolean result =  parallelInsertions.get();
 			//saving the result of the process

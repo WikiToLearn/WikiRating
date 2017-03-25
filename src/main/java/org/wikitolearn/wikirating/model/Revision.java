@@ -41,6 +41,8 @@ public class Revision {
 	private Revision previousRevision;
     @Relationship(type="VOTE", direction = Relationship.INCOMING)
 	private Set<Vote> votes;
+    @Relationship( type="AUTHOR", direction = Relationship.INCOMING)
+	private User author;
     
 	/**
 	 * 
@@ -279,48 +281,87 @@ public class Revision {
 	}
 
 	/**
-	 *
-	 * @return
+	 * @return the graphId
+	 */
+	public Long getGraphId() {
+		return graphId;
+	}
+
+	/**
+	 * @param graphId the graphId to set
+	 */
+	public void setGraphId(Long graphId) {
+		this.graphId = graphId;
+	}
+
+	/**
+	 * @return the timestamp
+	 */
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * @param timestamp the timestamp to set
+	 */
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	/**
+	 * @return the previousRevision
 	 */
 	public Revision getPreviousRevision() {
 		return previousRevision;
 	}
 
 	/**
-	 *
-	 * @param previousRevision
+	 * @param previousRevision the previousRevision to set
 	 */
 	public void setPreviousRevision(Revision previousRevision) {
 		this.previousRevision = previousRevision;
 	}
 
+	/**
+	 * @return the votes
+	 */
 	public Set<Vote> getVotes() {
 		return votes;
 	}
 
+	/**
+	 * @param votes the votes to set
+	 */
 	public void setVotes(Set<Vote> votes) {
 		this.votes = votes;
 	}
 
-    public Date getTimestamp() {
-        return timestamp;
-    }
+	/**
+	 * @return the author
+	 */
+	public User getAuthor() {
+		return author;
+	}
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
+	/**
+	 * @param author the author to set
+	 */
+	public void setAuthor(User author) {
+		this.author = author;
+	}
 
-    /* (non-Javadoc)
-                 * @see java.lang.Object#toString()
-                 */
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
-		return "Revision [graphId=" + graphId + ", revid=" + revid + ", userid=" + userid + ", parentid=" + parentid
-				+ ", length=" + length + ", changeCoefficient=" + changeCoefficient + ", currentMeanVote="
-				+ currentMeanVote + ", currentVotesReliability=" + currentVotesReliability
-				+ ", currentNormalisesVotesReliability=" + currentNormalisesVotesReliability + ", totalMeanVote="
-				+ totalMeanVote + ", totalVotesReliability=" + totalVotesReliability
+		return "Revision [graphId=" + graphId + ", revid=" + revid + ", lang=" + lang + ", userid=" + userid
+				+ ", parentid=" + parentid + ", timestamp=" + timestamp + ", length=" + length + ", changeCoefficient="
+				+ changeCoefficient + ", currentMeanVote=" + currentMeanVote + ", currentVotesReliability="
+				+ currentVotesReliability + ", currentNormalisesVotesReliability=" + currentNormalisesVotesReliability
+				+ ", totalMeanVote=" + totalMeanVote + ", totalVotesReliability=" + totalVotesReliability
 				+ ", totalNormalisesVotesReliability=" + totalNormalisesVotesReliability + ", validated=" + validated
-				+ ", lang=" + lang + ", langRevId=" + langRevId + "]";
+				+ ", langRevId=" + langRevId + ", previousRevision=" + previousRevision + ", votes=" + votes
+				+ ", author=" + author + "]";
 	}
 }

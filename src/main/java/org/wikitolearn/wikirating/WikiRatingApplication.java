@@ -32,7 +32,7 @@ public class WikiRatingApplication extends AsyncConfigurerSupport{
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(5);
         executor.setMaxPoolSize(10);
-        executor.setThreadNamePrefix("ServicesTread-");
+        executor.setThreadNamePrefix("ServicesThread-");
         executor.initialize();
         return executor;
     }

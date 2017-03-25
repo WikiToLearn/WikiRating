@@ -65,27 +65,45 @@ public class Vote {
 	public void setReliability(double reliability) {
 		this.reliability = reliability;
 	}
-
+	/**
+	 * 
+	 * @return
+	 */
 	public User getUser() {
 		return user;
 	}
-
+	/**
+	 * 
+	 * @param user
+	 */
 	public void setUser(User user) {
 		this.user = user;
 	}
-
+	/**
+	 * 
+	 * @return
+	 */
 	public Revision getRevision() {
 		return revision;
 	}
-
+	/**
+	 * 
+	 * @param revision
+	 */
 	public void setRevision(Revision revision) {
 		this.revision = revision;
 	}
-
+	/**
+	 * 
+	 * @return
+	 */
 	public Date getTimestamp() {
 		return timestamp;
 	}
-
+	/**
+	 * 
+	 * @param timestamp
+	 */
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}

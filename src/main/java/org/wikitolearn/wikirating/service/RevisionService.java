@@ -3,6 +3,7 @@
  */
 package org.wikitolearn.wikirating.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -13,8 +14,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.model.Page;
 import org.wikitolearn.wikirating.model.Revision;
+import org.wikitolearn.wikirating.model.User;
 import org.wikitolearn.wikirating.repository.PageRepository;
 import org.wikitolearn.wikirating.repository.RevisionRepository;
+import org.wikitolearn.wikirating.repository.UserRepository;
 import org.wikitolearn.wikirating.service.mediawiki.RevisionMediaWikiService;
 
 /**
@@ -31,6 +34,8 @@ public class RevisionService {
 	private RevisionRepository revisionRepository;
 	@Autowired
 	private PageRepository pageRepository;
+	@Autowired
+	private UserRepository userRepository;
 
 	/**
 	 * This method inserts all the revisions for every page, creating the

@@ -28,7 +28,7 @@ public class User {
 	private double votesReliability;
 	private double contributesReliability;
 	private double totalReliability;
-	@Relationship( type="AUTHOR", direction = Relationship.OUTGOING)
+	@Relationship( type="AUTHOR", direction = Relationship.UNDIRECTED)
 	private Set<Revision> revisionsAuthored;
 	@Relationship( type="VOTE", direction = Relationship.OUTGOING)
 	private Set<Vote> votes;
