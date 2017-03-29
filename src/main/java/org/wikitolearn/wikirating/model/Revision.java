@@ -355,13 +355,18 @@ public class Revision {
 	 */
 	@Override
 	public String toString() {
-		return "Revision [graphId=" + graphId + ", revid=" + revid + ", lang=" + lang + ", userid=" + userid
-				+ ", parentid=" + parentid + ", timestamp=" + timestamp + ", length=" + length + ", changeCoefficient="
-				+ changeCoefficient + ", currentMeanVote=" + currentMeanVote + ", currentVotesReliability="
-				+ currentVotesReliability + ", currentNormalisesVotesReliability=" + currentNormalisesVotesReliability
-				+ ", totalMeanVote=" + totalMeanVote + ", totalVotesReliability=" + totalVotesReliability
-				+ ", totalNormalisesVotesReliability=" + totalNormalisesVotesReliability + ", validated=" + validated
-				+ ", langRevId=" + langRevId + ", previousRevision=" + previousRevision + ", votes=" + votes
-				+ ", author=" + author + "]";
+		return "Revision{" +
+				"graphId=" + graphId +
+				", revid=" + revid +
+				", lang='" + lang + '\'' +
+				", userid=" + userid +
+				", parentid=" + parentid +
+				", timestamp=" + timestamp +
+				", length=" + length +
+				", changeCoefficient=" + changeCoefficient +
+				", validated=" + validated +
+				", langRevId='" + langRevId + '\'' +
+				", author=" + author +
+				'}';
 	}
 }

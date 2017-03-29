@@ -23,13 +23,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-//import org.wikitolearn.wikirating.model.Process;
-import org.wikitolearn.wikirating.service.PageService;
-import org.wikitolearn.wikirating.service.RevisionService;
-import org.wikitolearn.wikirating.service.UserService;
-//import org.wikitolearn.wikirating.util.MediaWikiApiUtils;
-//import org.wikitolearn.wikirating.util.enums.ProcessResult;
-//import org.wikitolearn.wikirating.util.enums.ProcessType;
+import org.wikitolearn.wikirating.model.Process;
+import org.wikitolearn.wikirating.service.*;
+import org.wikitolearn.wikirating.util.enums.ProcessStatus;
+import org.wikitolearn.wikirating.util.enums.ProcessType;
 
 /**
  * 
@@ -47,6 +44,10 @@ public class MaintenanceController {
 	private UserService userService;
 	@Autowired
 	private RevisionService revisionService;
+	@Autowired
+    private ProcessService processService;
+	@Autowired
+	private MetadataService metadataService;
 	@Value("#{'${mediawiki.langs}'.split(',')}")
 	private List<String> langs;
 	@Value("${mediawiki.protocol}")
@@ -113,15 +114,16 @@ public class MaintenanceController {
 	/**
 	 * Secured endpoint that handles initialization request for the given
 	 * language
-	 * 
-	 * @param lang
+	 *
 	 * @return true if the initialization is completed without errors, false
 	 *         otherwise
 	 */
 	@RequestMapping(value = "${maintenance.init.uri}", method = RequestMethod.POST, produces = "application/json")
 	public boolean initialize() {
+	    // Initialize Metadata service
+        metadataService.initMetadata();
 		// Starting a new Process
-		// Process initializeProcess = new Process(ProcessType.INIT);
+		Process initializeProcess = processService.createNewProcess(ProcessType.INIT);
 
 		CompletableFuture<Boolean> initFuture = CompletableFuture
 				.allOf(buildUsersAndPagesFutersList().toArray(new CompletableFuture[langs.size() + 1]))
@@ -137,14 +139,14 @@ public class MaintenanceController {
 		 * userService.setAllUsersAuthorship());
 		 */
 		try {
-			/*
-			 * boolean result = parallelInsertions.get(); //saving the result of
-			 * the process if (result){
-			 * initializeProcess.setProcessResult(ProcessResult.DONE); }else{
-			 * initializeProcess.setProcessResult(ProcessResult.ERROR); }
-			 * //metadataDAO.addProcess(initializeProcess); return result;
-			 */
-			return initFuture.get();
+            boolean result = initFuture.get();
+            //saving the result of the process
+            if (result){
+                processService.closeCurrentProcess(ProcessStatus.DONE);
+            }else{
+                processService.closeCurrentProcess(ProcessStatus.EXCEPTION);
+            }
+            return result;
 		} catch (InterruptedException | ExecutionException e) {
 			LOG.error("Something went wrong. {}", e.getMessage());
 			return false;

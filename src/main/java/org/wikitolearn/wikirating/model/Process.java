@@ -1,13 +1,15 @@
 package org.wikitolearn.wikirating.model;
 
 import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.Index;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.annotation.typeconversion.DateLong;
-import org.wikitolearn.wikirating.util.enums.ProcessResult;
+import org.wikitolearn.wikirating.util.enums.ProcessStatus;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * This class represents a Process happened in the engine.
@@ -19,8 +21,10 @@ import java.util.Date;
 @NodeEntity( label = "Process")
 public class Process {
 	@GraphId private Long graphId;
+	@Index(unique = true, primary = true)
+	private String processId;
     private ProcessType processType;
-    private ProcessResult processResult;
+    private ProcessStatus processStatus;
     @Relationship(type="PREVIOUS_PROCESS", direction = Relationship.OUTGOING)
     private Process previousProcess;
     @DateLong
@@ -30,16 +34,19 @@ public class Process {
 
     public Process() {}
 
-    public Process( ProcessType processType, ProcessResult processResult, Date beginOfProcess, Date endOfProcess) {
+    public Process(String processId, ProcessType processType,
+                   ProcessStatus processStatus, Date beginOfProcess, Date endOfProcess) {
+        this.processId = processId;
         this.processType = processType;
-        this.processResult = processResult;
+        this.processStatus = processStatus;
         this.beginOfProcess = beginOfProcess;
         this.endOfProcess = endOfProcess;
     }
 
     public Process(ProcessType processType){
+        this.processId = UUID.randomUUID().toString();
         this.processType = processType;
-        this.processResult = ProcessResult.ONGOING;
+        this.processStatus = ProcessStatus.ONGOING;
         this.beginOfProcess = new Date();
     }
 
@@ -51,12 +58,12 @@ public class Process {
         this.processType = processType;
     }
 
-    public ProcessResult getProcessResult() {
-        return processResult;
+    public ProcessStatus getProcessStatus() {
+        return processStatus;
     }
 
-    public void setProcessResult(ProcessResult processResult) {
-        this.processResult = processResult;
+    public void setProcessStatus(ProcessStatus processStatus) {
+        this.processStatus = processStatus;
     }
 
     public Process getPreviousProcess() {
@@ -81,5 +88,16 @@ public class Process {
 
     public void setEndOfProcess(Date endOfProcess) {
         this.endOfProcess = endOfProcess;
+    }
+
+    @Override
+    public String toString() {
+        return "Process[" +
+                "processId='" + processId + '\'' +
+                ", processType=" + processType +
+                ", processStatus=" + processStatus +
+                ", beginOfProcess=" + beginOfProcess +
+                ", endOfProcess=" + endOfProcess +
+                ']';
     }
 }
