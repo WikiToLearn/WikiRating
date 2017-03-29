@@ -21,6 +21,7 @@ public class Page {
 	@GraphId private Long graphId;
 	private int pageid;
 	private String title;
+	@Index
 	private String lang;
 	@Index(unique = true, primary=true)
 	private String langPageId;

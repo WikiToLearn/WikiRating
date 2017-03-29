@@ -25,6 +25,9 @@ public class MetadataService {
     @Autowired
     private ProcessRepository processRepository;
 
+    /**
+     * This method insert in the DB the root nodes of the metadata
+     */
     public void initMetadata(){
         Metadata metadataProcesses = new Metadata(MetadataType.PROCESSES);
         Metadata metadataStats = new Metadata(MetadataType.STATS);
@@ -32,6 +35,12 @@ public class MetadataService {
         metadataRepository.save(metadataStats);
     }
 
+    /**
+     * This method inserts in the DB a new Process connecting it
+     * to the Metadata root node and to the previous Process.
+     * @param process
+     * @return
+     */
     public boolean addProcess(Process process){
         Metadata metadata = metadataRepository.getMetadataByType(MetadataType.PROCESSES);
         //Creating the new process node of the chain

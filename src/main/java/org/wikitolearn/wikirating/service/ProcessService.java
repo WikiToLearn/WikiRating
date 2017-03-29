@@ -19,6 +19,12 @@ public class ProcessService {
     @Autowired
     private ProcessRepository processRepository;
 
+    /**
+     * This method creates a new process of the specified
+     * type and adds it on the top of the processes chain.
+     * @param type Type of process requested
+     * @return returns the created process
+     */
     public Process createNewProcess(ProcessType type){
         Process proc = new Process(type);
         metadataService.addProcess(proc);
@@ -26,6 +32,12 @@ public class ProcessService {
         return proc;
     }
 
+    /**
+     * This method modify the status of the last opened process
+     * and saves it.
+     * @param status Final status of the process
+     * @return returns the closed process
+     */
     public Process closeCurrentProcess(ProcessStatus status){
         Process currentProcess = processRepository.getLastProcess();
         currentProcess.setProcessStatus(status);
