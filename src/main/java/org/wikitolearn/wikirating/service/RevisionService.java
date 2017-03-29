@@ -57,8 +57,9 @@ public class RevisionService {
             while(it.hasNext()){
                 Revision rev = it.next();
                 rev.setLangRevId(lang + "_" + rev.getRevid());
-                if (it.hasPrevious()){
-                    rev.setPreviousRevision(revisions.get(it.previousIndex()));
+                rev.setLang(lang);
+                if (it.previousIndex() != 0){
+                    rev.setPreviousRevision(revisions.get(it.previousIndex()-1));
                 }
             }
 			//saving all the revisions node
