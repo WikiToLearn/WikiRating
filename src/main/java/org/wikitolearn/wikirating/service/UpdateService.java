@@ -11,10 +11,8 @@ import org.wikitolearn.wikirating.model.UpdateInfo;
 import org.wikitolearn.wikirating.service.mediawiki.UpdateMediaWikiService;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by valsdav on 29/03/17.
@@ -24,10 +22,8 @@ public class UpdateService {
     private static final Logger LOG = LoggerFactory.getLogger(UpdateService.class);
 
     @Autowired private PageService pageService;
-    @Autowired private UserService userService;
     @Autowired private RevisionService revisionService;
     @Autowired private ProcessService processService;
-    @Autowired private MetadataService metadataService;
     @Autowired private UpdateMediaWikiService updateMediaWikiService;
     @Value("#{'${mediawiki.langs}'.split(',')}")
     private List<String> langs;
@@ -71,6 +67,8 @@ public class UpdateService {
                         break;
                     case DELETE:
                         break;
+				default:
+					break;
                 }
             });
 
