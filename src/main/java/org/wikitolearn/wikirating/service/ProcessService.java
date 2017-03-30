@@ -1,5 +1,7 @@
 package org.wikitolearn.wikirating.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.model.Process;
@@ -14,6 +16,7 @@ import java.util.Date;
  */
 @Service
 public class ProcessService {
+    private static final Logger LOG = LoggerFactory.getLogger(ProcessService.class);
     @Autowired
     private MetadataService metadataService;
     @Autowired
@@ -29,6 +32,7 @@ public class ProcessService {
         Process proc = new Process(type);
         metadataService.addProcess(proc);
         processRepository.save(proc);
+        LOG.info("Created new process: {}", proc.toString());
         return proc;
     }
 
@@ -43,6 +47,7 @@ public class ProcessService {
         currentProcess.setProcessStatus(status);
         currentProcess.setEndOfProcess(new Date());
         processRepository.save(currentProcess);
+        LOG.info("Updated last process: {}", currentProcess.toString());
         return currentProcess;
     }
 

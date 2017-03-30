@@ -3,10 +3,8 @@
  */
 package org.wikitolearn.wikirating.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
@@ -62,7 +60,7 @@ public class RevisionService {
                     rev.setPreviousRevision(revisions.get(it.previousIndex()-1));
                 }
             }
-			//saving all the revisions node
+			// Saving all the revisions node and the page node
 			revisionRepository.save(revisions);
 			pageRepository.save(page);
 			LOG.info("Inserted revisions for page {}", page.getLangPageId());

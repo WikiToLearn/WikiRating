@@ -17,7 +17,7 @@ import org.wikitolearn.wikirating.util.enums.MetadataType;
  */
 @Service
 public class MetadataService {
-    private static final Logger LOG = LoggerFactory.getLogger(PageService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MetadataService.class);
     @Autowired
     private PageMediaWikiService pageMediaWikiService;
     @Autowired
@@ -43,7 +43,7 @@ public class MetadataService {
      */
     public boolean addProcess(Process process){
         Metadata metadata = metadataRepository.getMetadataByType(MetadataType.PROCESSES);
-        //Creating the new process node of the chain
+        // Creating the new process node of the chain
         process.setPreviousProcess(metadata.getLastItem());
         metadata.setLastItem(process);
         metadataRepository.save(metadata);
