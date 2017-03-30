@@ -110,7 +110,7 @@ public class MediaWikiApiUtils {
 	}
 
 	/**
-	 * This method constructs the MAP of parameters to attach iwth the Mediawiki Query to get
+	 * This method constructs the MAP of parameters to attach to the Mediawiki Query to get
 	 * all the recent changes in one namespace between two dates.
 	 * @param namespace namespace to user
 	 * @param begin start of the recentchanges
@@ -126,11 +126,33 @@ public class MediaWikiApiUtils {
 		queryParameterMap.put("format", "json");
 		queryParameterMap.put("rcnamespace", namespace);
 		queryParameterMap.put("rcshow", "!bot|!redirect");
-		queryParameterMap.put("rcprop", "userid|timestamp|ids|sizes|flags|loginfo");
-		queryParameterMap.put("rctype", "new|edit|log");
+		queryParameterMap.put("rcprop", "title|userid|timestamp|ids|sizes|flags");
+		queryParameterMap.put("rctype", "new|edit");
 		queryParameterMap.put("rcstart", dateFormat.format(begin));
 		queryParameterMap.put("rcend", dateFormat.format(end));
 		queryParameterMap.put("rcdir", "newer");
+		return queryParameterMap;
+	}
+
+	/**
+	 * This method constructs the MAP of parameters to attach to the Mediawiki Query to get
+	 * all the log entries between two dates. We need the logs about moved pages, new users, deleted pages.
+	 * @param logtype Type of log to fetch: newusers|delete|move
+	 * @param begin start of the recentchanges
+	 * @param end end of the changes
+	 * @return the map with the parameters
+	 */
+	public Map<String, String> getLogEventsParam(String logtype, Date begin, Date end){
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		Map<String, String> queryParameterMap = new HashMap<>();
+		queryParameterMap.put("action", "query");
+		queryParameterMap.put("list", "logevents");
+		queryParameterMap.put("lelimit", "max");
+		queryParameterMap.put("format", "json");
+		queryParameterMap.put("leprop", "ids|title|user|userid|timestamp");
+		queryParameterMap.put("lestart", dateFormat.format(begin));
+		queryParameterMap.put("leend", dateFormat.format(end));
+		queryParameterMap.put("ledir", "newer");
 		return queryParameterMap;
 	}
 	

@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.model.Page;
 import org.wikitolearn.wikirating.model.Revision;
+import org.wikitolearn.wikirating.model.UpdateInfo;
 import org.wikitolearn.wikirating.repository.PageRepository;
 import org.wikitolearn.wikirating.repository.RevisionRepository;
 import org.wikitolearn.wikirating.service.mediawiki.RevisionMediaWikiService;
@@ -66,6 +67,22 @@ public class RevisionService {
 			LOG.info("Inserted revisions for page {}", page.getLangPageId());
 		});
 		return CompletableFuture.completedFuture(true);
+	}
+
+    /**
+     * This method adds a new Revision to the DB.
+     * @param revid
+     * @param lang
+     * @param userid
+     * @param parentid
+     * @param length
+     * @param timestamp
+     * @return
+     */
+	public Revision addRevision(int revid, String lang, int userid, int parentid, int length, Date timestamp){
+		Revision rev = new Revision(revid, lang,userid, parentid, length, timestamp);
+		revisionRepository.save(rev);
+		return rev;
 	}
 
 }

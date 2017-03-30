@@ -12,25 +12,22 @@ import java.util.Map;
  * Created by valsdav on 30/03/17.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UpdateEvent {
+public class UpdateInfo {
 
     private UpdateType type;
+    private String title;
     private int pageid;
     private int revid;
     private int old_revid;
+    private String user;
     private int userid;
     private int oldlen;
     private int newlen;
-    private UpdateType logtype;
-    private Map<String, Object> logparams;
     private Date timestamp;
 
-    public UpdateEvent(){}
+    public UpdateInfo(){}
 
     public UpdateType getType() {
-        if (this.type == UpdateType.LOG){
-            return this.logtype;
-        }
         return type;
     }
 
@@ -94,19 +91,19 @@ public class UpdateEvent {
         this.timestamp = timestamp;
     }
 
-    public UpdateType getLogtype() {
-        return logtype;
+    public String getTitle() {
+        return title;
     }
 
-    public void setLogtype(UpdateType logtype) {
-        this.logtype = logtype;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public Map<String, Object> getLogparams() {
-        return logparams;
+    public String getUser() {
+        return user;
     }
 
-    public void setLogparams(Map<String, Object> logparams) {
-        this.logparams = logparams;
+    public void setUser(String user) {
+        this.user = user;
     }
 }

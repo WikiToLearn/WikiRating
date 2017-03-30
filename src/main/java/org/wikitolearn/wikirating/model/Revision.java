@@ -54,34 +54,18 @@ public class Revision {
      * @param userid
      * @param parentid
      * @param length
-     * @param changeCoefficient
-     * @param currentMeanVote
-     * @param currentVotesReliability
-     * @param currentNormalisesVotesReliability
-     * @param totalMeanVote
-     * @param totalVotesReliability
-     * @param totalNormalisesVotesReliability
-     * @param validated
      * @param lang
      * @param timestamp
      */
-	public Revision(int revid, int userid, int parentid, long length, double changeCoefficient, double currentMeanVote,
-                    double currentVotesReliability, double currentNormalisesVotesReliability, double totalMeanVote,
-                    double totalVotesReliability, double totalNormalisesVotesReliability, boolean validated, String lang, Date timestamp) {
+	public Revision(int revid, String lang, int userid, int parentid, long length, Date timestamp) {
 		this.revid = revid;
+		this.langRevId = lang +"_"+revid;
 		this.userid = userid;
 		this.parentid = parentid;
 		this.length = length;
-		this.changeCoefficient = changeCoefficient;
-		this.currentMeanVote = currentMeanVote;
-		this.currentVotesReliability = currentVotesReliability;
-		this.currentNormalisesVotesReliability = currentNormalisesVotesReliability;
-		this.totalMeanVote = totalMeanVote;
-		this.totalVotesReliability = totalVotesReliability;
-		this.totalNormalisesVotesReliability = totalNormalisesVotesReliability;
-		this.validated = validated;
 		this.lang = lang;
         this.timestamp = timestamp;
+        this.validated = false;
     }
 
 	/**
