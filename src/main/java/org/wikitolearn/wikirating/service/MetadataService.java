@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.model.Metadata;
 import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.repository.MetadataRepository;
-import org.wikitolearn.wikirating.repository.ProcessRepository;
-import org.wikitolearn.wikirating.service.mediawiki.PageMediaWikiService;
 import org.wikitolearn.wikirating.util.enums.MetadataType;
 
 /**
@@ -19,12 +17,8 @@ import org.wikitolearn.wikirating.util.enums.MetadataType;
 public class MetadataService {
     private static final Logger LOG = LoggerFactory.getLogger(MetadataService.class);
     @Autowired
-    private PageMediaWikiService pageMediaWikiService;
-    @Autowired
     private MetadataRepository metadataRepository;
-    @Autowired
-    private ProcessRepository processRepository;
-
+    
     /**
      * This method insert in the DB the root nodes of the metadata
      */

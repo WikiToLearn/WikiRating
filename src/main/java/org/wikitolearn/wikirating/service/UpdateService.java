@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.model.Revision;
 import org.wikitolearn.wikirating.model.UpdateInfo;
+import org.wikitolearn.wikirating.model.User;
 import org.wikitolearn.wikirating.service.mediawiki.UpdateMediaWikiService;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,63 +21,102 @@ import java.util.List;
  */
 @Service
 public class UpdateService {
-    private static final Logger LOG = LoggerFactory.getLogger(UpdateService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UpdateService.class);
+	
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private PageService pageService;
+	@Autowired
+	private RevisionService revisionService;
+	@Autowired
+	private ProcessService processService;
+	@Autowired
+	private UpdateMediaWikiService updateMediaWikiService;
+	@Value("#{'${mediawiki.langs}'.split(',')}")
+	private List<String> langs;
+	@Value("${mediawiki.protocol}")
+	private String protocol;
+	@Value("${mediawiki.api.url}")
+	private String apiUrl;
+	@Value("${mediawiki.namespace}")
+	private String namespace;
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean updateGraph() {
+		// Get start timestamp of the latest FETCH Process before opening a new process
+		Date startTimestampLatestFetch = processService.getLastProcessStartDateByType(ProcessType.FETCH);
+		// Create a new FETCH process
+		Process currentFetchProcess = processService.createNewProcess(ProcessType.FETCH);
+		LOG.info("Created new fetch process {}", currentFetchProcess.toString());
+		
+		Date startTimestampCurrentFetch = currentFetchProcess.getStartOfProcess();
+		
+		updatePagesAndRevisions(startTimestampLatestFetch, startTimestampCurrentFetch);
+		updateUsers(startTimestampLatestFetch, startTimestampCurrentFetch);
+		return true;
+	}
+	
+	/**
+	 * @param start
+	 * @param end
+	 */
+	private void updateUsers(Date start, Date end) {
+		String url = protocol + langs.get(0) + "." + apiUrl;
+		List<UpdateInfo> usersUpdateInfo = updateMediaWikiService.getNewUsers(url, start, end);
+		List<User> newUsers = new ArrayList<>();
+		
+		// Build a list with new users to be added to the graph
+		for(UpdateInfo updateInfo : usersUpdateInfo){
+			User user = new User();
+			user.setUserId(updateInfo.getUserid());
+			user.setUsername(updateInfo.getUser());
+			newUsers.add(user);
+		}
+		
+		userService.addUsers(newUsers);
+	}
 
-    @Autowired private PageService pageService;
-    @Autowired private RevisionService revisionService;
-    @Autowired private ProcessService processService;
-    @Autowired private UpdateMediaWikiService updateMediaWikiService;
-    @Value("#{'${mediawiki.langs}'.split(',')}")
-    private List<String> langs;
-    @Value("${mediawiki.protocol}")
-    private String protocol;
-    @Value("${mediawiki.api.url}")
-    private String apiUrl;
-    @Value("${mediawiki.namespace}")
-    private String namespace;
+	/**
+	 * 
+	 * @param start
+	 * @param end
+	 */
+	private void updatePagesAndRevisions(Date start, Date end) {
+		// First of all, get the RecentChangeEvents from MediaWiki API
+		for (String lang : langs) {
+			String url = protocol + lang + "." + apiUrl;
+			// Fetching pages updates
+			List<UpdateInfo> updates = updateMediaWikiService.getPagesUpdateInfo(url, namespace, start, end);
 
-    private boolean updateData(){
-        //getting the begin timestamp of the latest FETCH Process before opening a new process
-        Date beginOfLastFetch = processService.getLastProcessStartDateByType(ProcessType.FETCH);
-        //opening a new FETCH process
-        Process currentFetchProcess = processService.createNewProcess(ProcessType.FETCH);
-        //First of all we get the RecentChangeEvents from Mediawiki API.
-
-        for(String lang : langs) {
-            String url = protocol + lang + "." + apiUrl;
-            //fetching upda
-            List<UpdateInfo> updates = updateMediaWikiService.getPagesUpdateInfo(url, namespace,
-                    beginOfLastFetch, currentFetchProcess.getStartOfProcess());
-
-            updates.forEach(update -> {
-                switch (update.getType()) {
-                    case NEW:
-                        //create the new revision
-                        Revision newRev = revisionService.addRevision(update.getRevid(), lang,
-                                update.getUserid(), update.getOld_revid(), update.getNewlen(), update.getTimestamp());
-                        //then create a new Page and link it with the revision
-                        pageService.addPage(update.getPageid(), update.getTitle(), lang, newRev);
-                        break;
-                    case EDIT:
-                        //create a new revision
-                        Revision updateRev = revisionService.addRevision(update.getRevid(), lang,
-                                update.getUserid(), update.getOld_revid(), update.getNewlen(), update.getTimestamp());
-                        //then add it to the page
-                        pageService.addRevisionToPage(lang + "_" + update.getPageid(), updateRev);
-                        break;
-                    case MOVE:
-                        break;
-                    case DELETE:
-                        break;
+			updates.forEach(update -> {
+				switch (update.getType()) {
+				case NEW:
+					// Create the new revision
+					Revision newRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
+							update.getOld_revid(), update.getNewlen(), update.getTimestamp());
+					// Then create a new Page and link it with the revision
+					pageService.addPage(update.getPageid(), update.getTitle(), lang, newRev);
+					break;
+				case EDIT:
+					// Create a new revision
+					Revision updateRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
+							update.getOld_revid(), update.getNewlen(), update.getTimestamp());
+					// Then add it to the page
+					pageService.addRevisionToPage(lang + "_" + update.getPageid(), updateRev);
+					break;
+				case MOVE:
+					break;
+				case DELETE:
+					break;
 				default:
 					break;
-                }
-            });
-
-        }
-
-        return true;
-    }
-
-
+				}
+			});
+		}
+	}
+	
 }

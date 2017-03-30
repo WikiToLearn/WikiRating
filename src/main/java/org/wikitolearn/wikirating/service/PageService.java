@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.model.Page;
 import org.wikitolearn.wikirating.model.Revision;
-import org.wikitolearn.wikirating.model.UpdateInfo;
 import org.wikitolearn.wikirating.repository.PageRepository;
 import org.wikitolearn.wikirating.service.mediawiki.PageMediaWikiService;
 

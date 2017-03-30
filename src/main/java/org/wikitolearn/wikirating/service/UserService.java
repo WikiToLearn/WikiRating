@@ -70,5 +70,14 @@ public class UserService {
     	LOG.info("Set revisions authorship for anonymous revisions");
         return CompletableFuture.completedFuture(true);
     }
+    
+    /**
+     * 
+     * @param users
+     */
+    public void addUsers(List<User> users){
+    	userRepository.save(users);
+    	//TODO return something and handle exceptions
+    }
 
 }

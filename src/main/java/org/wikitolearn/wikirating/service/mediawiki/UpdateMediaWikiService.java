@@ -22,7 +22,15 @@ import java.util.stream.Stream;
  */
 @Service
 public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
-
+	
+	/**
+	 * 
+	 * @param apiUrl
+	 * @param namespace
+	 * @param start
+	 * @param end
+	 * @return
+	 */
     public List<UpdateInfo> getPagesUpdateInfo(String apiUrl, String namespace, Date start, Date end){
         List<UpdateInfo> editsAndNewPages = getRecentChangesBetweenDates(apiUrl, namespace, start, end);
         List<UpdateInfo> deletedPages = getLogEventsBetweenDates(apiUrl, "delete", start, end);
@@ -31,22 +39,36 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
                 .flatMap(List::stream).collect(Collectors.toList());
         return allUpdates;
     }
-
+    
+    /**
+     * 
+     * @param apiUrl
+     * @param start
+     * @param end
+     * @return
+     */
     public List<UpdateInfo> getNewUsers(String apiUrl, Date start, Date end){
         return getLogEventsBetweenDates(apiUrl, "newusers", start, end);
     }
 
-
+    /**
+     * 
+     * @param apiUrl
+     * @param namespace
+     * @param start
+     * @param end
+     * @return
+     */
     public List<UpdateInfo> getRecentChangesBetweenDates( String apiUrl, String namespace, Date start, Date end){
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
         InputStream response;
-        boolean moreRc = true;
-        JSONArray rcJson = new JSONArray();
+        boolean moreRecentChanges = true;
+        JSONArray recentChangesJson = new JSONArray();
         List<JSONArray> toBeConcat = new ArrayList<>();
-        List<UpdateInfo> rcs = new ArrayList<>();
+        List<UpdateInfo> recentChanges = new ArrayList<>();
         Map<String, String> parameters = mediaWikiApiUtils.getRecentChangesParam(namespace, start,end);
         try {
-            while(moreRc){
+            while(moreRecentChanges){
                 response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
                 JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
 
@@ -56,33 +78,40 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
                     String continueFrom = responseJson.getJSONObject("continue").getString("rccontinue");
                     parameters.put("rccontinue", continueFrom);
                 }else{
-                    moreRc = false;
-                    rcJson = concatArrays(toBeConcat);
+                    moreRecentChanges = false;
+                    recentChangesJson = concatArrays(toBeConcat);
                 }
             }
-            rcs = mapper.readValue(rcJson.toString(), new TypeReference<List<UpdateInfo>>(){});
-            return rcs;
+            recentChanges = mapper.readValue(recentChangesJson.toString(), new TypeReference<List<UpdateInfo>>(){});
+            return recentChanges;
         } catch (JSONException e){
             LOG.error("An error occurred while a JSONObject or JSONArray. {}", e.getMessage());
         } catch(IOException e){
             LOG.error("An error occurred while converting an InputStream to JSONObject. {}", e.getMessage());
         }
-        return rcs;
+        return recentChanges;
     }
 
-
+    /**
+     * 
+     * @param apiUrl
+     * @param logtype
+     * @param start
+     * @param end
+     * @return
+     */
     public List<UpdateInfo> getLogEventsBetweenDates( String apiUrl, String logtype, Date start, Date end){
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
         InputStream response;
-        JSONArray leJson = new JSONArray();
+        JSONArray logEventsJson = new JSONArray();
         List<JSONArray> toBeConcat = new ArrayList<>();
-        List<UpdateInfo> levents = new ArrayList<>();
+        List<UpdateInfo> logEvents = new ArrayList<>();
 
         try {
             Map<String, String> parameters = mediaWikiApiUtils.getLogEventsParam(logtype, start,end);
-            boolean moreLe = true;
+            boolean moreLogEvents = true;
 
-            while(moreLe){
+            while(moreLogEvents){
                 response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
                 JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
 
@@ -92,21 +121,23 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
                     String continueFrom = responseJson.getJSONObject("continue").getString("lecontinue");
                     parameters.put("lecontinue", continueFrom);
                 }else{
-                    moreLe = false;
-                    leJson = concatArrays(toBeConcat);
+                    moreLogEvents = false;
+                    logEventsJson = concatArrays(toBeConcat);
                 }
             }
-            levents = mapper.readValue(leJson.toString(), new TypeReference<List<UpdateInfo>>(){});
-            return levents;
+            logEvents = mapper.readValue(logEventsJson.toString(), new TypeReference<List<UpdateInfo>>(){});
+            return logEvents;
         } catch (JSONException e){
             LOG.error("An error occurred while a JSONObject or JSONArray. {}", e.getMessage());
         } catch(IOException e){
             LOG.error("An error occurred while converting an InputStream to JSONObject. {}", e.getMessage());
         }
-        return levents;
+        return logEvents;
     }
 
-
+    /**
+     * 
+     */
     @Override
     public List<UpdateInfo> getAll(String apiUrl) {
         return null;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.wikitolearn.wikirating.util.enums.UpdateType;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
  * This class represents a RecentChange entry during the fetch Process.

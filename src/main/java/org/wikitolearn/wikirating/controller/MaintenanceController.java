@@ -122,7 +122,7 @@ public class MaintenanceController {
 	public boolean initialize() {
 	    // Initialize Metadata service
         metadataService.initMetadata();
-		// Starting a new Process
+		// Start a new Process
 		Process initializeProcess = processService.createNewProcess(ProcessType.INIT);
 
 		CompletableFuture<Boolean> initFuture = CompletableFuture
@@ -133,7 +133,7 @@ public class MaintenanceController {
 
 		try {
             boolean result = initFuture.get();
-            //saving the result of the process
+            // Save the result of the process
             if (result){
                 processService.closeCurrentProcess(ProcessStatus.DONE);
             }else{
