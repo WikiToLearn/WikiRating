@@ -14,10 +14,11 @@ public interface PageRepository extends GraphRepository<Page> {
 	/**
 	 * 
 	 * @param title
+     * @param lang
 	 * @return
 	 */
-	Page findByTitle(String title);
-	
+	Page findByTitleAndLang(String title, String lang);
+
 	/**
 	 * 
 	 * @param langPageId

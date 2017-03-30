@@ -20,6 +20,7 @@ import org.neo4j.ogm.annotation.Relationship;
 public class Page {
 	@GraphId private Long graphId;
 	private int pageid;
+	@Index
 	private String title;
 	@Index
 	private String lang;
@@ -39,12 +40,12 @@ public class Page {
 	/**
 	 * @param title
 	 * @param pageid
-	 * @param pageRank
 	 */
-	public Page(String title, int pageid, double pageRank) {
+	public Page(String title, int pageid, String lang) {
 		this.title = title;
 		this.pageid = pageid;
-		this.pageRank = pageRank;
+		this.lang = lang;
+		this.langPageId = lang +"_"+ this.pageid;
 	} 
 	
 	/**
