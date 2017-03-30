@@ -47,11 +47,11 @@ public class ProcessService {
     }
 
     public Date getLastProcessBeginDate(){
-        return processRepository.getLastProcess().getBeginOfProcess();
+        return processRepository.getLastProcess().getStartOfProcess();
     }
 
-    public Date getLastProcessBeginDateByType(ProcessType type){
-        return processRepository.getLastProcessByType(type).getBeginOfProcess();
+    public Date getLastProcessStartDateByType(ProcessType type){
+        return processRepository.getLastProcessByType(type).getStartOfProcess();
     }
 
 }

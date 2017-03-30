@@ -28,18 +28,18 @@ public class Process {
     @Relationship(type="PREVIOUS_PROCESS", direction = Relationship.OUTGOING)
     private Process previousProcess;
     @DateLong
-    private Date beginOfProcess;
+    private Date startOfProcess;
     @DateLong
     private Date endOfProcess;
 
     public Process() {}
 
     public Process(String processId, ProcessType processType,
-                   ProcessStatus processStatus, Date beginOfProcess, Date endOfProcess) {
+                   ProcessStatus processStatus, Date startOfProcess, Date endOfProcess) {
         this.processId = processId;
         this.processType = processType;
         this.processStatus = processStatus;
-        this.beginOfProcess = beginOfProcess;
+        this.startOfProcess = startOfProcess;
         this.endOfProcess = endOfProcess;
     }
 
@@ -47,7 +47,7 @@ public class Process {
         this.processId = UUID.randomUUID().toString();
         this.processType = processType;
         this.processStatus = ProcessStatus.ONGOING;
-        this.beginOfProcess = new Date();
+        this.startOfProcess = new Date();
     }
 
     public ProcessType getProcessType() {
@@ -74,12 +74,12 @@ public class Process {
         this.previousProcess = previousProcess;
     }
 
-    public Date getBeginOfProcess() {
-        return beginOfProcess;
+    public Date getStartOfProcess() {
+        return startOfProcess;
     }
 
-    public void setBeginOfProcess(Date beginOfProcess) {
-        this.beginOfProcess = beginOfProcess;
+    public void setStartOfProcess(Date startOfProcess) {
+        this.startOfProcess = startOfProcess;
     }
 
     public Date getEndOfProcess() {
@@ -96,7 +96,7 @@ public class Process {
                 "processId='" + processId + '\'' +
                 ", processType=" + processType +
                 ", processStatus=" + processStatus +
-                ", beginOfProcess=" + beginOfProcess +
+                ", startOfProcess=" + startOfProcess +
                 ", endOfProcess=" + endOfProcess +
                 ']';
     }
