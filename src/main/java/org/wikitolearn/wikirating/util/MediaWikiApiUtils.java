@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,6 +106,31 @@ public class MediaWikiApiUtils {
 		queryParameterMap.put("list", "allusers");
 		queryParameterMap.put("aulimit", "max");
 		queryParameterMap.put("format", "json");
+		return queryParameterMap;
+	}
+
+	/**
+	 * This method constructs the MAP of parameters to attach iwth the Mediawiki Query to get
+	 * all the recent changes in one namespace between two dates.
+	 * @param namespace namespace to user
+	 * @param begin start of the recentchanges
+	 * @param end end of the changes
+	 * @return the map with the parameters
+	 */
+	public Map<String, String> getRecentChangesParam(String namespace, Date begin, Date end){
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		Map<String, String> queryParameterMap = new HashMap<>();
+		queryParameterMap.put("action", "query");
+		queryParameterMap.put("list", "recentchanges");
+		queryParameterMap.put("rclimit", "max");
+		queryParameterMap.put("format", "json");
+		queryParameterMap.put("rcnamespace", namespace);
+		queryParameterMap.put("rcshow", "!bot|!redirect");
+		queryParameterMap.put("rcprop", "userid|timestamp|ids|sizes|flags|loginfo");
+		queryParameterMap.put("rctype", "new|edit|log");
+		queryParameterMap.put("rcstart", dateFormat.format(begin));
+		queryParameterMap.put("rcend", dateFormat.format(end));
+		queryParameterMap.put("rcdir", "newer");
 		return queryParameterMap;
 	}
 	
