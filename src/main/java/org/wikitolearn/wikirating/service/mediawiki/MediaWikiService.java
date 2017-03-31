@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.wikitolearn.wikirating.util.MediaWikiApiUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +28,8 @@ public abstract class MediaWikiService<T> {
 	protected MediaWikiApiUtils mediaWikiApiUtils;
 	@Autowired
 	protected ObjectMapper mapper;
+	@Value("${mediawiki.namespace}")
+	protected String namespace;
 	
 	public abstract List<T> getAll(String apiUrl);
 	

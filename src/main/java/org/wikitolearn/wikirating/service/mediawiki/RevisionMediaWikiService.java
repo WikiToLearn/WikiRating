@@ -72,7 +72,7 @@ public class RevisionMediaWikiService extends MediaWikiService<Revision>{
      * @return revisions List<Revision> A list that contains all the fetched revisions
      */
 	public List<Revision> getAllRevisionByPageId(String apiUrl, int pageId) {
-		parameters = mediaWikiApiUtils.getRevisionParam(pageId);
+		parameters = mediaWikiApiUtils.getRevisionParams(pageId);
 		return getAll(apiUrl);
 	}
 

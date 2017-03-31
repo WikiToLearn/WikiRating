@@ -29,7 +29,7 @@ public class UserMediaWikiService extends MediaWikiService<User>{
     @Override
     public List<User> getAll(String apiUrl){
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
-        Map<String, String> parameters = mediaWikiApiUtils.getUserParam();
+        Map<String, String> parameters = mediaWikiApiUtils.getUserParams();
         InputStream response;
         boolean moreUsers = true;
         JSONArray usersJson = new JSONArray();

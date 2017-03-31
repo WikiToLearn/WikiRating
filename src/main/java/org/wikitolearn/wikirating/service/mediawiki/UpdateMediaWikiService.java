@@ -66,7 +66,7 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
         JSONArray recentChangesJson = new JSONArray();
         List<JSONArray> toBeConcat = new ArrayList<>();
         List<UpdateInfo> recentChanges = new ArrayList<>();
-        Map<String, String> parameters = mediaWikiApiUtils.getRecentChangesParam(namespace, start,end);
+        Map<String, String> parameters = mediaWikiApiUtils.getRecentChangesParams(namespace, start,end);
         try {
             while(moreRecentChanges){
                 response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
@@ -108,7 +108,7 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
         List<UpdateInfo> logEvents = new ArrayList<>();
 
         try {
-            Map<String, String> parameters = mediaWikiApiUtils.getLogEventsParam(logtype, start,end);
+            Map<String, String> parameters = mediaWikiApiUtils.getLogEventsParams(logtype, start,end);
             boolean moreLogEvents = true;
 
             while(moreLogEvents){

@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
+import org.wikitolearn.wikirating.model.CourseTree;
 import org.wikitolearn.wikirating.model.Page;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -34,7 +35,7 @@ public class PageMediaWikiService extends MediaWikiService<Page>{
 	@Override
 	public List<Page> getAll(String apiUrl){
 		ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
-		Map<String, String> parameters = mediaWikiApiUtils.getListAllPagesParamsMap("2800");
+		Map<String, String> parameters = mediaWikiApiUtils.getListAllPagesParams(namespace);
 		InputStream response;
 		boolean morePages = true;
 		JSONArray pagesJson = new JSONArray();
@@ -64,5 +65,40 @@ public class PageMediaWikiService extends MediaWikiService<Page>{
 			LOG.error("An error occurred while converting an InputStream to JSONObject. {}", e.getMessage());
 		}
 		return pages;
+	}
+	
+	/**
+	 * 
+	 * @param apiUrl the MediaWiki API url
+	 * @param pageTitle the title of the root course page
+	 * @return
+	 */
+	public void getCourseTree(String apiUrl, String pageTitle) {
+		ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
+		Map<String, String> parameters = mediaWikiApiUtils.getCourseTreeParams(pageTitle);
+		InputStream response;
+		response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
+		JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
+		try {
+			JSONObject jsonTree = responseJson.getJSONObject("coursetree").getJSONObject("response");
+			List<List<String>> levelsThree = new ArrayList<>();
+			JSONArray levelsThreeJson = jsonTree.getJSONArray("levelsThree");
+			levelsThree = mapper.readValue(levelsThreeJson.toString(), new TypeReference<List<List<String>>>(){});
+
+			// Build course tree manually cause difficulties with serialization of nested JSON arrays
+			CourseTree courseTree = new CourseTree();
+			courseTree.setRoot(jsonTree.getString("root"));
+			courseTree.setLevelsTwo(
+					mapper.readValue(
+						jsonTree.getJSONArray("levelsTwo").toString(), 
+						new TypeReference<List<String>>(){}
+					)
+			);
+			courseTree.setLevelsTree(levelsThree);
+
+			LOG.info(courseTree.toString());
+		} catch (JSONException | IOException e) {
+			LOG.error("An error occurred: {}", e.getMessage());
+		}
 	}
 }

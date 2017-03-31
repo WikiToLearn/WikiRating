@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.wikitolearn.wikirating.model.Revision;
 import org.wikitolearn.wikirating.model.Vote;
+import org.wikitolearn.wikirating.service.mediawiki.PageMediaWikiService;
 
 /**
  * @author aletundo RESTController for pages resources. It handles all the
@@ -25,7 +27,8 @@ import org.wikitolearn.wikirating.model.Vote;
 @RequestMapping("/pages/")
 public class PageController {
 	private static final Logger LOG = LoggerFactory.getLogger(PageController.class);
-	
+	@Autowired
+	private PageMediaWikiService pageMediaWikiService;
 	/**
 	 * Handle GET requests on /pages/{pageId} URI. The last revision of the page is returned.
 	 * 
@@ -37,6 +40,7 @@ public class PageController {
 	@ResponseBody
 	public Revision getLastRevisionByPageId(@PathVariable("pageId") int pageId) {
 		// TODO Get the last available revision for the requested page
+		pageMediaWikiService.getCourseTree("https://it.wikitolearn.vodka/api.php", "Course:Fisica moderna");
 		return new Revision();
 	}
 	

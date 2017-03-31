@@ -42,7 +42,7 @@ public class MediaWikiApiUtilsTest {
 		queryParameterMap.put("apfilterredir", "nonredirects");
 		queryParameterMap.put("format", "json");
 		
-		Map<String, String> result = mediaWikiApiUtils.getListAllPagesParamsMap("2800");
+		Map<String, String> result = mediaWikiApiUtils.getListAllPagesParams("2800");
 		assertEquals(queryParameterMap.get("action"), result.get("action"));
 		assertEquals(queryParameterMap.get("list"), result.get("list"));
 		assertEquals(queryParameterMap.get("aplimit"), result.get("aplimit"));
@@ -62,7 +62,7 @@ public class MediaWikiApiUtilsTest {
 		queryParameterMap.put("rvdir", "newer");
 		queryParameterMap.put("format", "json");
 		
-		Map<String, String> result = mediaWikiApiUtils.getRevisionParam(1);
+		Map<String, String> result = mediaWikiApiUtils.getRevisionParams(1);
 		assertEquals(queryParameterMap.get("action"), result.get("action"));
 		assertEquals(queryParameterMap.get("prop"), result.get("prop"));
 		assertEquals(queryParameterMap.get("pageids"), result.get("pageids"));
@@ -80,7 +80,7 @@ public class MediaWikiApiUtilsTest {
 		queryParameterMap.put("aulimit", "max");
 		queryParameterMap.put("format", "json");
 		
-		Map<String, String> result = mediaWikiApiUtils.getUserParam();
+		Map<String, String> result = mediaWikiApiUtils.getUserParams();
 		assertEquals(queryParameterMap.get("action"), result.get("action"));
 		assertEquals(queryParameterMap.get("list"), result.get("list"));
 		assertEquals(queryParameterMap.get("aulimit"), result.get("aulimit"));

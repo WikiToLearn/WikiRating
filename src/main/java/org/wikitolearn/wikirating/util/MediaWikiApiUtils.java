@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +65,7 @@ public class MediaWikiApiUtils {
 	 * @return Map having parameters
 	 */
 
-	public Map<String, String> getListAllPagesParamsMap(String namespace) {
+	public Map<String, String> getListAllPagesParams(String namespace) {
 		Map<String, String> queryParameterMap = new HashMap<String, String>();
 		queryParameterMap.put("action", "query");
 		queryParameterMap.put("list", "allpages");
@@ -83,7 +82,7 @@ public class MediaWikiApiUtils {
 	 * @param pid	The PageID of the page for which revisions are requested
 	 * @return	Map having parameters
 	 */
-	public Map<String, String> getRevisionParam(int pid) {
+	public Map<String, String> getRevisionParams(int pid) {
 		Map<String, String> queryParameterMap = new HashMap<String, String>();
 		queryParameterMap.put("action", "query");
 		queryParameterMap.put("prop", "revisions");
@@ -100,7 +99,7 @@ public class MediaWikiApiUtils {
 	 * all the users.
 	 * @return	Map having parameters
 	 */
-	public Map<String, String> getUserParam() {
+	public Map<String, String> getUserParams() {
 		Map<String, String> queryParameterMap = new HashMap<String, String>();
 		queryParameterMap.put("action", "query");
 		queryParameterMap.put("list", "allusers");
@@ -117,7 +116,7 @@ public class MediaWikiApiUtils {
 	 * @param end end of the changes
 	 * @return the map with the parameters
 	 */
-	public Map<String, String> getRecentChangesParam(String namespace, Date begin, Date end){
+	public Map<String, String> getRecentChangesParams(String namespace, Date begin, Date end){
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		Map<String, String> queryParameterMap = new HashMap<>();
 		queryParameterMap.put("action", "query");
@@ -142,7 +141,7 @@ public class MediaWikiApiUtils {
 	 * @param end end of the changes
 	 * @return the map with the parameters
 	 */
-	public Map<String, String> getLogEventsParam(String logtype, Date begin, Date end){
+	public Map<String, String> getLogEventsParams(String logtype, Date begin, Date end){
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		Map<String, String> queryParameterMap = new HashMap<>();
 		queryParameterMap.put("action", "query");
@@ -153,6 +152,19 @@ public class MediaWikiApiUtils {
 		queryParameterMap.put("leend", dateFormat.format(end));
 		queryParameterMap.put("ledir", "newer");
 		return queryParameterMap;
+	}
+	
+	/**
+	 * This method constructs the Map of parameters to get the course tree structure
+	 * @param pageTitle the title of the page
+	 * @return the map with the parameters
+	 */
+	public Map<String, String> getCourseTreeParams(String pageTitle){
+		Map<String, String> courseTreeParameterMap = new HashMap<>();
+		courseTreeParameterMap.put("action", "coursetree");
+		courseTreeParameterMap.put("coursetitle", pageTitle);
+		courseTreeParameterMap.put("format", "json");
+		return courseTreeParameterMap;
 	}
 	
 	/**
