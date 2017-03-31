@@ -149,7 +149,6 @@ public class MediaWikiApiUtils {
 		queryParameterMap.put("list", "logevents");
 		queryParameterMap.put("lelimit", "max");
 		queryParameterMap.put("format", "json");
-		queryParameterMap.put("leprop", "ids|title|user|userid|timestamp");
 		queryParameterMap.put("lestart", dateFormat.format(begin));
 		queryParameterMap.put("leend", dateFormat.format(end));
 		queryParameterMap.put("ledir", "newer");

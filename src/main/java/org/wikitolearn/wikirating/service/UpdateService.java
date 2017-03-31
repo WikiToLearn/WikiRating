@@ -10,6 +10,7 @@ import org.wikitolearn.wikirating.model.Revision;
 import org.wikitolearn.wikirating.model.UpdateInfo;
 import org.wikitolearn.wikirating.model.User;
 import org.wikitolearn.wikirating.service.mediawiki.UpdateMediaWikiService;
+import org.wikitolearn.wikirating.util.enums.ProcessStatus;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
 
 import java.util.ArrayList;
@@ -57,6 +58,9 @@ public class UpdateService {
 		
 		updatePagesAndRevisions(startTimestampLatestFetch, startTimestampCurrentFetch);
 		updateUsers(startTimestampLatestFetch, startTimestampCurrentFetch);
+
+		// Save the result of the process, closing the current one
+		processService.closeCurrentProcess(ProcessStatus.DONE);
 		return true;
 	}
 	
@@ -109,6 +113,8 @@ public class UpdateService {
 					pageService.addRevisionToPage(lang + "_" + update.getPageid(), updateRev);
 					break;
 				case MOVE:
+					// Move the page to the new title
+					pageService.movePage(update.getTitle(), update.getNewTitle(), lang);
 					break;
 				case DELETE:
 					break;
