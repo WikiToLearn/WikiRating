@@ -117,6 +117,8 @@ public class UpdateService {
 					pageService.movePage(update.getTitle(), update.getNewTitle(), lang);
 					break;
 				case DELETE:
+					// Delete the page and all its revisions
+					pageService.deletePage(update.getTitle(), lang);
 					break;
 				default:
 					break;

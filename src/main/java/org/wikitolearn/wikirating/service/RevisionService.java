@@ -6,6 +6,7 @@ package org.wikitolearn.wikirating.service;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
@@ -85,4 +86,9 @@ public class RevisionService {
 		return rev;
 	}
 
+	public void deleteRevisionsOfPage(String langPageId){
+        Set<Revision> revisions = revisionRepository.findAllRevisionOfPage(langPageId);
+        revisionRepository.delete(revisions);
+        //TODO throw exceptions
+    }
 }

@@ -60,7 +60,7 @@ public class PageService {
      */
     public Page addPage(int pageid, String title, String lang, Revision firstRevision){
 		Page page = new Page(pageid, title, lang, lang + "_" + pageid);
-		
+		// Add the links from the page to the first revision
 		page.setFistRevision(firstRevision);
 		page.setLastRevision(firstRevision);
 		pageRepository.save(page);
@@ -99,5 +99,13 @@ public class PageService {
         return page;
     }
 
+    public void deletePage(String title, String lang ){
+        Page page = pageRepository.findByTitleAndLang(title, lang);
+        // Delete the revisions of the page
+        revisionService.deleteRevisionsOfPage(page.getLangPageId());
+        // Delete finally the page itself
+        pageRepository.delete(page);
+        //TODO throw specific exceptions
+    }
 
 }
