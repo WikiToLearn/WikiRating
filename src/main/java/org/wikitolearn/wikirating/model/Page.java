@@ -32,10 +32,10 @@ public class Page {
 	private Revision lastRevision;
 	@Relationship(type = "FIRST_REVISION", direction = Relationship.OUTGOING)
 	private Revision fistRevision;
-	@Relationship(type = "LEVEL_ONE", direction = Relationship.UNDIRECTED)
-	private Set<Page> levelsOne;
 	@Relationship(type = "LEVEL_TWO", direction = Relationship.UNDIRECTED)
 	private Set<Page> levelsTwo;
+	@Relationship(type = "LEVEL_THREE", direction = Relationship.UNDIRECTED)
+	private Set<Page> levelsThree;
 	@Labels
 	private Set<String> labels;
 	
@@ -169,20 +169,6 @@ public class Page {
 	}
 
 	/**
-	 * @return the levelsOne
-	 */
-	public Set<Page> getLevelsOne() {
-		return levelsOne;
-	}
-
-	/**
-	 * @param levelsOne the levelsOne to set
-	 */
-	public void setLevelsOne(Set<Page> levelsOne) {
-		this.levelsOne = levelsOne;
-	}
-
-	/**
 	 * @return the levelsTwo
 	 */
 	public Set<Page> getLevelsTwo() {
@@ -194,6 +180,20 @@ public class Page {
 	 */
 	public void setLevelsTwo(Set<Page> levelsTwo) {
 		this.levelsTwo = levelsTwo;
+	}
+
+	/**
+	 * @return the levelsThree
+	 */
+	public Set<Page> getLevelsThree() {
+		return levelsThree;
+	}
+
+	/**
+	 * @param levelsThree the levelsThree to set
+	 */
+	public void setLevelsThree(Set<Page> levelsThree) {
+		this.levelsThree = levelsThree;
 	}
 
 	/**
