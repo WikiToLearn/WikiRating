@@ -15,6 +15,7 @@ public class UpdateInfo {
 
     private UpdateType type;
     private String title;
+    private String newTitle;
     private int pageid;
     private int revid;
     private int old_revid;
@@ -104,5 +105,13 @@ public class UpdateInfo {
 
     public void setUser(String user) {
         this.user = user;
+    }
+
+    public String getNewTitle() {
+        return newTitle;
+    }
+
+    public void setNewTitle(String newTitle) {
+        this.newTitle = newTitle;
     }
 }

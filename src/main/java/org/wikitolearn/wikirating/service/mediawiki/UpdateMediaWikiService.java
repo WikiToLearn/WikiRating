@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 @Service
 public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
-	
+
 	/**
 	 * 
 	 * @param apiUrl
@@ -125,6 +125,13 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
                     logEventsJson = concatArrays(toBeConcat);
                 }
             }
+            if(logtype.equals("move")){
+                for (int i = 0; i < logEventsJson.length(); i++){
+                    JSONObject element = logEventsJson.getJSONObject(i);
+                    String newTitle = (String) element.getJSONObject("params").get("target_title");
+                    element.put("newTitle", newTitle);
+                }
+            }
             logEvents = mapper.readValue(logEventsJson.toString(), new TypeReference<List<UpdateInfo>>(){});
             return logEvents;
         } catch (JSONException e){
@@ -136,7 +143,7 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
     }
 
     /**
-     * 
+     *
      */
     @Override
     public List<UpdateInfo> getAll(String apiUrl) {
