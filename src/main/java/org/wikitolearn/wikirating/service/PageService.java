@@ -50,7 +50,7 @@ public class PageService {
     }
 
     /**
-     * This method creates a new Page. It requires the firstR evision of the Page in order
+     * This method creates a new Page. It requires the firstRevision of the Page in order
      * to create the LAST_REVISION and FIRST_REVISION relationships.
      * @param pageid
      * @param title
@@ -59,11 +59,12 @@ public class PageService {
      * @return
      */
     public Page addPage(int pageid, String title, String lang, Revision firstRevision){
-		Page page = new Page(title, pageid, lang);
-		//creating the relations with the first revision.
+		Page page = new Page(pageid, title, lang, lang + "_" + pageid);
+		
 		page.setFistRevision(firstRevision);
 		page.setLastRevision(firstRevision);
 		pageRepository.save(page);
+		
 		return page;
 	}
 

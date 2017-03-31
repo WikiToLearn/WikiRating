@@ -3,87 +3,101 @@
  */
 package org.wikitolearn.wikirating.model;
 
+import java.util.Set;
+
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.Index;
+import org.neo4j.ogm.annotation.Labels;
 import org.neo4j.ogm.annotation.NodeEntity;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.neo4j.ogm.annotation.Relationship;
 
 /**
- * 
- * @author aletundo, valsdav
+ * @author aletundo
  *
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 @NodeEntity( label = "Page")
 public class Page {
-	@GraphId private Long graphId;
+
+	@GraphId
+	private Long graphId;
 	private int pageid;
 	@Index
 	private String title;
 	@Index
 	private String lang;
-	@Index(unique = true, primary=true)
+	@Index(unique = true, primary = true)
 	private String langPageId;
 	private double pageRank;
 	@Relationship(type = "LAST_REVISION", direction = Relationship.OUTGOING)
 	private Revision lastRevision;
-	@Relationship(type = "FIRST_REVISION", direction= Relationship.OUTGOING)
-    private Revision fistRevision;
+	@Relationship(type = "FIRST_REVISION", direction = Relationship.OUTGOING)
+	private Revision fistRevision;
+	@Relationship(type = "LEVEL_ONE", direction = Relationship.UNDIRECTED)
+	private Set<Page> levelsOne;
+	@Relationship(type = "LEVEL_TWO", direction = Relationship.UNDIRECTED)
+	private Set<Page> levelsTwo;
+	@Labels
+	private Set<String> labels;
 	
 	/**
 	 * 
 	 */
-	public Page() { }
-	
+	public Page() {}
+
 	/**
-	 * @param title
 	 * @param pageid
+	 * @param title
+	 * @param lang
 	 */
-	public Page(String title, int pageid, String lang) {
-		this.title = title;
+	public Page(int pageid, String title, String lang, String langPageId) {
 		this.pageid = pageid;
-		this.lang = lang;
-		this.langPageId = lang +"_"+ this.pageid;
-	} 
-	
-	/**
-	 * @return the title
-	 */
-	public String getTitle() {
-		return title;
-	}
-	/**
-	 * @param title the title to set
-	 */
-	public void setTitle(String title) {
 		this.title = title;
+		this.lang = lang;	
+		this.langPageId = langPageId;
 	}
+
+	/**
+	 * @return the graphId
+	 */
+	public Long getGraphId() {
+		return graphId;
+	}
+
+	/**
+	 * @param graphId the graphId to set
+	 */
+	public void setGraphId(Long graphId) {
+		this.graphId = graphId;
+	}
+
 	/**
 	 * @return the pageid
 	 */
 	public int getPageid() {
 		return pageid;
 	}
+
 	/**
 	 * @param pageid the pageid to set
 	 */
 	public void setPageid(int pageid) {
 		this.pageid = pageid;
 	}
+
 	/**
-	 * @return the pageRank
+	 * @return the title
 	 */
-	public double getPageRank() {
-		return pageRank;
+	public String getTitle() {
+		return title;
 	}
+
 	/**
-	 * @param pageRank the pageRank to set
+	 * @param title the title to set
 	 */
-	public void setPageRank(double pageRank) {
-		this.pageRank = pageRank;
+	public void setTitle(String title) {
+		this.title = title;
 	}
+
 	/**
 	 * @return the lang
 	 */
@@ -112,43 +126,87 @@ public class Page {
 		this.langPageId = langPageId;
 	}
 
-    /**
-     *
-     * @return
-     */
-    public Revision getLastRevision() {
-        return lastRevision;
-    }
+	/**
+	 * @return the pageRank
+	 */
+	public double getPageRank() {
+		return pageRank;
+	}
 
-    /**
-     *
-     * @param lastRevision
-     */
-    public void setLastRevision(Revision lastRevision) {
-        this.lastRevision = lastRevision;
-    }
+	/**
+	 * @param pageRank the pageRank to set
+	 */
+	public void setPageRank(double pageRank) {
+		this.pageRank = pageRank;
+	}
 
-    /**
-     *
-     * @return
-     */
-    public Revision getFistRevision() {
-        return fistRevision;
-    }
+	/**
+	 * @return the lastRevision
+	 */
+	public Revision getLastRevision() {
+		return lastRevision;
+	}
 
-    /**
-     *
-     * @param fistRevision
-     */
-    public void setFistRevision(Revision fistRevision) {
-        this.fistRevision = fistRevision;
-    }
+	/**
+	 * @param lastRevision the lastRevision to set
+	 */
+	public void setLastRevision(Revision lastRevision) {
+		this.lastRevision = lastRevision;
+	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "Page [title=" + title + ", pageid=" + pageid + ", pageRank=" + pageRank + "]";
-    }
+	/**
+	 * @return the fistRevision
+	 */
+	public Revision getFistRevision() {
+		return fistRevision;
+	}
+
+	/**
+	 * @param fistRevision the fistRevision to set
+	 */
+	public void setFistRevision(Revision fistRevision) {
+		this.fistRevision = fistRevision;
+	}
+
+	/**
+	 * @return the levelsOne
+	 */
+	public Set<Page> getLevelsOne() {
+		return levelsOne;
+	}
+
+	/**
+	 * @param levelsOne the levelsOne to set
+	 */
+	public void setLevelsOne(Set<Page> levelsOne) {
+		this.levelsOne = levelsOne;
+	}
+
+	/**
+	 * @return the levelsTwo
+	 */
+	public Set<Page> getLevelsTwo() {
+		return levelsTwo;
+	}
+
+	/**
+	 * @param levelsTwo the levelsTwo to set
+	 */
+	public void setLevelsTwo(Set<Page> levelsTwo) {
+		this.levelsTwo = levelsTwo;
+	}
+
+	/**
+	 * @return the labels
+	 */
+	public Set<String> getLabels() {
+		return labels;
+	}
+
+	/**
+	 * @param labels the labels to set
+	 */
+	public void setLabels(Set<String> labels) {
+		this.labels = labels;
+	}
 }
