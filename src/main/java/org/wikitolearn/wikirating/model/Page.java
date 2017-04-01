@@ -209,4 +209,11 @@ public class Page {
 	public void setLabels(Set<String> labels) {
 		this.labels = labels;
 	}
+	
+	/**
+	 * @param label the label to set
+	 */
+	public void addLabel(String label) {
+		this.labels.add(label);
+	}
 }

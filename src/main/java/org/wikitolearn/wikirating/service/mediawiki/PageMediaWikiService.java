@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
+import org.wikitolearn.wikirating.exception.GenericException;
 import org.wikitolearn.wikirating.model.CourseTree;
 import org.wikitolearn.wikirating.model.Page;
 
@@ -35,7 +36,7 @@ public class PageMediaWikiService extends MediaWikiService<Page>{
 	@Override
 	public List<Page> getAll(String apiUrl){
 		ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
-		Map<String, String> parameters = mediaWikiApiUtils.getListAllPagesParams(namespace);
+		Map<String, String> parameters = mediaWikiApiUtils.getListAllPagesParams("2800");
 		InputStream response;
 		boolean morePages = true;
 		JSONArray pagesJson = new JSONArray();
@@ -68,12 +69,12 @@ public class PageMediaWikiService extends MediaWikiService<Page>{
 	}
 	
 	/**
-	 * 
+	 * Get the course tree structure through the MediaWiki API
 	 * @param apiUrl the MediaWiki API url
 	 * @param pageTitle the title of the root course page
-	 * @return
+	 * @return the course tree
 	 */
-	public void getCourseTree(String apiUrl, String pageTitle) {
+	public CourseTree getCourseTree(String apiUrl, String pageTitle) {
 		ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
 		Map<String, String> parameters = mediaWikiApiUtils.getCourseTreeParams(pageTitle);
 		InputStream response;
@@ -96,9 +97,11 @@ public class PageMediaWikiService extends MediaWikiService<Page>{
 			);
 			courseTree.setLevelsTree(levelsThree);
 
-			LOG.info(courseTree.toString());
+			LOG.info("Got course tree for page {}: {}", pageTitle, courseTree.toString());
+			return courseTree;
 		} catch (JSONException | IOException e) {
 			LOG.error("An error occurred: {}", e.getMessage());
+			throw new GenericException(e.getMessage());
 		}
 	}
 }

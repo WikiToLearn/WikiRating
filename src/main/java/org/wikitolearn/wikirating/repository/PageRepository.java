@@ -3,6 +3,8 @@
  */
 package org.wikitolearn.wikirating.repository;
 
+import java.util.List;
+
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.wikitolearn.wikirating.model.Page;
 
@@ -25,4 +27,11 @@ public interface PageRepository extends GraphRepository<Page> {
 	 * @return
 	 */
 	Page findByLangPageId(String langPageId);
+	
+	/**
+	 * 
+	 * @param lang
+	 * @return
+	 */
+	List<Page> findAllByLang(String lang);
 }
