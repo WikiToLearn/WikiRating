@@ -3,6 +3,8 @@
  */
 package org.wikitolearn.wikirating.model;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.neo4j.ogm.annotation.GraphId;
@@ -37,7 +39,7 @@ public class Page {
 	@Relationship(type = "LEVEL_THREE", direction = Relationship.UNDIRECTED)
 	private Set<Page> levelsThree;
 	@Labels
-	private Set<String> labels;
+	private Set<String> labels = new HashSet<>();
 	
 	/**
 	 * 
