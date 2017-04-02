@@ -3,7 +3,6 @@
  */
 package org.wikitolearn.wikirating.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 

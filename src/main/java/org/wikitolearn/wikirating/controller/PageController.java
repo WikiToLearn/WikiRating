@@ -25,7 +25,7 @@ import org.wikitolearn.wikirating.model.Vote;
 @RequestMapping("/pages/")
 public class PageController {
 	private static final Logger LOG = LoggerFactory.getLogger(PageController.class);
-
+	
 	/**
 	 * Handle GET requests on /pages/{pageId} URI. The last revision of the page is returned.
 	 * 
