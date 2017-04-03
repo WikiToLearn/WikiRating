@@ -36,17 +36,15 @@ public class RevisionService {
 	private PageRepository pageRepository;
 
 	/**
-	 * This method inserts all the revisions for every page, creating the
-	 * connections between them and between the users that have written them.
-	 * 
-	 * @param lang
-	 *            String
-	 * @param apiUrl
-	 *            String The MediaWiki API url
-	 * @return CompletableFuture<Boolean>
+	 * Initialize the revisions for the first time querying the MediaWiki API.
+	 * This method adds the revisions and sets the FIRST_REVISION,
+	 * LAST_REVISION and PREVIOUS_REVISION relationships.
+	 * @param lang the domain language
+	 * @param apiUrl the MediaWiki API url
+	 * @return CompletableFuture
 	 */
 	@Async
-	public CompletableFuture<Boolean> addAllRevisions(String lang, String apiUrl) {
+	public CompletableFuture<Boolean> initRevisions(String lang, String apiUrl) {
 		Iterable<Page> pages = pageRepository.findAll();
 		pages.forEach(page -> {
 			List<Revision> revisions = revisionMediaWikiService.getAllRevisionByPageId(apiUrl, page.getPageid());
@@ -71,7 +69,7 @@ public class RevisionService {
 	}
 
     /**
-     * This method adds a new Revision to the DB.
+     * Add a new Revision to the graph
      * @param revid
      * @param lang
      * @param userid
@@ -85,7 +83,11 @@ public class RevisionService {
 		revisionRepository.save(rev);
 		return rev;
 	}
-
+	
+	/**
+	 * Delete a revision given its langPageId
+	 * @param langPageId the langPageId of the revision
+	 */
 	public void deleteRevisionsOfPage(String langPageId){
         Set<Revision> revisions = revisionRepository.findAllRevisionOfPage(langPageId);
         revisionRepository.delete(revisions);

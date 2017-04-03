@@ -34,27 +34,24 @@ public class UserService {
 	private RevisionRepository revisionRepository;
 
 	/**
-     * This methods inserts all the users inside the DB querying the MediaWiki API.
-     *
+     * Initialize the graph for the first time querying the MediaWiki API
+     * to get the all the users and then insert them.
+     * @param apiUrl the MediaWiki API url
      * @return CompletableFuture<Boolean>
      */
     @Async
-    public CompletableFuture<Boolean> addAllUsers(String apiUrl){
+    public CompletableFuture<Boolean> initUsers(String apiUrl){
     	List<User> users = userMediaWikiService.getAll(apiUrl);
-    	
-    	userRepository.save(users);
-    	
-    	LOG.info("Inserted all users");
+    	addUsers(users);
         return CompletableFuture.completedFuture(true);
     }
     
 	/**
-     * This methods connect the users to their revisions
-     *
+     * Initialize relationships between users and their created revisions for the first time
      * @return CompletableFuture<Boolean>
      */
     @Async
-    public CompletableFuture<Boolean> setAllUsersAuthorship(){
+    public CompletableFuture<Boolean> initAuthorship(){
     	Iterable<User> users = userRepository.findAll();
     	users.forEach(user -> {
     		Set<Revision> revisions = revisionRepository.findByUserid(user.getUserid());
@@ -72,12 +69,15 @@ public class UserService {
     }
     
     /**
-     * 
-     * @param users
+     * Insert users into the graph
+     * @param users the list of users to be inserted
+     * @return the list of inserted users
      */
-    public void addUsers(List<User> users){
+    public List<User> addUsers(List<User> users){
     	userRepository.save(users);
-    	//TODO return something and handle exceptions
+    	LOG.info("Inserted users: {}", users);
+    	return users;
+    	//TODO handle exceptions
     }
 
 }

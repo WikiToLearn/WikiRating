@@ -56,8 +56,8 @@ public class UpdateService {
 		
 		Date startTimestampCurrentFetch = currentFetchProcess.getStartOfProcess();
 		
-		updatePagesAndRevisions(startTimestampLatestFetch, startTimestampCurrentFetch);
 		updateUsers(startTimestampLatestFetch, startTimestampCurrentFetch);
+		updatePagesAndRevisions(startTimestampLatestFetch, startTimestampCurrentFetch);
 
 		// Save the result of the process, closing the current one
 		processService.closeCurrentProcess(ProcessStatus.DONE);

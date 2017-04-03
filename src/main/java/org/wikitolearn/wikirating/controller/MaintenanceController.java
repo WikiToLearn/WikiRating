@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.service.*;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
@@ -86,7 +85,7 @@ public class MaintenanceController {
 					response.put("status", "success");
 					response.put("message", "Application is in maintenance mode now.");
 					// Create maintenance lock file with a maintenance.active
-					// property setted to true
+					// property set to true
 					Properties props = new Properties();
 					props.setProperty("maintenance.active", "true");
 					File lockFile = new File("maintenance.lock");
@@ -123,13 +122,13 @@ public class MaintenanceController {
 	    // Initialize Metadata service
         metadataService.initMetadata();
 		// Start a new Process
-		Process initializeProcess = processService.createNewProcess(ProcessType.INIT);
+		processService.createNewProcess(ProcessType.INIT);
 
 		CompletableFuture<Boolean> initFuture = CompletableFuture
 				.allOf(buildUsersAndPagesFutersList().toArray(new CompletableFuture[langs.size() + 1]))
 				.thenCompose(result -> CompletableFuture
 						.allOf(buildRevisionsFuturesList().toArray(new CompletableFuture[langs.size()])))
-				.thenCompose(result -> userService.setAllUsersAuthorship());
+				.thenCompose(result -> userService.initAuthorship());
 
 		try {
             boolean result = initFuture.get();
@@ -165,7 +164,7 @@ public class MaintenanceController {
 		// Add revisions fetch for each domain language
 		for (String lang : langs) {
 			String url = protocol + lang + "." + apiUrl;
-			parallelRevisionsFutures.add(revisionService.addAllRevisions(lang, url));
+			parallelRevisionsFutures.add(revisionService.initRevisions(lang, url));
 		}
 		return parallelRevisionsFutures;
 	}
@@ -181,11 +180,11 @@ public class MaintenanceController {
 	private List<CompletableFuture<Boolean>> buildUsersAndPagesFutersList() {
 		List<CompletableFuture<Boolean>> usersAndPagesInsertion = new ArrayList<>();
 		// Add users fetch as fist operation
-		usersAndPagesInsertion.add(userService.addAllUsers(protocol + langs.get(0) + "." + apiUrl));
+		usersAndPagesInsertion.add(userService.initUsers(protocol + langs.get(0) + "." + apiUrl));
 		// Add pages fetch for each domain language
 		for (String lang : langs) {
 			String url = protocol + lang + "." + apiUrl;
-			usersAndPagesInsertion.add(pageService.addAllPages(lang, url));
+			usersAndPagesInsertion.add(pageService.initPages(lang, url));
 		}
 		return usersAndPagesInsertion;
 	}

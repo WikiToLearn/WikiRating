@@ -40,7 +40,7 @@ public class PageService {
      * @return CompletableFuture<Boolean>
      */
     @Async
-    public CompletableFuture<Boolean> addAllPages( String lang, String apiUrl ){
+    public CompletableFuture<Boolean> initPages( String lang, String apiUrl ){
     	List<Page> pages = pageMediaWikiService.getAll(apiUrl);
     	
     	pages.forEach(page -> {
@@ -102,8 +102,13 @@ public class PageService {
         pageRepository.save(page);
         return page;
     }
-
-    public void deletePage(String title, String lang ){
+    
+    /**
+     * Delete a page from the graph given its title and domain language.
+     * @param title
+     * @param lang
+     */
+    public void deletePage(String title, String lang){
         Page page = pageRepository.findByTitleAndLang(title, lang);
         // Delete the revisions of the page
         revisionService.deleteRevisionsOfPage(page.getLangPageId());
