@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
 import org.wikitolearn.wikirating.model.Page;
 import org.wikitolearn.wikirating.model.Revision;
 import org.wikitolearn.wikirating.repository.PageRepository;
@@ -93,4 +94,29 @@ public class RevisionService {
         revisionRepository.delete(revisions);
         //TODO throw exceptions
     }
+	
+	/**
+	 * Get the requested revision
+	 * @param langRevId
+	 * @return
+	 * @throws RevisionNotFoundException
+	 */
+	public Revision getRevision(String langRevId) throws RevisionNotFoundException{
+		Revision revision = revisionRepository.findByLangRevId(langRevId);
+		if(revision == null){
+			LOG.error("Revision {} not found", langRevId);
+			throw new RevisionNotFoundException();
+		}
+		return revision;
+	}
+	
+	/**
+	 * Update the given revision
+	 * @param revision
+	 * @return the updated revision
+	 */
+	public Revision updateRevision(Revision revision){
+		revisionRepository.save(revision);
+		return revision;
+	}
 }

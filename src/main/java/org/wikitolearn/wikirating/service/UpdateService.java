@@ -6,10 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
+import org.wikitolearn.wikirating.exception.TemporaryVoteValidationException;
+import org.wikitolearn.wikirating.exception.UpdateGraphException;
+import org.wikitolearn.wikirating.exception.UserNotFoundException;
 import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.model.Revision;
+import org.wikitolearn.wikirating.model.TemporaryVote;
 import org.wikitolearn.wikirating.model.UpdateInfo;
 import org.wikitolearn.wikirating.model.User;
+import org.wikitolearn.wikirating.model.Vote;
+import org.wikitolearn.wikirating.repository.TemporaryVoteRepository;
 import org.wikitolearn.wikirating.service.mediawiki.UpdateMediaWikiService;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
@@ -35,6 +42,8 @@ public class UpdateService {
 	private ProcessService processService;
 	@Autowired
 	private UpdateMediaWikiService updateMediaWikiService;
+	@Autowired
+	private TemporaryVoteRepository temporaryVoteRepository;
 	@Value("#{'${mediawiki.langs}'.split(',')}")
 	private List<String> langs;
 	@Value("${mediawiki.protocol}")
@@ -58,8 +67,14 @@ public class UpdateService {
 		
 		Date startTimestampCurrentFetch = currentFetchProcess.getStartOfProcess();
 		
-		updateUsers(startTimestampLatestFetch, startTimestampCurrentFetch);
-		updatePagesAndRevisions(startTimestampLatestFetch, startTimestampCurrentFetch);
+		try{
+			updateUsers(startTimestampLatestFetch, startTimestampCurrentFetch);
+			updatePagesAndRevisions(startTimestampLatestFetch, startTimestampCurrentFetch);
+			validateTemporaryVotes(startTimestampCurrentFetch);
+		}catch(TemporaryVoteValidationException e){
+			LOG.error("An error occurred during a scheduled graph update procedure");
+			throw new UpdateGraphException();
+		}
 
 		// Save the result of the process, closing the current one
 		processService.closeCurrentProcess(ProcessStatus.DONE);
@@ -128,6 +143,28 @@ public class UpdateService {
 				default:
 					break;
 				}
+			}
+		}
+	}
+	
+	/**
+	 * Validate temporary votes added before the given timestamp
+	 * @param timestamp the timestamp used for comparison
+	 */
+	private void validateTemporaryVotes(Date timestamp) throws TemporaryVoteValidationException{
+		List<TemporaryVote> temporaryVotes = temporaryVoteRepository.findByTimestamp(timestamp);
+		for(TemporaryVote temporaryVote: temporaryVotes){
+			try{
+				User user = userService.getUser(temporaryVote.getUserid());
+				Revision revision = revisionService.getRevision(temporaryVote.getLangRevId());
+				Vote vote = new Vote(temporaryVote.getValue(), temporaryVote.getReliability(), temporaryVote.getTimestamp());
+				vote.setRevision(revision);
+				vote.setUser(user);
+				revision.addVote(vote);
+				revisionService.updateRevision(revision);
+			}catch(UserNotFoundException | RevisionNotFoundException e){
+				LOG.error("An error occurred during temporary vote validation: {}", temporaryVote);
+				throw new TemporaryVoteValidationException(e.getMessage());
 			}
 		}
 	}

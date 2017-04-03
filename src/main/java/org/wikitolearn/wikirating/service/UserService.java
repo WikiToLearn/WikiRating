@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.wikitolearn.wikirating.exception.UserNotFoundException;
 import org.wikitolearn.wikirating.model.Revision;
 import org.wikitolearn.wikirating.model.User;
 import org.wikitolearn.wikirating.repository.RevisionRepository;
@@ -100,5 +101,20 @@ public class UserService {
     	for(Revision revision : revisions){
     		setAuthorship(revision);
     	}
+    }
+    
+    /**
+     * Get the requested user.
+     * @param userId the user id
+     * @return the requested user if is found
+     * @throws UserNotFoundException
+     */
+    public User getUser(int userId) throws UserNotFoundException{
+    	User user  = userRepository.findByUserId(userId);
+    	if(user == null){
+    		LOG.error("User {} not found", userId);
+    		throw new UserNotFoundException();
+    	}
+    	return user;
     }
 }

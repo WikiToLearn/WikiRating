@@ -67,46 +67,48 @@ public class Vote {
 	}
 	/**
 	 * 
-	 * @return
+	 * @return the user
 	 */
 	public User getUser() {
 		return user;
 	}
 	/**
 	 * 
-	 * @param user
+	 * @param user the user to set
 	 */
 	public void setUser(User user) {
 		this.user = user;
 	}
 	/**
 	 * 
-	 * @return
+	 * @return the revision
 	 */
 	public Revision getRevision() {
 		return revision;
 	}
 	/**
 	 * 
-	 * @param revision
+	 * @param revision the revision to set
 	 */
 	public void setRevision(Revision revision) {
 		this.revision = revision;
 	}
 	/**
 	 * 
-	 * @return
+	 * @return the timestamp
 	 */
 	public Date getTimestamp() {
 		return timestamp;
 	}
 	/**
 	 * 
-	 * @param timestamp
+	 * @param timestamp the timestamp to set
 	 */
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
+	
+	
 
 	/* (non-Javadoc)
              * @see java.lang.Object#toString()

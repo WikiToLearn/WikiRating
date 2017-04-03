@@ -333,6 +333,14 @@ public class Revision {
 	public void setAuthor(User author) {
 		this.author = author;
 	}
+	
+	/**
+	 * 
+	 * @param vote the vote to set
+	 */
+	public void addVote(Vote vote){
+		this.votes.add(vote);
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
