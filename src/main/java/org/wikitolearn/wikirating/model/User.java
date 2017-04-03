@@ -139,13 +139,25 @@ public class User {
 	public void setRevisionsAuthored(Set<Revision> revisionsAuthored) {
 		this.revisionsAuthored = revisionsAuthored;
 	}
-
+	
+	/**
+	 * 
+	 * @return the votes of the user
+	 */
 	public Set<Vote> getVotes() {
 		return votes;
 	}
-
+	
+	/**
+	 * 
+	 * @param votes the votes to set
+	 */
 	public void setVotes(Set<Vote> votes) {
 		this.votes = votes;
+	}
+	
+	public void setRevisionAuthored(Revision revision){
+		this.revisionsAuthored.add(revision);
 	}
 
 	/* (non-Javadoc)

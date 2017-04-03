@@ -44,8 +44,8 @@ public class UpdateService {
 	private String namespace;
 	
 	/**
-	 * 
-	 * @return
+	 * Entry point for the scheduled graph updated
+	 * @return true if the update succeed
 	 */
 	public boolean updateGraph() {
 		// Get start timestamp of the latest FETCH Process before opening a new process
@@ -65,6 +65,7 @@ public class UpdateService {
 	}
 	
 	/**
+	 * Update the users querying the MediaWiki API
 	 * @param start
 	 * @param end
 	 */
@@ -85,7 +86,7 @@ public class UpdateService {
 	}
 
 	/**
-	 * 
+	 * Update the pages and the revisions querying the MediaWiki API
 	 * @param start
 	 * @param end
 	 */
@@ -104,6 +105,7 @@ public class UpdateService {
 							update.getOld_revid(), update.getNewlen(), update.getTimestamp());
 					// Then create a new Page and link it with the revision
 					pageService.addPage(update.getPageid(), update.getTitle(), lang, newRev);
+					userService.setAuthorship(newRev);
 					break;
 				case EDIT:
 					// Create a new revision
@@ -111,6 +113,7 @@ public class UpdateService {
 							update.getOld_revid(), update.getNewlen(), update.getTimestamp());
 					// Then add it to the page
 					pageService.addRevisionToPage(lang + "_" + update.getPageid(), updateRev);
+					userService.setAuthorship(updateRev);
 					break;
 				case MOVE:
 					// Move the page to the new title
