@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.model.Revision;
@@ -47,6 +48,7 @@ public class UpdateService {
 	 * Entry point for the scheduled graph updated
 	 * @return true if the update succeed
 	 */
+	@Scheduled(cron = "${maintenance.update.cron}")
 	public boolean updateGraph() {
 		// Get start timestamp of the latest FETCH Process before opening a new process
 		Date startTimestampLatestFetch = processService.getLastProcessStartDateByType(ProcessType.FETCH);
