@@ -30,6 +30,6 @@ public interface RevisionRepository extends GraphRepository<Revision> {
 	 * @param langPageId
 	 * @return
 	 */
-	@Query("MATCH (m:Metadata)-[*]->(p:Process {type:{0}}) RETURN p LIMIT 1")
+	@Query("MATCH (p:Page {langPageId:{0}})-[*]->(r:Revision) RETURN r")
 	Set<Revision> findAllRevisionOfPage(String langPageId);
 }
