@@ -95,8 +95,8 @@ public class UpdateService {
 			String url = protocol + lang + "." + apiUrl;
 			// Fetching pages updates
 			List<UpdateInfo> updates = updateMediaWikiService.getPagesUpdateInfo(url, namespace, start, end);
-
-			updates.forEach(update -> {
+			
+			for(UpdateInfo update : updates){
 				switch (update.getType()) {
 				case NEW:
 					// Create the new revision
@@ -123,7 +123,7 @@ public class UpdateService {
 				default:
 					break;
 				}
-			});
+			}
 		}
 	}
 	
