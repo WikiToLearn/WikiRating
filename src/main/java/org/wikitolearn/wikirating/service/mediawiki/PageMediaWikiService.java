@@ -36,7 +36,7 @@ public class PageMediaWikiService extends MediaWikiService<Page>{
 	@Override
 	public List<Page> getAll(String apiUrl){
 		ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
-		Map<String, String> parameters = mediaWikiApiUtils.getListAllPagesParams("2800");
+		Map<String, String> parameters = mediaWikiApiUtils.getListAllPagesParams(namespace);
 		InputStream response;
 		boolean morePages = true;
 		JSONArray pagesJson = new JSONArray();
