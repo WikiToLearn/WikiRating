@@ -106,7 +106,7 @@ public class UserService {
     /**
      * Get the requested user.
      * @param userId the user id
-     * @return the requested user if is found
+     * @return the requested user
      * @throws UserNotFoundException
      */
     public User getUser(int userId) throws UserNotFoundException{

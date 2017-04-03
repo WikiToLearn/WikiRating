@@ -97,8 +97,8 @@ public class RevisionService {
 	
 	/**
 	 * Get the requested revision
-	 * @param langRevId
-	 * @return
+	 * @param langRevId the langRevId of the revision
+	 * @return the revision
 	 * @throws RevisionNotFoundException
 	 */
 	public Revision getRevision(String langRevId) throws RevisionNotFoundException{

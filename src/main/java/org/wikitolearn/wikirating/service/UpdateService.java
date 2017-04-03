@@ -150,6 +150,7 @@ public class UpdateService {
 	/**
 	 * Validate temporary votes added before the given timestamp
 	 * @param timestamp the timestamp used for comparison
+	 * @throws TemporaryVoteValidationException
 	 */
 	private void validateTemporaryVotes(Date timestamp) throws TemporaryVoteValidationException{
 		List<TemporaryVote> temporaryVotes = temporaryVoteRepository.findByTimestamp(timestamp);
