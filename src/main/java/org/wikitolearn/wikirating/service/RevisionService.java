@@ -89,10 +89,13 @@ public class RevisionService {
 	 * Delete a revision given its langPageId
 	 * @param langPageId the langPageId of the revision
 	 */
-	public void deleteRevisionsOfPage(String langPageId){
+	public void deleteRevisionsOfPage(String langPageId) throws RevisionNotFoundException{
         Set<Revision> revisions = revisionRepository.findAllRevisionOfPage(langPageId);
+        if (revisions.size() == 0){
+        	LOG.error("Revisions of page {} not found", langPageId);
+        	throw new RevisionNotFoundException("Revisions of page "+langPageId+" not found");
+		}
         revisionRepository.delete(revisions);
-        //TODO throw exceptions
     }
 	
 	/**
