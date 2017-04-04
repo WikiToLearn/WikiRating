@@ -3,6 +3,7 @@
  */
 package org.wikitolearn.wikirating.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.UserNotFoundException;
+import org.wikitolearn.wikirating.model.Author;
 import org.wikitolearn.wikirating.model.Revision;
 import org.wikitolearn.wikirating.model.User;
 import org.wikitolearn.wikirating.repository.RevisionRepository;
@@ -54,19 +56,15 @@ public class UserService {
     @Async
     public CompletableFuture<Boolean> initAuthorship(){
     	Iterable<User> users = userRepository.findAll();
-    	
     	for(User user : users){
     		Set<Revision> revisions = revisionRepository.findByUserid(user.getUserid());
-    		user.setRevisionsAuthored(revisions);
-    		userRepository.save(user);
+    		this.setAuthorship(revisions, user);
     		LOG.info("Set revisions authorship for user {}", user.getUserid());
     	}
-    	
     	// Get revisions with userid = 0 (anonymous authors)
     	Set<Revision> anonRevisions = revisionRepository.findByUserid(0);
     	User anonymousUser =  new User("AnonymousUser", 0, 0.0, 0.0, 0.0);
-    	anonymousUser.setRevisionsAuthored(anonRevisions);
-    	userRepository.save(anonymousUser);
+        this.setAuthorship(anonRevisions, anonymousUser);
     	LOG.info("Set revisions authorship for anonymous revisions");
     	
         return CompletableFuture.completedFuture(true);
@@ -83,21 +81,41 @@ public class UserService {
     	return users;
     	//TODO handle exceptions
     }
+
+    /**
+     * Set the authorship for a list a Revisions for a selected User
+     * @param revisions
+     * @param user
+     */
+    public void setAuthorship(Collection<Revision> revisions, User user){
+        for (Revision rev : revisions){
+            Author author = new Author(user.getTotalReliability());
+            author.setRevision(rev);
+            author.setUser(user);
+            user.addAuthor(author);
+        }
+        userRepository.save(user);
+    }
     
     /**
-     * Set the authorship for a revision
+     * Set the authorship for a revision creating a new Author relationship
+     * that saves the reliability of the user.
      * @param revision the revision
      */
     public void setAuthorship(Revision revision){
     	User user = userRepository.findByUserId(revision.getUserid());
-    	user.setRevisionAuthored(revision);
+		Author author = new Author(user.getTotalReliability());
+		author.setRevision(revision);
+		author.setUser(user);
+    	user.addAuthor(author);
+    	userRepository.save(user);
     }
     
     /**
      * Set the authorship for a list of revisions
      * @param revisions the list of revisions
      */
-    public void setAuthorship(List<Revision> revisions){
+    public void setAuthorship(Collection<Revision> revisions){
     	for(Revision revision : revisions){
     		setAuthorship(revision);
     	}

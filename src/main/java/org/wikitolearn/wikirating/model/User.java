@@ -28,8 +28,8 @@ public class User {
 	private double votesReliability;
 	private double contributesReliability;
 	private double totalReliability;
-	@Relationship( type="AUTHOR", direction = Relationship.UNDIRECTED)
-	private Set<Revision> revisionsAuthored;
+	@Relationship( type="AUTHOR", direction = Relationship.OUTGOING)
+	private Set<Author> authors;
 	@Relationship( type="VOTE", direction = Relationship.OUTGOING)
 	private Set<Vote> votes;
 	
@@ -128,18 +128,22 @@ public class User {
 	 *
 	 * @return
 	 */
-	public Set<Revision> getRevisionsAuthored() {
-		return revisionsAuthored;
+	public Set<Author> getAuthors() {
+		return authors;
 	}
 
 	/**
 	 *
-	 * @param revisionsAuthored
+	 * @param authors
 	 */
-	public void setRevisionsAuthored(Set<Revision> revisionsAuthored) {
-		this.revisionsAuthored = revisionsAuthored;
+	public void setAuthors(Set<Author> authors) {
+		this.authors = authors;
 	}
-	
+
+	public void addAuthor(Author author){
+	    this.authors.add(author);
+    }
+
 	/**
 	 * 
 	 * @return the votes of the user
@@ -155,10 +159,7 @@ public class User {
 	public void setVotes(Set<Vote> votes) {
 		this.votes = votes;
 	}
-	
-	public void setRevisionAuthored(Revision revision){
-		this.revisionsAuthored.add(revision);
-	}
+
 
 	/* (non-Javadoc)
              * @see java.lang.Object#toString()

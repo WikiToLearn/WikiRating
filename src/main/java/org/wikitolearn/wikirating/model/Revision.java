@@ -41,8 +41,10 @@ public class Revision {
 	private Revision previousRevision;
     @Relationship(type="VOTE", direction = Relationship.INCOMING)
 	private Set<Vote> votes;
-    @Relationship( type="AUTHOR", direction = Relationship.INCOMING)
-	private User author;
+    //This relationship represents the connection between the revision
+	//and its creator (user). It saves his reliability at the moment of the author.
+    @Relationship(type="AUTHOR", direction = Relationship.INCOMING)
+	private Author author;
     
 	/**
 	 * 
@@ -320,20 +322,14 @@ public class Revision {
 		this.votes = votes;
 	}
 
-	/**
-	 * @return the author
-	 */
-	public User getAuthor() {
+	public Author getAuthor() {
 		return author;
 	}
 
-	/**
-	 * @param author the author to set
-	 */
-	public void setAuthor(User author) {
+	public void setAuthor(Author author) {
 		this.author = author;
 	}
-	
+
 	/**
 	 * 
 	 * @param vote the vote to set
@@ -345,20 +341,18 @@ public class Revision {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
-	public String toString() {
-		return "Revision{" +
-				"graphId=" + graphId +
-				", revid=" + revid +
-				", lang='" + lang + '\'' +
-				", userid=" + userid +
-				", parentid=" + parentid +
-				", timestamp=" + timestamp +
-				", length=" + length +
-				", changeCoefficient=" + changeCoefficient +
-				", validated=" + validated +
-				", langRevId='" + langRevId + '\'' +
-				", author=" + author +
-				'}';
-	}
+    @Override
+    public String toString() {
+        return "Revision{" +
+                "revid=" + revid +
+                ", lang='" + lang + '\'' +
+                ", userid=" + userid +
+                ", parentid=" + parentid +
+                ", timestamp=" + timestamp +
+                ", length=" + length +
+                ", validated=" + validated +
+                ", langRevId='" + langRevId + '\'' +
+                ", author=" + author +
+                '}';
+    }
 }
