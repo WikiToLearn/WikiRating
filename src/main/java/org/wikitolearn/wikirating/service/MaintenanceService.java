@@ -24,13 +24,15 @@ import org.wikitolearn.wikirating.util.enums.ProcessType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by valsdav on 29/03/17.
  */
 @Service
-public class UpdateService {
-	private static final Logger LOG = LoggerFactory.getLogger(UpdateService.class);
+public class MaintenanceService {
+	private static final Logger LOG = LoggerFactory.getLogger(MaintenanceService.class);
 	
 	@Autowired
 	private UserService userService;
@@ -38,6 +40,8 @@ public class UpdateService {
 	private PageService pageService;
 	@Autowired
 	private RevisionService revisionService;
+	@Autowired
+	private MetadataService metadataService;
 	@Autowired
 	private ProcessService processService;
 	@Autowired
@@ -52,6 +56,73 @@ public class UpdateService {
 	private String apiUrl;
 	@Value("${mediawiki.namespace}")
 	private String namespace;
+	
+	/**
+	 * Initialize the graph for the first time using parallel threads for each domain language
+	 * @return true if initialization succeed
+	 */
+	public boolean initializeGraph() {
+		// Initialize Metadata service
+        metadataService.initMetadata();
+		// Start a new Process
+		processService.createNewProcess(ProcessType.INIT);
+
+		CompletableFuture<Boolean> initFuture = CompletableFuture
+				.allOf(buildUsersAndPagesFutersList().toArray(new CompletableFuture[langs.size() + 1]))
+				.thenCompose(result -> CompletableFuture
+						.allOf(buildRevisionsFuturesList().toArray(new CompletableFuture[langs.size()])))
+				.thenCompose(result -> userService.initAuthorship());
+
+		try {
+            boolean result = initFuture.get();
+            // Save the result of the process
+            if (result){
+                processService.closeCurrentProcess(ProcessStatus.DONE);
+            }else{
+                processService.closeCurrentProcess(ProcessStatus.EXCEPTION);
+            }
+            return result;
+		} catch (InterruptedException | ExecutionException e) {
+			LOG.error("Something went wrong. {}", e.getMessage());
+			return false;
+		}
+	}
+	
+	/**
+	 * Build a list of CompletableFuture. The elements are the fetches of pages'
+	 * revisions from each domain language.
+	 * 
+	 * @return a list of CompletableFuture
+	 */
+	private List<CompletableFuture<Boolean>> buildRevisionsFuturesList() {
+		List<CompletableFuture<Boolean>> parallelRevisionsFutures = new ArrayList<>();
+		// Add revisions fetch for each domain language
+		for (String lang : langs) {
+			String url = protocol + lang + "." + apiUrl;
+			parallelRevisionsFutures.add(revisionService.initRevisions(lang, url));
+		}
+		return parallelRevisionsFutures;
+	}
+
+	/**
+	 * Build a list of CompletableFuture. The first one is the fetch of the
+	 * users from the first domain in mediawiki.langs list. The rest of the
+	 * elements are the fetches of the pages for each language. This
+	 * implementation assumes that the users are shared among domains.
+	 * 
+	 * @return a list of CompletableFuture
+	 */
+	private List<CompletableFuture<Boolean>> buildUsersAndPagesFutersList() {
+		List<CompletableFuture<Boolean>> usersAndPagesInsertion = new ArrayList<>();
+		// Add users fetch as fist operation
+		usersAndPagesInsertion.add(userService.initUsers(protocol + langs.get(0) + "." + apiUrl));
+		// Add pages fetch for each domain language
+		for (String lang : langs) {
+			String url = protocol + lang + "." + apiUrl;
+			usersAndPagesInsertion.add(pageService.initPages(lang, url));
+		}
+		return usersAndPagesInsertion;
+	}
 	
 	/**
 	 * Entry point for the scheduled graph updated
