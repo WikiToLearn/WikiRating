@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.neo4j.ogm.annotation.Relationship;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -36,7 +37,10 @@ public class User {
 	/**
 	 * 
 	 */
-	public User() {}
+	public User() {
+	    this.authors = new HashSet<>();
+	    this.votes = new HashSet<>();
+    }
 	
 	/**
 	 * @param username
@@ -52,6 +56,8 @@ public class User {
 		this.votesReliability = votesReliability;
 		this.contributesReliability = contributesReliability;
 		this.totalReliability = totalReliability;
+        this.authors = new HashSet<>();
+        this.votes = new HashSet<>();
 	}
 
 	/**
@@ -160,6 +166,9 @@ public class User {
 		this.votes = votes;
 	}
 
+	public void addVote(Vote vote){
+	    this.votes.add(vote);
+    }
 
 	/* (non-Javadoc)
              * @see java.lang.Object#toString()
