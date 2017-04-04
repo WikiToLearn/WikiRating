@@ -22,16 +22,14 @@ import java.util.Map;
  */
 @Service
 public class RevisionMediaWikiService extends MediaWikiService<Revision>{
-	
-	private Map<String, String> parameters;
 
     /**
      * Get all the revisions of a page.
      * @param apiUrl String The MediaWiki API url
      * @return revisions List<Revision> A list that contains all the fetched revisions
      */
-	@Override
-    public List<Revision> getAll(String apiUrl){
+	//@Override
+    public List<Revision> getAll(String apiUrl,Map<String, String> parameters){
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
         InputStream response;
         boolean moreRevs = true;
@@ -43,6 +41,7 @@ public class RevisionMediaWikiService extends MediaWikiService<Revision>{
             while(moreRevs){
                 response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
                 JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
+                LOG.info(responseJson.toString());
                 toBeConcat.add(responseJson.getJSONObject("query").getJSONObject("pages").
                         getJSONObject(parameters.get("pageids")).getJSONArray("revisions"));
 
@@ -67,12 +66,14 @@ public class RevisionMediaWikiService extends MediaWikiService<Revision>{
     /**
      * Get all the revisions for a specific page querying MediaWiki API
      * @param apiUrl String The MediaWiki API url
-     * @param pageid int The id the page of which getting the revisions
+     * @param pageId int The id the page of which getting the revisions
      * @return revisions List<Revision> A list that contains all the fetched revisions
      */
 	public List<Revision> getAllRevisionByPageId(String apiUrl, int pageId) {
-		parameters = mediaWikiApiUtils.getRevisionParams(pageId);
-		return getAll(apiUrl);
+	    LOG.info("ApiUrl: {}",apiUrl);
+        LOG.info("PageId {}", pageId);
+		Map<String, String> parameters = mediaWikiApiUtils.getRevisionParams(pageId);
+		return getAll(apiUrl, parameters);
 	}
 
 }

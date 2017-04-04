@@ -145,7 +145,7 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
     /**
      *
      */
-    @Override
+    //@Override
     public List<UpdateInfo> getAll(String apiUrl) {
         return null;
     }

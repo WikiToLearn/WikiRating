@@ -33,7 +33,7 @@ public class PageMediaWikiService extends MediaWikiService<Page>{
 	 * @param apiUrl String The MediaWiki API url
 	 * @return pages List<Page> A list that contains all the fetched pages
 	 */
-	@Override
+	//@Override
 	public List<Page> getAll(String apiUrl){
 		ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
 		Map<String, String> parameters = mediaWikiApiUtils.getListAllPagesParams(namespace);

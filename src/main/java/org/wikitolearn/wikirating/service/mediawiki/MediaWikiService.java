@@ -4,6 +4,7 @@
 package org.wikitolearn.wikirating.service.mediawiki;
 
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,7 +32,7 @@ public abstract class MediaWikiService<T> {
 	@Value("${mediawiki.namespace}")
 	protected String namespace;
 	
-	public abstract List<T> getAll(String apiUrl);
+	//public abstract List<T> getAll(String apiUrl, Map<String, String> parameters);
 	
 	/**
 	 * This method is an utility. It concatenates the given JSONArrays into one. 

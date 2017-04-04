@@ -26,7 +26,7 @@ public class UserMediaWikiService extends MediaWikiService<User>{
      * @param apiUrl String The MediaWiki API url
      * @return users List<User> A list that contains all the fetched users
      */
-    @Override
+    //@Override
     public List<User> getAll(String apiUrl){
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
         Map<String, String> parameters = mediaWikiApiUtils.getUserParams();
