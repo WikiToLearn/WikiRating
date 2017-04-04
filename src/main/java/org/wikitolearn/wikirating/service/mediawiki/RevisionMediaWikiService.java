@@ -21,16 +21,17 @@ import java.util.Map;
  *
  */
 @Service
-public class RevisionMediaWikiService extends MediaWikiService<Revision>{
-
+public class RevisionMediaWikiService extends MediaWikiService<Revision>{  
+	
     /**
-     * Get all the revisions of a page.
-     * @param apiUrl String The MediaWiki API url
-     * @return revisions List<Revision> A list that contains all the fetched revisions
+     * Get all the revisions for a specific page querying MediaWiki API
+     * @param apiUrl the MediaWiki API url
+     * @param pageId the id the page of which getting the revisions
+     * @return revisions  a list that contains all the fetched revisions
      */
-	//@Override
-    public List<Revision> getAll(String apiUrl,Map<String, String> parameters){
-        ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
+	public List<Revision> getAllRevisionByPageId(String apiUrl, int pageId) {
+		Map<String, String> parameters = mediaWikiApiUtils.getRevisionParams(pageId);
+		ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
         InputStream response;
         boolean moreRevs = true;
         JSONArray revsJson = new JSONArray();
@@ -41,7 +42,6 @@ public class RevisionMediaWikiService extends MediaWikiService<Revision>{
             while(moreRevs){
                 response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
                 JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
-                LOG.info(responseJson.toString());
                 toBeConcat.add(responseJson.getJSONObject("query").getJSONObject("pages").
                         getJSONObject(parameters.get("pageids")).getJSONArray("revisions"));
 
@@ -61,19 +61,5 @@ public class RevisionMediaWikiService extends MediaWikiService<Revision>{
             LOG.error("An error occurred while converting an InputStream to JSONObject. {}", e.getMessage());
         }
         return revs;
-    }
-	
-    /**
-     * Get all the revisions for a specific page querying MediaWiki API
-     * @param apiUrl String The MediaWiki API url
-     * @param pageId int The id the page of which getting the revisions
-     * @return revisions List<Revision> A list that contains all the fetched revisions
-     */
-	public List<Revision> getAllRevisionByPageId(String apiUrl, int pageId) {
-	    LOG.info("ApiUrl: {}",apiUrl);
-        LOG.info("PageId {}", pageId);
-		Map<String, String> parameters = mediaWikiApiUtils.getRevisionParams(pageId);
-		return getAll(apiUrl, parameters);
 	}
-
 }

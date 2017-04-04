@@ -20,7 +20,6 @@ import org.wikitolearn.wikirating.model.Revision;
 import org.wikitolearn.wikirating.repository.PageRepository;
 import org.wikitolearn.wikirating.repository.RevisionRepository;
 import org.wikitolearn.wikirating.service.mediawiki.RevisionMediaWikiService;
-import sun.rmi.runtime.Log;
 
 /**
  * 
@@ -47,8 +46,7 @@ public class RevisionService {
 	 */
 	@Async
 	public CompletableFuture<Boolean> initRevisions(String lang, String apiUrl) {
-		LOG.warn("LANG: {}", lang);
-		Iterable<Page> pages = pageRepository.findAllByLang(lang);
+		List<Page> pages = pageRepository.findAllByLang(lang);
 		for(Page page : pages){
 			List<Revision> revisions = revisionMediaWikiService.getAllRevisionByPageId(apiUrl, page.getPageid());
 			// Set the first and the last revisions for the current page

@@ -4,7 +4,6 @@
 package org.wikitolearn.wikirating.service.mediawiki;
 
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,7 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author aletundo
  * @param <T>
- *
  */
 public abstract class MediaWikiService<T> {
 	
@@ -32,12 +30,10 @@ public abstract class MediaWikiService<T> {
 	@Value("${mediawiki.namespace}")
 	protected String namespace;
 	
-	//public abstract List<T> getAll(String apiUrl, Map<String, String> parameters);
-	
 	/**
 	 * This method is an utility. It concatenates the given JSONArrays into one. 
-	 * @param arrays List<JSONArray> The arrays to be concatenated
-	 * @return result JSONArray The resulted JSONArray 
+	 * @param arrays the arrays to be concatenated
+	 * @return result the resulted JSONArray 
 	 * @throws JSONException
 	 */
 	protected JSONArray concatArrays(List<JSONArray> arrays) throws JSONException{

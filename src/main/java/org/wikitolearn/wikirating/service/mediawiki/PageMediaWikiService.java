@@ -30,10 +30,9 @@ public class PageMediaWikiService extends MediaWikiService<Page>{
 	
 	/**
 	 * Get all the pages from a specified namespace of MediaWiki instance through its API.
-	 * @param apiUrl String The MediaWiki API url
-	 * @return pages List<Page> A list that contains all the fetched pages
+	 * @param apiUrl the MediaWiki API url
+	 * @return pages a list that contains all the fetched pages
 	 */
-	//@Override
 	public List<Page> getAll(String apiUrl){
 		ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
 		Map<String, String> parameters = mediaWikiApiUtils.getListAllPagesParams(namespace);

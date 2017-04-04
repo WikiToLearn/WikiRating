@@ -141,12 +141,4 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
         }
         return logEvents;
     }
-
-    /**
-     *
-     */
-    //@Override
-    public List<UpdateInfo> getAll(String apiUrl) {
-        return null;
-    }
 }

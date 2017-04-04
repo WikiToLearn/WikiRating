@@ -23,10 +23,9 @@ import java.util.Map;
 public class UserMediaWikiService extends MediaWikiService<User>{
     /**
      * Get all the users from MediaWiki instance through its API.
-     * @param apiUrl String The MediaWiki API url
-     * @return users List<User> A list that contains all the fetched users
+     * @param apiUrl the MediaWiki API url
+     * @return users a list that contains all the fetched users
      */
-    //@Override
     public List<User> getAll(String apiUrl){
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
         Map<String, String> parameters = mediaWikiApiUtils.getUserParams();
@@ -61,4 +60,3 @@ public class UserMediaWikiService extends MediaWikiService<User>{
         return users;
     }
 }
-
