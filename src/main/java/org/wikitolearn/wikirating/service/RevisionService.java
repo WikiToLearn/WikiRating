@@ -46,8 +46,8 @@ public class RevisionService {
 	 */
 	@Async
 	public CompletableFuture<Boolean> initRevisions(String lang, String apiUrl) {
-		Iterable<Page> pages = pageRepository.findAll();
-		pages.forEach(page -> {
+		Iterable<Page> pages = pageRepository.findAllByLang(lang);
+		for(Page page : pages){
 			List<Revision> revisions = revisionMediaWikiService.getAllRevisionByPageId(apiUrl, page.getPageid());
 			// Set the first and the last revisions for the current page
 			page.setFistRevision(revisions.get(0));
@@ -65,7 +65,8 @@ public class RevisionService {
 			revisionRepository.save(revisions);
 			pageRepository.save(page);
 			LOG.info("Inserted revisions for page {}", page.getLangPageId());
-		});
+		}
+
 		return CompletableFuture.completedFuture(true);
 	}
 

@@ -43,7 +43,6 @@ public class RevisionMediaWikiService extends MediaWikiService<Revision>{
             while(moreRevs){
                 response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
                 JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
-
                 toBeConcat.add(responseJson.getJSONObject("query").getJSONObject("pages").
                         getJSONObject(parameters.get("pageids")).getJSONArray("revisions"));
 
