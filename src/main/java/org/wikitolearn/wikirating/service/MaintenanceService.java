@@ -71,6 +71,8 @@ public class MaintenanceService {
 				.allOf(buildUsersAndPagesFutersList().toArray(new CompletableFuture[langs.size() + 1]))
 				.thenCompose(result -> CompletableFuture
 						.allOf(buildRevisionsFuturesList().toArray(new CompletableFuture[langs.size()])))
+				.thenCompose(result -> CompletableFuture
+						.allOf(buildApplyCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
 				.thenCompose(result -> userService.initAuthorship());
 
 		try {
@@ -86,6 +88,22 @@ public class MaintenanceService {
 			LOG.error("Something went wrong. {}", e.getMessage());
 			return false;
 		}
+	}
+	
+	/**
+	 * Build a list of CompletableFuture. The elements are the fetches of pages'
+	 * revisions from each domain language.
+	 * 
+	 * @return a list of CompletableFuture
+	 */
+	private List<CompletableFuture<Boolean>> buildApplyCourseStructureFuturesList() {
+		List<CompletableFuture<Boolean>> parallelApplyCourseStructureFutures = new ArrayList<>();
+		// Add course structure for each domain language
+		for (String lang : langs) {
+			String url = protocol + lang + "." + apiUrl;
+			parallelApplyCourseStructureFutures.add(pageService.applyCourseStructure(url, lang));
+		}
+		return parallelApplyCourseStructureFutures;
 	}
 	
 	/**

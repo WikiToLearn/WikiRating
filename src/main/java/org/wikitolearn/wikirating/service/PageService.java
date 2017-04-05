@@ -122,7 +122,8 @@ public class PageService {
      * @param apiUrl
      * @param lang
      */
-    public void applyCourseStructure(String apiUrl, String lang){
+    @Async
+    public CompletableFuture<Boolean> applyCourseStructure(String apiUrl, String lang){
     	List<Page> pages = pageRepository.findAllByLang(lang);
     	
     	// Remove all pages that are not course root pages
@@ -169,6 +170,8 @@ public class PageService {
      		pageRepository.save(levelsTwo);
      		pageRepository.save(p);
     	}
+    	
+    	return CompletableFuture.completedFuture(true);
     }
 
 }
