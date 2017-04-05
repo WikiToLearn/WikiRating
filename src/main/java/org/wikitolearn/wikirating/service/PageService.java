@@ -140,15 +140,21 @@ public class PageService {
      			// Add CourseLEvelTwo label and add levels two to the set to be saved
     			String levelTwoTitle = (tree.getRoot() + "/" + levelTwo).trim();
     			Page levelTwoPage = pageRepository.findByTitleAndLang(levelTwoTitle, lang);
+    			// Skip malformed page
+    			if(levelTwoPage == null) continue;
+    			
     			levelTwoPage.addLabel("CourseLevelTwo");
     			levelsTwo.add(levelTwoPage);
     			
     			// Add CourseLevelThree labels and add levels three to the set to be saved
     			for(String levelThree : tree.getLevelsTree().get(index)){
     				String levelThreeTitle = (levelTwoTitle + "/" + levelThree).trim();
-    				Page levelTwoThree = pageRepository.findByTitleAndLang(levelThreeTitle, lang);
-        			levelTwoThree.addLabel("CourseLevelThree");
-        			levelsThree.add(levelTwoPage);
+    				Page levelThreePage = pageRepository.findByTitleAndLang(levelThreeTitle, lang);
+    				// Skip malformed page
+        			if(levelThreePage == null) continue;
+        			
+        			levelThreePage.addLabel("CourseLevelThree");
+        			levelsThree.add(levelThreePage);
     			}
     			// Set LEVEL_THREE relationships
          		levelTwoPage.setLevelsThree(levelsThree);
