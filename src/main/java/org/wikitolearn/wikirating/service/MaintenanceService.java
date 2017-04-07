@@ -150,6 +150,9 @@ public class MaintenanceService {
 	public boolean updateGraph() {
 		// Get start timestamp of the latest FETCH Process before opening a new process
 		Date startTimestampLatestFetch = processService.getLastProcessStartDateByType(ProcessType.FETCH);
+		if(startTimestampLatestFetch == null){
+			startTimestampLatestFetch = processService.getLastProcessStartDateByType(ProcessType.INIT);
+		}
 		// Create a new FETCH process
 		Process currentFetchProcess = processService.createNewProcess(ProcessType.FETCH);
 		LOG.info("Created new fetch process {}", currentFetchProcess.toString());

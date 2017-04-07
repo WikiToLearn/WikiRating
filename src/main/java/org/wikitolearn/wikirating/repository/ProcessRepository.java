@@ -5,6 +5,7 @@ package org.wikitolearn.wikirating.repository;
 
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.GraphRepository;
+import org.springframework.data.repository.query.Param;
 import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
 
@@ -27,7 +28,7 @@ public interface ProcessRepository extends GraphRepository<Process> {
      * @param type the type of the process to look for
      * @return the found process
      */
-    @Query("MATCH (m:Metadata)-[*]->(p:Process {type:{0}}) RETURN p LIMIT 1")
-    public Process getLastProcessByType(ProcessType type);
+    @Query("MATCH (m:Metadata)-[*]->(p:Process {processType:{type}}) RETURN p LIMIT 1")
+    public Process getLastProcessByType(@Param("type") ProcessType type);
 
 }

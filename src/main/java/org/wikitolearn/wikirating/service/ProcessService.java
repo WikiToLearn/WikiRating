@@ -56,7 +56,11 @@ public class ProcessService {
     }
 
     public Date getLastProcessStartDateByType(ProcessType type){
-        return processRepository.getLastProcessByType(type).getStartOfProcess();
+        Process latestProcess = processRepository.getLastProcessByType(type);
+        if(latestProcess != null){
+        	return latestProcess.getStartOfProcess();
+        }
+        return null;
     }
 
 }
