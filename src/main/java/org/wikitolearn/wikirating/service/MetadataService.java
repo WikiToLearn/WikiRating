@@ -28,20 +28,17 @@ public class MetadataService {
         metadataRepository.save(metadataProcesses);
         metadataRepository.save(metadataStats);
     }
-
+    
     /**
-     * This method inserts in the DB a new Process connecting it
-     * to the Metadata root node and to the previous Process.
-     * @param process
+     * Update the LATEST_PROCESS relationship
+     * @param process the latest process
      * @return
      */
-    public boolean addProcess(Process process){
+    public boolean updateLatestProcess(Process process){
         Metadata metadata = metadataRepository.getMetadataByType(MetadataType.PROCESSES);
-        // Creating the new process node of the chain
-        process.setPreviousProcess(metadata.getLastItem());
-        metadata.setLastItem(process);
+        metadataRepository.removeLatestProcess();
+        metadata.setLatestProcess(process);
         metadataRepository.save(metadata);
-        LOG.info("Process {} inserted ", process);
         return true;
     }
 }

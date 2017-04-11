@@ -13,7 +13,7 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateInfo {
 
-    private UpdateType type;
+    private String type;
     private String title;
     private String newTitle;
     private int pageid;
@@ -27,11 +27,11 @@ public class UpdateInfo {
 
     public UpdateInfo(){}
 
-    public UpdateType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(UpdateType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

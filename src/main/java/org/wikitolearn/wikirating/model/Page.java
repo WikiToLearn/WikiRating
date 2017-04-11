@@ -12,6 +12,8 @@ import org.neo4j.ogm.annotation.Labels;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * @author aletundo
  *
@@ -21,7 +23,8 @@ public class Page {
 
 	@GraphId
 	private Long graphId;
-	private int pageid;
+	@JsonProperty("pageId")
+	private int pageId;
 	@Index
 	private String title;
 	@Index
@@ -46,12 +49,12 @@ public class Page {
 	public Page() {}
 
 	/**
-	 * @param pageid
+	 * @param pageId
 	 * @param title
 	 * @param lang
 	 */
-	public Page(int pageid, String title, String lang, String langPageId) {
-		this.pageid = pageid;
+	public Page(int pageId, String title, String lang, String langPageId) {
+		this.pageId = pageId;
 		this.title = title;
 		this.lang = lang;	
 		this.langPageId = langPageId;
@@ -72,17 +75,17 @@ public class Page {
 	}
 
 	/**
-	 * @return the pageid
+	 * @return the pageId
 	 */
-	public int getPageid() {
-		return pageid;
+	public int getPageId() {
+		return pageId;
 	}
 
 	/**
-	 * @param pageid the pageid to set
+	 * @param pageId the pageId to set
 	 */
-	public void setPageid(int pageid) {
-		this.pageid = pageid;
+	public void setPageid(int pageId) {
+		this.pageId = pageId;
 	}
 
 	/**

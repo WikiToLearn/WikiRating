@@ -20,6 +20,7 @@ import org.wikitolearn.wikirating.repository.TemporaryVoteRepository;
 import org.wikitolearn.wikirating.service.mediawiki.UpdateMediaWikiService;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
+import org.wikitolearn.wikirating.util.enums.UpdateType;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -155,7 +156,7 @@ public class MaintenanceService {
 		}
 		// Create a new FETCH process
 		Process currentFetchProcess = processService.createNewProcess(ProcessType.FETCH);
-		LOG.info("Created new fetch process {}", currentFetchProcess.toString());
+		metadataService.updateLatestProcess(currentFetchProcess);
 		
 		Date startTimestampCurrentFetch = currentFetchProcess.getStartOfProcess();
 		
@@ -208,7 +209,7 @@ public class MaintenanceService {
 			
 			for(UpdateInfo update : updates){
 				switch (update.getType()) {
-				case NEW:
+				case "new":
 					// Create the new revision
 					Revision newRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
 							update.getOld_revid(), update.getNewlen(), update.getTimestamp());
@@ -216,7 +217,7 @@ public class MaintenanceService {
 					pageService.addPage(update.getPageid(), update.getTitle(), lang, newRev);
 					userService.setAuthorship(newRev);
 					break;
-				case EDIT:
+				case "edit":
 					// Create a new revision
 					Revision updateRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
 							update.getOld_revid(), update.getNewlen(), update.getTimestamp());
@@ -224,11 +225,11 @@ public class MaintenanceService {
 					pageService.addRevisionToPage(lang + "_" + update.getPageid(), updateRev);
 					userService.setAuthorship(updateRev);
 					break;
-				case MOVE:
+				case "move":
 					// Move the page to the new title
 					pageService.movePage(update.getTitle(), update.getNewTitle(), lang);
 					break;
-				case DELETE:
+				case "delete":
 					// Delete the page and all its revisions
 					pageService.deletePage(update.getTitle(), lang);
 					break;
@@ -248,7 +249,7 @@ public class MaintenanceService {
 		List<TemporaryVote> temporaryVotes = temporaryVoteRepository.findByTimestamp(timestamp);
 		for(TemporaryVote temporaryVote: temporaryVotes){
 			try{
-				User user = userService.getUser(temporaryVote.getUserid());
+				User user = userService.getUser(temporaryVote.getUserId());
 				Revision revision = revisionService.getRevision(temporaryVote.getLangRevId());
 				Vote vote = new Vote(temporaryVote.getValue(), temporaryVote.getReliability(), temporaryVote.getTimestamp());
 				vote.setRevision(revision);

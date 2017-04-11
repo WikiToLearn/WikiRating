@@ -5,6 +5,8 @@ import org.neo4j.ogm.annotation.Index;
 import org.neo4j.ogm.annotation.NodeEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.annotation.typeconversion.DateLong;
 
@@ -20,10 +22,13 @@ import java.util.Set;
 @NodeEntity( label = "Revision" )
 public class Revision {
 	@GraphId private Long graphId;
-    private int revid;
+	@JsonProperty("revid")
+    private int revId;
     private String lang;
-    private int userid;
-    private int parentid;
+    @JsonProperty("userid")
+    private int userId;
+    @JsonProperty("parentid")
+    private int parentId;
     @DateLong
     private Date timestamp;
     private long length;
@@ -52,18 +57,18 @@ public class Revision {
 	public Revision() {}
 
 	/**
-     * @param revid
-     * @param userid
-     * @param parentid
+     * @param revId
+     * @param userId
+     * @param parentId
      * @param length
      * @param lang
      * @param timestamp
      */
-	public Revision(int revid, String lang, int userid, int parentid, long length, Date timestamp) {
-		this.revid = revid;
-		this.langRevId = lang +"_"+revid;
-		this.userid = userid;
-		this.parentid = parentid;
+	public Revision(int revId, String lang, int userId, int parentId, long length, Date timestamp) {
+		this.revId = revId;
+		this.langRevId = lang +"_"+revId;
+		this.userId = userId;
+		this.parentId = parentId;
 		this.length = length;
 		this.lang = lang;
         this.timestamp = timestamp;
@@ -71,45 +76,45 @@ public class Revision {
     }
 
 	/**
-	 * @return the revid
+	 * @return the revId
 	 */
-	public int getRevid() {
-		return revid;
+	public int getRevId() {
+		return revId;
 	}
 
 	/**
-	 * @param revid the revid to set
+	 * @param revId the revId to set
 	 */
-	public void setRevid(int revid) {
-		this.revid = revid;
+	public void setRevId(int revId) {
+		this.revId = revId;
 	}
 
 	/**
-	 * @return the userid
+	 * @return the userId
 	 */
-	public int getUserid() {
-		return userid;
+	public int getUserId() {
+		return userId;
 	}
 
 	/**
-	 * @param userid the userid to set
+	 * @param userid the userId to set
 	 */
-	public void setUserid(int userid) {
-		this.userid = userid;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 	/**
-	 * @return the parentid
+	 * @return the parentId
 	 */
-	public int getParentid() {
-		return parentid;
+	public int getParentId() {
+		return parentId;
 	}
 
 	/**
-	 * @param parentid the parentid to set
+	 * @param parentId the parentId to set
 	 */
-	public void setParentid(int parentid) {
-		this.parentid = parentid;
+	public void setParentId(int parentId) {
+		this.parentId = parentId;
 	}
 
 	/**
@@ -344,10 +349,10 @@ public class Revision {
     @Override
     public String toString() {
         return "Revision{" +
-                "revid=" + revid +
+                "revId=" + revId +
                 ", lang='" + lang + '\'' +
-                ", userid=" + userid +
-                ", parentid=" + parentid +
+                ", userId=" + userId +
+                ", parentId=" + parentId +
                 ", timestamp=" + timestamp +
                 ", length=" + length +
                 ", validated=" + validated +

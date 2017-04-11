@@ -57,12 +57,12 @@ public class UserService {
     public CompletableFuture<Boolean> initAuthorship(){
     	Iterable<User> users = userRepository.findAll();
     	for(User user : users){
-    		Set<Revision> revisions = revisionRepository.findByUserid(user.getUserid());
+    		Set<Revision> revisions = revisionRepository.findByUserId(user.getUserId());
     		this.setAuthorship(revisions, user);
-    		LOG.info("Set revisions authorship for user {}", user.getUserid());
+    		LOG.info("Set revisions authorship for user {}", user.getUserId());
     	}
     	// Get revisions with userid = 0 (anonymous authors)
-    	Set<Revision> anonRevisions = revisionRepository.findByUserid(0);
+    	Set<Revision> anonRevisions = revisionRepository.findByUserId(0);
     	User anonymousUser =  new User("AnonymousUser", 0, 0.0, 0.0, 0.0);
         this.setAuthorship(anonRevisions, anonymousUser);
     	LOG.info("Set revisions authorship for anonymous revisions");
@@ -103,7 +103,7 @@ public class UserService {
      * @param revision the revision
      */
     public void setAuthorship(Revision revision){
-    	User user = userRepository.findByUserId(revision.getUserid());
+    	User user = userRepository.findByUserId(revision.getUserId());
 		Author author = new Author(user.getTotalReliability());
 		author.setRevision(revision);
 		author.setUser(user);

@@ -20,8 +20,8 @@ public interface UserRepository extends GraphRepository<User> {
 	
 	/**
 	 * 
-	 * @param userid
+	 * @param userId
 	 * @return
 	 */
-	User findByUserId(int userid);
+	User findByUserId(int userId);
 }

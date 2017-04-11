@@ -17,8 +17,7 @@ import java.util.Date;
 @Service
 public class ProcessService {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessService.class);
-    @Autowired
-    private MetadataService metadataService;
+    
     @Autowired
     private ProcessRepository processRepository;
 
@@ -29,8 +28,9 @@ public class ProcessService {
      * @return returns the created process
      */
     public Process createNewProcess(ProcessType type){
+    	Process previousProcess = processRepository.getLatestProcess();
         Process proc = new Process(type);
-        metadataService.addProcess(proc);
+        proc.setPreviousProcess(previousProcess);
         processRepository.save(proc);
         LOG.info("Created new process: {}", proc.toString());
         return proc;
@@ -43,7 +43,7 @@ public class ProcessService {
      * @return returns the closed process
      */
     public Process closeCurrentProcess(ProcessStatus status){
-        Process currentProcess = processRepository.getLastProcess();
+        Process currentProcess = processRepository.getOnGoingProcess();
         currentProcess.setProcessStatus(status);
         currentProcess.setEndOfProcess(new Date());
         processRepository.save(currentProcess);
@@ -52,7 +52,7 @@ public class ProcessService {
     }
 
     public Date getLastProcessBeginDate(){
-        return processRepository.getLastProcess().getStartOfProcess();
+        return processRepository.getLatestProcess().getStartOfProcess();
     }
 
     public Date getLastProcessStartDateByType(ProcessType type){

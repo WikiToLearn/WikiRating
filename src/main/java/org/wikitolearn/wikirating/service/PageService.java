@@ -45,7 +45,7 @@ public class PageService {
     	
     	pages.forEach(page -> {
     		page.setLang(lang);
-    		page.setLangPageId(lang + "_" +page.getPageid());
+    		page.setLangPageId(lang + "_" +page.getPageId());
     	});
     	
     	pageRepository.save(pages);

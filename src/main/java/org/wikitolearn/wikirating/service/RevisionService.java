@@ -48,14 +48,14 @@ public class RevisionService {
 	public CompletableFuture<Boolean> initRevisions(String lang, String apiUrl) {
 		List<Page> pages = pageRepository.findAllByLang(lang);
 		for(Page page : pages){
-			List<Revision> revisions = revisionMediaWikiService.getAllRevisionByPageId(apiUrl, page.getPageid());
+			List<Revision> revisions = revisionMediaWikiService.getAllRevisionByPageId(apiUrl, page.getPageId());
 			// Set the first and the last revisions for the current page
 			page.setFistRevision(revisions.get(0));
 			page.setLastRevision(revisions.get(revisions.size() - 1));
             ListIterator<Revision> it = revisions.listIterator();
             while(it.hasNext()){
                 Revision rev = it.next();
-                rev.setLangRevId(lang + "_" + rev.getRevid());
+                rev.setLangRevId(lang + "_" + rev.getRevId());
                 rev.setLang(lang);
                 if (it.previousIndex() != 0){
                     rev.setPreviousRevision(revisions.get(it.previousIndex()-1));

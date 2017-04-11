@@ -25,7 +25,8 @@ public class User {
     @JsonProperty("name")
 	private String username;
     @Index(unique=true,primary = true)
-	private int userid;
+    @JsonProperty("userid")
+	private int userId;
 	private double votesReliability;
 	private double contributesReliability;
 	private double totalReliability;
@@ -44,15 +45,15 @@ public class User {
 	
 	/**
 	 * @param username
-	 * @param userid
+	 * @param userId
 	 * @param votesReliability
 	 * @param contributesReliability
 	 * @param totalReliability
 	 */
-	public User(String username, int userid, double votesReliability, double contributesReliability,
+	public User(String username, int userId, double votesReliability, double contributesReliability,
 			double totalReliability) {
 		this.username = username;
-		this.userid = userid;
+		this.userId = userId;
 		this.votesReliability = votesReliability;
 		this.contributesReliability = contributesReliability;
 		this.totalReliability = totalReliability;
@@ -75,17 +76,17 @@ public class User {
 	}
 
 	/**
-	 * @return the userid
+	 * @return the userId
 	 */
-	public int getUserid() {
-		return userid;
+	public int getUserId() {
+		return userId;
 	}
 
 	/**
-	 * @param userid the userid to set
+	 * @param userId the userId to set
 	 */
-	public void setUserId(int userid) {
-		this.userid = userid;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 	/**
@@ -175,7 +176,7 @@ public class User {
              */
 	@Override
 	public String toString() {
-		return "User [username=" + username + ", userid=" + userid + ", votesReliability=" + votesReliability
+		return "User [username=" + username + ", userId=" + userId + ", votesReliability=" + votesReliability
 				+ ", contributesReliability=" + contributesReliability + ", totalReliability=" + totalReliability + "]";
 	}
 	

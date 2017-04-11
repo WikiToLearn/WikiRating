@@ -4,6 +4,8 @@ import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.typeconversion.DateLong;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Date;
 
 /**
@@ -16,17 +18,19 @@ public class TemporaryVote {
     @GraphId private Long graphId;
     private double value;
     private double reliability;
-    private int userid;
-    private int revid;
+    @JsonProperty("userid")
+    private int userId;
+    @JsonProperty("revid")
+    private int revId;
     private String langRevId;
     @DateLong
     private Date timestamp;
 
-    public TemporaryVote(double value, double reliability, int userid, int revid, String langRevId, Date timestamp) {
+    public TemporaryVote(double value, double reliability, int userId, int revId, String langRevId, Date timestamp) {
         this.value = value;
         this.reliability = reliability;
-        this.userid = userid;
-        this.revid = revid;
+        this.userId = userId;
+        this.revId = revId;
         this.langRevId = langRevId;
         this.timestamp = timestamp;
     }
@@ -47,20 +51,20 @@ public class TemporaryVote {
         this.reliability = reliability;
     }
 
-    public int getUserid() {
-        return userid;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUserid(int userid) {
-        this.userid = userid;
+    public void setUserid(int userId) {
+        this.userId = userId;
     }
 
-    public int getRevid() {
-        return revid;
+    public int getRevId() {
+        return revId;
     }
 
-    public void setRevid(int revid) {
-        this.revid = revid;
+    public void setRevId(int revId) {
+        this.revId = revId;
     }
 
     public String getLangRevId() {

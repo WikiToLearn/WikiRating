@@ -21,7 +21,12 @@ public interface RevisionRepository extends GraphRepository<Revision> {
 	 */
 	Revision findByLangRevId(String langRevId);
 	
-	Set<Revision> findByUserid(int userId);
+	/**
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	Set<Revision> findByUserId(int userId);
 
 	/**
 	 * This query returns all the Revisions of a Page.

@@ -71,7 +71,7 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
             while(moreRecentChanges){
                 response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
                 JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
-
+                LOG.info("{}", responseJson.toString());
                 toBeConcat.add(responseJson.getJSONObject("query").getJSONArray("recentchanges"));
 
                 if(responseJson.has("continue")){
