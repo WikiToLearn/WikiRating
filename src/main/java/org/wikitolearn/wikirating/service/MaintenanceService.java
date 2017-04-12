@@ -7,18 +7,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.GetPagesUpdateInfoException;
-import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
 import org.wikitolearn.wikirating.exception.TemporaryVoteValidationException;
 import org.wikitolearn.wikirating.exception.UpdateGraphException;
 import org.wikitolearn.wikirating.exception.UpdatePagesAndRevisionsException;
 import org.wikitolearn.wikirating.exception.UpdateUsersException;
-import org.wikitolearn.wikirating.exception.UserNotFoundException;
 import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.model.Revision;
-import org.wikitolearn.wikirating.model.TemporaryVote;
 import org.wikitolearn.wikirating.model.UpdateInfo;
-import org.wikitolearn.wikirating.model.User;
-import org.wikitolearn.wikirating.model.Vote;
 import org.wikitolearn.wikirating.repository.TemporaryVoteRepository;
 import org.wikitolearn.wikirating.service.mediawiki.UpdateMediaWikiService;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
@@ -50,9 +45,9 @@ public class MaintenanceService {
 	@Autowired
 	private ProcessService processService;
 	@Autowired
-	private UpdateMediaWikiService updateMediaWikiService;
+	private VoteService voteService;
 	@Autowired
-	private TemporaryVoteRepository temporaryVoteRepository;
+	private UpdateMediaWikiService updateMediaWikiService;
 	@Value("#{'${mediawiki.langs}'.split(',')}")
 	private List<String> langs;
 	@Value("${mediawiki.protocol}")
@@ -173,7 +168,7 @@ public class MaintenanceService {
 				String url = protocol + lang + "." + apiUrl;
 				pageService.applyCourseStructure(url, lang);
 			}*/
-			validateTemporaryVotes(startTimestampCurrentFetch);
+			voteService.validateTemporaryVotes(startTimestampCurrentFetch);
 			// Save the result of the process, closing the current one
 			processService.closeCurrentProcess(ProcessStatus.DONE);
 		} catch (TemporaryVoteValidationException | UpdateUsersException | UpdatePagesAndRevisionsException e) {
@@ -232,28 +227,4 @@ public class MaintenanceService {
 			throw new UpdatePagesAndRevisionsException();
 		}
 	}
-	
-	/**
-	 * Validate temporary votes added before the given timestamp
-	 * @param timestamp the timestamp used for comparison
-	 * @throws TemporaryVoteValidationException
-	 */
-	private void validateTemporaryVotes(Date timestamp) throws TemporaryVoteValidationException{
-		List<TemporaryVote> temporaryVotes = temporaryVoteRepository.findByTimestamp(timestamp);
-		for(TemporaryVote temporaryVote: temporaryVotes){
-			try{
-				User user = userService.getUser(temporaryVote.getUserId());
-				Revision revision = revisionService.getRevision(temporaryVote.getLangRevId());
-				Vote vote = new Vote(temporaryVote.getValue(), temporaryVote.getReliability(), temporaryVote.getTimestamp());
-				vote.setRevision(revision);
-				vote.setUser(user);
-				revision.addVote(vote);
-				revisionService.updateRevision(revision);
-			}catch(UserNotFoundException | RevisionNotFoundException e){
-				LOG.error("An error occurred during temporary vote validation: {}", temporaryVote);
-				throw new TemporaryVoteValidationException(e.getMessage());
-			}
-		}
-	}
-	
 }
