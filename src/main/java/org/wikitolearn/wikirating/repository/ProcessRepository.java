@@ -11,7 +11,7 @@ import org.wikitolearn.wikirating.util.enums.ProcessType;
 
 /**
  * @author aletundo
- *
+ * @author valsdav
  */
 public interface ProcessRepository extends GraphRepository<Process> {
 

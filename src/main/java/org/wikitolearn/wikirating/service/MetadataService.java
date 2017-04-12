@@ -4,14 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.wikitolearn.wikirating.exception.LatestProcessUpdateException;
 import org.wikitolearn.wikirating.model.Metadata;
-import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.repository.MetadataRepository;
 import org.wikitolearn.wikirating.util.enums.MetadataType;
 
 /**
  * This service manages the addition of information about Metadata.
- * Created by valsdav on 29/03/17.
+ * @author aletundo
+ * @author valsdav
  */
 @Service
 public class MetadataService {
@@ -27,6 +28,7 @@ public class MetadataService {
         Metadata metadataStats = new Metadata(MetadataType.STATS);
         metadataRepository.save(metadataProcesses);
         metadataRepository.save(metadataStats);
+        LOG.info("Initialized Metadata nodes");
     }
     
     /**
@@ -34,11 +36,13 @@ public class MetadataService {
      * @param process the latest process
      * @return
      */
-    public boolean updateLatestProcess(Process process){
-        Metadata metadata = metadataRepository.getMetadataByType(MetadataType.PROCESSES);
-        metadataRepository.removeLatestProcess();
-        metadata.setLatestProcess(process);
-        metadataRepository.save(metadata);
-        return true;
+    public void updateLatestProcess() throws LatestProcessUpdateException{
+    	try{
+            metadataRepository.updateLatestProcess();
+            LOG.info("Updated LATEST_PROCESS relationship");
+    	}catch(Exception e){
+    		LOG.error("Something went wrong during update LATEST_PROCESS relationship: {}", e.getMessage());
+    		throw new LatestProcessUpdateException();
+    	}
     }
 }

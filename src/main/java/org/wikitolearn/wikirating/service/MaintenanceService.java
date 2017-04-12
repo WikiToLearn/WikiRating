@@ -20,7 +20,7 @@ import org.wikitolearn.wikirating.repository.TemporaryVoteRepository;
 import org.wikitolearn.wikirating.service.mediawiki.UpdateMediaWikiService;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
-import org.wikitolearn.wikirating.util.enums.UpdateType;
+//import org.wikitolearn.wikirating.util.enums.UpdateType;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,7 +29,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by valsdav on 29/03/17.
+ * @author aletundo
+ * @author valsdav
  */
 @Service
 public class MaintenanceService {
@@ -156,7 +157,7 @@ public class MaintenanceService {
 		}
 		// Create a new FETCH process
 		Process currentFetchProcess = processService.createNewProcess(ProcessType.FETCH);
-		metadataService.updateLatestProcess(currentFetchProcess);
+		metadataService.updateLatestProcess();
 		
 		Date startTimestampCurrentFetch = currentFetchProcess.getStartOfProcess();
 		

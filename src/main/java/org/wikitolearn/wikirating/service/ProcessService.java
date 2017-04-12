@@ -47,7 +47,7 @@ public class ProcessService {
         currentProcess.setProcessStatus(status);
         currentProcess.setEndOfProcess(new Date());
         processRepository.save(currentProcess);
-        LOG.info("Updated last process: {}", currentProcess.toString());
+        LOG.info("Update the status of the latest process: {}", currentProcess.toString());
         return currentProcess;
     }
 

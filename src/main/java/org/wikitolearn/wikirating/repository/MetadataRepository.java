@@ -6,12 +6,22 @@ import org.wikitolearn.wikirating.model.Metadata;
 import org.wikitolearn.wikirating.util.enums.MetadataType;
 
 /**
- * Created by valsdav on 24/03/17.
+ * @author aletundo
+ * @author valsdav
  */
-public interface MetadataRepository extends GraphRepository<Metadata>{
+public interface MetadataRepository extends GraphRepository<Metadata> {
+	/**
+	 * Get the Metadata node of the specified type
+	 * 
+	 * @param type
+	 * @return the Metadata node of the specified type
+	 */
+	Metadata getMetadataByType(MetadataType type);
 
-    Metadata getMetadataByType(MetadataType type);
-    
-    @Query("MATCH (m:Metadata)-[r:LATEST_PROCESS]->(p:Process) DELETE r")
-    void removeLatestProcess();
+	/**
+	 * Update the LAST_PROCESS relationship deleting the existing edge and
+	 * creating a new one.
+	 */
+	@Query("MATCH (m:Metadata)-[lp:LATEST_PROCESS]->(p1:Process)<-[pp:PREVIOUS_PROCESS]-(p2:Process) DELETE lp CREATE (m)-[:LATEST_PROCESS]->(p2)")
+	void updateLatestProcess();
 }
