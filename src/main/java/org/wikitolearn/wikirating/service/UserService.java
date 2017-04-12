@@ -3,7 +3,9 @@
  */
 package org.wikitolearn.wikirating.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -13,12 +15,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.wikitolearn.wikirating.exception.GetNewUsersException;
+import org.wikitolearn.wikirating.exception.UpdateUsersException;
 import org.wikitolearn.wikirating.exception.UserNotFoundException;
 import org.wikitolearn.wikirating.model.Author;
 import org.wikitolearn.wikirating.model.Revision;
+import org.wikitolearn.wikirating.model.UpdateInfo;
 import org.wikitolearn.wikirating.model.User;
 import org.wikitolearn.wikirating.repository.RevisionRepository;
 import org.wikitolearn.wikirating.repository.UserRepository;
+import org.wikitolearn.wikirating.service.mediawiki.UpdateMediaWikiService;
 import org.wikitolearn.wikirating.service.mediawiki.UserMediaWikiService;
 
 /**
@@ -31,6 +37,8 @@ public class UserService {
 	private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 	@Autowired
 	private UserMediaWikiService  userMediaWikiService;
+	@Autowired
+	private UpdateMediaWikiService  updateMediaWikiService;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -135,4 +143,31 @@ public class UserService {
     	}
     	return user;
     }
+    
+    /**
+     * 
+     * @param apiUrl
+     * @param start
+     * @param end
+     * @throws UpdateUsersException
+     */
+	public void updateUsers(String apiUrl, Date start, Date end) throws UpdateUsersException{
+		try{
+			List<UpdateInfo> usersUpdateInfo = updateMediaWikiService.getNewUsers(apiUrl, start, end);
+			List<User> newUsers = new ArrayList<>();
+			
+			// Build a list with new users to be added to the graph
+			for(UpdateInfo updateInfo : usersUpdateInfo){
+				User user = new User();
+				user.setUserId(updateInfo.getUserid());
+				user.setUsername(updateInfo.getUser());
+				newUsers.add(user);
+			}
+			
+			addUsers(newUsers);
+		}catch(GetNewUsersException e){
+			LOG.error("An error occurred while updating users: {}", e.getMessage());
+			throw new UpdateUsersException();
+		}
+	}
 }

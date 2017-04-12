@@ -10,7 +10,7 @@ import org.wikitolearn.wikirating.repository.MetadataRepository;
 import org.wikitolearn.wikirating.util.enums.MetadataType;
 
 /**
- * This service manages the addition of information about Metadata.
+ * This service manages the addition of information about Metadata
  * @author aletundo
  * @author valsdav
  */

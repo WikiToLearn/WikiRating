@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.wikitolearn.wikirating.exception.AddProcessException;
 import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.repository.ProcessRepository;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
@@ -26,14 +27,20 @@ public class ProcessService {
      * type and adds it on the top of the processes chain.
      * @param type Type of process requested
      * @return returns the created process
+     * @throws AddProcessException
      */
-    public Process createNewProcess(ProcessType type){
-    	Process previousProcess = processRepository.getLatestProcess();
-        Process proc = new Process(type);
-        proc.setPreviousProcess(previousProcess);
-        processRepository.save(proc);
-        LOG.info("Created new process: {}", proc.toString());
-        return proc;
+    public Process addProcess(ProcessType type) throws AddProcessException{
+    	try{
+    		Process process = new Process(type);
+    		Process previousProcess = processRepository.getLatestProcess();
+            process.setPreviousProcess(previousProcess);
+            processRepository.save(process);
+            LOG.info("Created new process: {}", process.toString());
+            return process;
+    	}catch(Exception e){
+    		LOG.error("An error occurred during process creation: {}", e.getMessage());
+    		throw new AddProcessException();
+    	}
     }
 
     /**
@@ -50,13 +57,26 @@ public class ProcessService {
         LOG.info("Update the status of the latest process: {}", currentProcess.toString());
         return currentProcess;
     }
-
-    public Date getLastProcessBeginDate(){
-        return processRepository.getLatestProcess().getStartOfProcess();
+    
+    /**
+     * Get the start date of the latest process
+     * @return the start date of the latest process
+     */
+    public Date getLastProcessStartDate(){
+    	Process latestProcess = processRepository.getLatestProcess();
+        if(latestProcess != null){
+        	return latestProcess.getStartOfProcess();
+        }
+        return null;
     }
-
+    
+    /**
+     * Get the start date of the latest process of the specified type
+     * @param type the process type requested
+     * @return the start date of the latest process of the specified type
+     */
     public Date getLastProcessStartDateByType(ProcessType type){
-        Process latestProcess = processRepository.getLastProcessByType(type);
+        Process latestProcess = processRepository.getLatestProcessByType(type);
         if(latestProcess != null){
         	return latestProcess.getStartOfProcess();
         }

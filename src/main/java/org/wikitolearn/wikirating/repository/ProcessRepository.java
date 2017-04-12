@@ -32,6 +32,6 @@ public interface ProcessRepository extends GraphRepository<Process> {
      * @return the found process
      */
     @Query("MATCH (m:Metadata)-[*]->(p:Process {processType:{type}}) RETURN p LIMIT 1")
-    public Process getLastProcessByType(@Param("type") ProcessType type);
+    public Process getLatestProcessByType(@Param("type") ProcessType type);
 
 }

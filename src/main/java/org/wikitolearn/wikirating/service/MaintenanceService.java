@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.wikitolearn.wikirating.exception.GetPagesUpdateInfoException;
 import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
 import org.wikitolearn.wikirating.exception.TemporaryVoteValidationException;
 import org.wikitolearn.wikirating.exception.UpdateGraphException;
+import org.wikitolearn.wikirating.exception.UpdatePagesAndRevisionsException;
+import org.wikitolearn.wikirating.exception.UpdateUsersException;
 import org.wikitolearn.wikirating.exception.UserNotFoundException;
 import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.model.Revision;
@@ -67,7 +70,7 @@ public class MaintenanceService {
 		// Initialize Metadata service
         metadataService.initMetadata();
 		// Start a new Process
-		processService.createNewProcess(ProcessType.INIT);
+		processService.addProcess(ProcessType.INIT);
 
 		CompletableFuture<Boolean> initFuture = CompletableFuture
 				.allOf(buildUsersAndPagesFutersList().toArray(new CompletableFuture[langs.size() + 1]))
@@ -149,51 +152,35 @@ public class MaintenanceService {
 	 * @return true if the update succeed
 	 */
 	@Scheduled(cron = "${maintenance.update.cron}")
-	public boolean updateGraph() {
+	public void updateGraph() {
+		
 		// Get start timestamp of the latest FETCH Process before opening a new process
 		Date startTimestampLatestFetch = processService.getLastProcessStartDateByType(ProcessType.FETCH);
 		if(startTimestampLatestFetch == null){
 			startTimestampLatestFetch = processService.getLastProcessStartDateByType(ProcessType.INIT);
 		}
 		// Create a new FETCH process
-		Process currentFetchProcess = processService.createNewProcess(ProcessType.FETCH);
+		Process currentFetchProcess = processService.addProcess(ProcessType.FETCH);
 		metadataService.updateLatestProcess();
 		
 		Date startTimestampCurrentFetch = currentFetchProcess.getStartOfProcess();
 		
-		try{
-			updateUsers(startTimestampLatestFetch, startTimestampCurrentFetch);
+		try {
+			userService.updateUsers(protocol + langs.get(0) + "." + apiUrl, startTimestampLatestFetch,
+					startTimestampCurrentFetch);
 			updatePagesAndRevisions(startTimestampLatestFetch, startTimestampCurrentFetch);
+			/*for (String lang : langs) {
+				String url = protocol + lang + "." + apiUrl;
+				pageService.applyCourseStructure(url, lang);
+			}*/
 			validateTemporaryVotes(startTimestampCurrentFetch);
-		}catch(TemporaryVoteValidationException e){
+			// Save the result of the process, closing the current one
+			processService.closeCurrentProcess(ProcessStatus.DONE);
+		} catch (TemporaryVoteValidationException | UpdateUsersException | UpdatePagesAndRevisionsException e) {
+			processService.closeCurrentProcess(ProcessStatus.EXCEPTION);
 			LOG.error("An error occurred during a scheduled graph update procedure");
 			throw new UpdateGraphException();
 		}
-
-		// Save the result of the process, closing the current one
-		processService.closeCurrentProcess(ProcessStatus.DONE);
-		return true;
-	}
-	
-	/**
-	 * Update the users querying the MediaWiki API
-	 * @param start
-	 * @param end
-	 */
-	private void updateUsers(Date start, Date end) {
-		String url = protocol + langs.get(0) + "." + apiUrl;
-		List<UpdateInfo> usersUpdateInfo = updateMediaWikiService.getNewUsers(url, start, end);
-		List<User> newUsers = new ArrayList<>();
-		
-		// Build a list with new users to be added to the graph
-		for(UpdateInfo updateInfo : usersUpdateInfo){
-			User user = new User();
-			user.setUserId(updateInfo.getUserid());
-			user.setUsername(updateInfo.getUser());
-			newUsers.add(user);
-		}
-		
-		userService.addUsers(newUsers);
 	}
 
 	/**
@@ -201,43 +188,48 @@ public class MaintenanceService {
 	 * @param start
 	 * @param end
 	 */
-	private void updatePagesAndRevisions(Date start, Date end) {
-		// First of all, get the RecentChangeEvents from MediaWiki API
-		for (String lang : langs) {
-			String url = protocol + lang + "." + apiUrl;
-			// Fetching pages updates
-			List<UpdateInfo> updates = updateMediaWikiService.getPagesUpdateInfo(url, namespace, start, end);
-			
-			for(UpdateInfo update : updates){
-				switch (update.getType()) {
-				case "new":
-					// Create the new revision
-					Revision newRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
-							update.getOld_revid(), update.getNewlen(), update.getTimestamp());
-					// Then create a new Page and link it with the revision
-					pageService.addPage(update.getPageid(), update.getTitle(), lang, newRev);
-					userService.setAuthorship(newRev);
-					break;
-				case "edit":
-					// Create a new revision
-					Revision updateRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
-							update.getOld_revid(), update.getNewlen(), update.getTimestamp());
-					// Then add it to the page
-					pageService.addRevisionToPage(lang + "_" + update.getPageid(), updateRev);
-					userService.setAuthorship(updateRev);
-					break;
-				case "move":
-					// Move the page to the new title
-					pageService.movePage(update.getTitle(), update.getNewTitle(), lang);
-					break;
-				case "delete":
-					// Delete the page and all its revisions
-					pageService.deletePage(update.getTitle(), lang);
-					break;
-				default:
-					break;
+	private void updatePagesAndRevisions(Date start, Date end) throws UpdatePagesAndRevisionsException{
+		try{
+			// First of all, get the RecentChangeEvents from MediaWiki API
+			for (String lang : langs) {
+				String url = protocol + lang + "." + apiUrl;
+				// Fetching pages updates
+				List<UpdateInfo> updates = updateMediaWikiService.getPagesUpdateInfo(url, namespace, start, end);
+				
+				for(UpdateInfo update : updates){
+					switch (update.getType()) {
+					case "new":
+						// Create the new revision
+						Revision newRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
+								update.getOld_revid(), update.getNewlen(), update.getTimestamp());
+						// Then create a new Page and link it with the revision
+						pageService.addPage(update.getPageid(), update.getTitle(), lang, newRev);
+						userService.setAuthorship(newRev);
+						break;
+					case "edit":
+						// Create a new revision
+						Revision updateRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
+								update.getOld_revid(), update.getNewlen(), update.getTimestamp());
+						// Then add it to the page
+						pageService.addRevisionToPage(lang + "_" + update.getPageid(), updateRev);
+						userService.setAuthorship(updateRev);
+						break;
+					case "move":
+						// Move the page to the new title
+						pageService.movePage(update.getTitle(), update.getNewTitle(), lang);
+						break;
+					case "delete":
+						// Delete the page and all its revisions
+						pageService.deletePage(update.getTitle(), lang);
+						break;
+					default:
+						break;
+					}
 				}
 			}
+		}catch(GetPagesUpdateInfoException e){
+			LOG.error("An error occurred while updating pages and revisions: {}", e.getMessage());
+			throw new UpdatePagesAndRevisionsException();
 		}
 	}
 	

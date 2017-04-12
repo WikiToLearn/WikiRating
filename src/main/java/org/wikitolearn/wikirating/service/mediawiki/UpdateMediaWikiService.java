@@ -6,6 +6,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
+import org.wikitolearn.wikirating.exception.GetLogEventsException;
+import org.wikitolearn.wikirating.exception.GetNewUsersException;
+import org.wikitolearn.wikirating.exception.GetPagesUpdateInfoException;
+import org.wikitolearn.wikirating.exception.GetRecentChangesException;
 import org.wikitolearn.wikirating.model.UpdateInfo;
 
 import java.io.IOException;
@@ -18,7 +22,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Created by valsdav on 29/03/17.
+ * @author aletundo
+ * @author valsdav
  */
 @Service
 public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
@@ -29,15 +34,21 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
 	 * @param namespace
 	 * @param start
 	 * @param end
-	 * @return
+	 * @return the list of information about the pages
+	 * @throws GetPagesUpdateInfoException
 	 */
-    public List<UpdateInfo> getPagesUpdateInfo(String apiUrl, String namespace, Date start, Date end){
-        List<UpdateInfo> editsAndNewPages = getRecentChangesBetweenDates(apiUrl, namespace, start, end);
-        List<UpdateInfo> deletedPages = getLogEventsBetweenDates(apiUrl, "delete", start, end);
-        List<UpdateInfo> movedPages = getLogEventsBetweenDates(apiUrl, "move", start, end);
-        List<UpdateInfo> allUpdates = Stream.of(editsAndNewPages,deletedPages,movedPages)
-                .flatMap(List::stream).collect(Collectors.toList());
-        return allUpdates;
+    public List<UpdateInfo> getPagesUpdateInfo(String apiUrl, String namespace, Date start, Date end) throws GetPagesUpdateInfoException{
+    	try{
+    		List<UpdateInfo> editsAndNewPages = getRecentChangesBetweenDates(apiUrl, namespace, start, end);
+            List<UpdateInfo> deletedPages = getLogEventsBetweenDates(apiUrl, "delete", start, end);
+            List<UpdateInfo> movedPages = getLogEventsBetweenDates(apiUrl, "move", start, end);
+            List<UpdateInfo> allUpdates = Stream.of(editsAndNewPages,deletedPages,movedPages)
+                    .flatMap(List::stream).collect(Collectors.toList());
+            return allUpdates;
+    	}catch(GetLogEventsException | GetRecentChangesException e){
+    		LOG.error("An error occurred while getting pages update information: {}", e.getMessage());
+    		throw new GetPagesUpdateInfoException();
+    	}
     }
     
     /**
@@ -45,21 +56,29 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
      * @param apiUrl
      * @param start
      * @param end
-     * @return
+     * @return the list of information about new users
+     * @throws GetNewUsersException
      */
-    public List<UpdateInfo> getNewUsers(String apiUrl, Date start, Date end){
-        return getLogEventsBetweenDates(apiUrl, "newusers", start, end);
+    public List<UpdateInfo> getNewUsers(String apiUrl, Date start, Date end) throws GetNewUsersException{
+    	try{
+    		LOG.info("Fetched new users log events from {} to {}", start, end);
+    		return getLogEventsBetweenDates(apiUrl, "newusers", start, end);
+    	}catch(GetLogEventsException e){
+    		LOG.error("An error occurred while getting new users from MediaWiki API", e.getMessage());
+    		throw new GetNewUsersException();
+    	}
     }
-
+    
     /**
      * 
      * @param apiUrl
      * @param namespace
      * @param start
      * @param end
-     * @return
+     * @return the list of recent changes between the specified dates
+     * @throws GetRecentChangesException
      */
-    public List<UpdateInfo> getRecentChangesBetweenDates( String apiUrl, String namespace, Date start, Date end){
+    private List<UpdateInfo> getRecentChangesBetweenDates( String apiUrl, String namespace, Date start, Date end) throws GetRecentChangesException{
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
         InputStream response;
         boolean moreRecentChanges = true;
@@ -84,23 +103,22 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
             }
             recentChanges = mapper.readValue(recentChangesJson.toString(), new TypeReference<List<UpdateInfo>>(){});
             return recentChanges;
-        } catch (JSONException e){
-            LOG.error("An error occurred while a JSONObject or JSONArray. {}", e.getMessage());
-        } catch(IOException e){
-            LOG.error("An error occurred while converting an InputStream to JSONObject. {}", e.getMessage());
+        } catch (JSONException | IOException e){
+            LOG.error("An error occurred while getting recent changes. {}", e.getMessage());
+            throw new GetRecentChangesException();
         }
-        return recentChanges;
     }
-
+    
     /**
      * 
      * @param apiUrl
      * @param logtype
      * @param start
      * @param end
-     * @return
+     * @return the list of log events between the specified dates
+     * @throws GetLogEventsException
      */
-    public List<UpdateInfo> getLogEventsBetweenDates( String apiUrl, String logtype, Date start, Date end){
+    private List<UpdateInfo> getLogEventsBetweenDates( String apiUrl, String logtype, Date start, Date end) throws GetLogEventsException{
         ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
         InputStream response;
         JSONArray logEventsJson = new JSONArray();
@@ -134,11 +152,9 @@ public class UpdateMediaWikiService extends MediaWikiService<UpdateInfo>{
             }
             logEvents = mapper.readValue(logEventsJson.toString(), new TypeReference<List<UpdateInfo>>(){});
             return logEvents;
-        } catch (JSONException e){
-            LOG.error("An error occurred while a JSONObject or JSONArray. {}", e.getMessage());
-        } catch(IOException e){
-            LOG.error("An error occurred while converting an InputStream to JSONObject. {}", e.getMessage());
+        } catch (JSONException | IOException e){
+            LOG.error("An error occurred while getting log events. {}", e.getMessage());
+            throw new GetLogEventsException();
         }
-        return logEvents;
     }
 }
