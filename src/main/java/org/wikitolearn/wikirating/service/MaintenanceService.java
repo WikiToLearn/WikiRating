@@ -65,7 +65,8 @@ public class MaintenanceService {
 		// Initialize Metadata service
         metadataService.initMetadata();
 		// Start a new Process
-		processService.addProcess(ProcessType.INIT);
+		Process initProcess = processService.addProcess(ProcessType.INIT);
+		metadataService.addFirstProcess(initProcess);
 
 		CompletableFuture<Boolean> initFuture = CompletableFuture
 				.allOf(buildUsersAndPagesFutersList().toArray(new CompletableFuture[langs.size() + 1]))

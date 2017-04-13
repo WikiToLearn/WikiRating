@@ -33,7 +33,9 @@ public class ProcessService {
     	try{
     		Process process = new Process(type);
     		Process previousProcess = processRepository.getLatestProcess();
-            process.setPreviousProcess(previousProcess);
+    		if (previousProcess != null) {
+                process.setPreviousProcess(previousProcess);
+            }
             processRepository.save(process);
             LOG.info("Created new process: {}", process.toString());
             return process;
