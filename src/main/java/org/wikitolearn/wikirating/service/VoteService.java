@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
 import org.wikitolearn.wikirating.exception.TemporaryVoteValidationException;
 import org.wikitolearn.wikirating.exception.UserNotFoundException;
@@ -22,6 +23,7 @@ import org.wikitolearn.wikirating.repository.TemporaryVoteRepository;
  * @author aletundo
  *
  */
+@Service
 public class VoteService {
 	private static final Logger LOG = LoggerFactory.getLogger(VoteService.class);
 	@Autowired
