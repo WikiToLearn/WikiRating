@@ -6,11 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.wikitolearn.wikirating.exception.GetPagesUpdateInfoException;
-import org.wikitolearn.wikirating.exception.TemporaryVoteValidationException;
-import org.wikitolearn.wikirating.exception.UpdateGraphException;
-import org.wikitolearn.wikirating.exception.UpdatePagesAndRevisionsException;
-import org.wikitolearn.wikirating.exception.UpdateUsersException;
+import org.wikitolearn.wikirating.exception.*;
 import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.model.Revision;
 import org.wikitolearn.wikirating.model.UpdateInfo;
@@ -156,8 +152,14 @@ public class MaintenanceService {
 			startTimestampLatestFetch = processService.getLastProcessStartDateByType(ProcessType.INIT);
 		}
 		// Create a new FETCH process
-		Process currentFetchProcess = processService.addProcess(ProcessType.FETCH);
-		metadataService.updateLatestProcess();
+        Process currentFetchProcess = null;
+		try {
+            currentFetchProcess = processService.addProcess(ProcessType.FETCH);
+			metadataService.updateLatestProcess();
+		} catch (PreviousProcessOngoingException e){
+			LOG.error("Cannot start Update process because the previous process is still ONGOING. Waiting next turn.");
+			return;
+		}
 		
 		Date startTimestampCurrentFetch = currentFetchProcess.getStartOfProcess();
 		

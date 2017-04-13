@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.AddProcessException;
+import org.wikitolearn.wikirating.exception.PreviousProcessOngoingException;
 import org.wikitolearn.wikirating.model.Process;
 import org.wikitolearn.wikirating.repository.ProcessRepository;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
@@ -29,16 +30,23 @@ public class ProcessService {
      * @return returns the created process
      * @throws AddProcessException
      */
-    public Process addProcess(ProcessType type) throws AddProcessException{
-    	try{
-    		Process process = new Process(type);
-    		Process previousProcess = processRepository.getLatestProcess();
-    		if (previousProcess != null) {
+    public Process addProcess(ProcessType type) throws AddProcessException, PreviousProcessOngoingException{
+    	try {
+            Process process = new Process(type);
+            Process previousProcess = processRepository.getLatestProcess();
+            if (previousProcess != null) {
+                // Check if the process is still ONGOING
+                if (previousProcess.getProcessStatus() == ProcessStatus.ONGOING) {
+                    LOG.error("Cannot create new Process: the previous one is still ONGOING");
+                    throw new PreviousProcessOngoingException();
+                }
                 process.setPreviousProcess(previousProcess);
             }
             processRepository.save(process);
             LOG.info("Created new process: {}", process.toString());
             return process;
+        }catch (PreviousProcessOngoingException p){
+    	    throw p;
     	}catch(Exception e){
     		LOG.error("An error occurred during process creation: {}", e.getMessage());
     		throw new AddProcessException();
