@@ -5,10 +5,12 @@ package org.wikitolearn.wikirating.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
 import org.wikitolearn.wikirating.exception.TemporaryVoteValidationException;
@@ -38,7 +40,8 @@ public class VoteService {
 	 * @param timestamp the timestamp used for comparison
 	 * @throws TemporaryVoteValidationException
 	 */
-	public void validateTemporaryVotes(Date timestamp) throws TemporaryVoteValidationException{
+	@Async
+	public CompletableFuture<Boolean> validateTemporaryVotes(Date timestamp) throws TemporaryVoteValidationException{
 		List<TemporaryVote> temporaryVotes = temporaryVoteRepository.findByTimestamp(timestamp);
 		for(TemporaryVote temporaryVote: temporaryVotes){
 			try{
@@ -54,5 +57,6 @@ public class VoteService {
 				throw new TemporaryVoteValidationException(e.getMessage());
 			}
 		}
+		return CompletableFuture.completedFuture(true);
 	}
 }

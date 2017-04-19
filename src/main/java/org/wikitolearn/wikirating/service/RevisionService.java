@@ -81,7 +81,7 @@ public class RevisionService {
      * @return
      */
 	public Revision addRevision(int revid, String lang, int userid, int parentid, int length, Date timestamp){
-		Revision rev = new Revision(revid, lang,userid, parentid, length, timestamp);
+		Revision rev = new Revision(revid, lang, userid, parentid, length, timestamp);
 		revisionRepository.save(rev);
 		return rev;
 	}

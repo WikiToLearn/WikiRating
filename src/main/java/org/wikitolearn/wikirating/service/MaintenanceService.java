@@ -8,13 +8,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.*;
 import org.wikitolearn.wikirating.model.Process;
-import org.wikitolearn.wikirating.model.Revision;
-import org.wikitolearn.wikirating.model.UpdateInfo;
-import org.wikitolearn.wikirating.repository.TemporaryVoteRepository;
-import org.wikitolearn.wikirating.service.mediawiki.UpdateMediaWikiService;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
-//import org.wikitolearn.wikirating.util.enums.UpdateType;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,8 +37,6 @@ public class MaintenanceService {
 	private ProcessService processService;
 	@Autowired
 	private VoteService voteService;
-	@Autowired
-	private UpdateMediaWikiService updateMediaWikiService;
 	@Value("#{'${mediawiki.langs}'.split(',')}")
 	private List<String> langs;
 	@Value("${mediawiki.protocol}")
@@ -63,13 +56,13 @@ public class MaintenanceService {
 		// Start a new Process
 		Process initProcess = processService.addProcess(ProcessType.INIT);
 		metadataService.addFirstProcess(initProcess);
-
+		
 		CompletableFuture<Boolean> initFuture = CompletableFuture
-				.allOf(buildUsersAndPagesFutersList().toArray(new CompletableFuture[langs.size() + 1]))
+				.allOf(buildUsersAndPagesFuturesList().toArray(new CompletableFuture[langs.size() + 1]))
 				.thenCompose(result -> CompletableFuture
 						.allOf(buildRevisionsFuturesList().toArray(new CompletableFuture[langs.size()])))
 				.thenCompose(result -> CompletableFuture
-						.allOf(buildApplyCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
+						.allOf(buildInitCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
 				.thenCompose(result -> userService.initAuthorship());
 
 		try {
@@ -88,19 +81,100 @@ public class MaintenanceService {
 	}
 	
 	/**
-	 * Build a list of CompletableFuture. The elements are the fetches of pages'
-	 * revisions from each domain language.
+	 * Entry point for the scheduled graph updated
+	 * @return true if the update succeed
+	 */
+	@Scheduled(cron = "${maintenance.update.cron}")
+	public void updateGraph() {
+		Process currentFetchProcess;
+		Date startTimestampCurrentFetch, startTimestampLatestFetch;
+		// Get start timestamp of the latest FETCH Process before opening a new process
+		startTimestampLatestFetch = 
+				(processService.getLastProcessStartDateByType(ProcessType.FETCH) != null) 
+				? processService.getLastProcessStartDateByType(ProcessType.FETCH) 
+				: processService.getLastProcessStartDateByType(ProcessType.INIT);
+
+		// Create a new FETCH process
+		try {
+			currentFetchProcess = processService.addProcess(ProcessType.FETCH);
+			metadataService.updateLatestProcess();
+			startTimestampCurrentFetch = currentFetchProcess.getStartOfProcess();
+		} catch (PreviousProcessOngoingException e){
+			LOG.error("Cannot start Update process because the previous process is still ONGOING."
+					+ "The update will be aborted.");
+			return;
+		}
+		
+		try {
+			CompletableFuture<Boolean> updateFuture = CompletableFuture
+					.allOf(userService.updateUsers(protocol + langs.get(0) + "." + apiUrl, startTimestampLatestFetch,
+							startTimestampCurrentFetch))
+					.thenCompose(result -> CompletableFuture
+							.allOf(buildUpdatePagesFuturesList(startTimestampLatestFetch, startTimestampCurrentFetch)
+									.toArray(new CompletableFuture[langs.size()])))
+					.thenCompose(result -> CompletableFuture
+							.allOf(buildUpdateCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
+					.thenCompose(result -> voteService.validateTemporaryVotes(startTimestampCurrentFetch));
+
+			boolean result = updateFuture.get();
+			// Save the result of the process, closing the current one
+			if (result) {
+				processService.closeCurrentProcess(ProcessStatus.DONE);
+			} else {
+				processService.closeCurrentProcess(ProcessStatus.ERROR);
+			}
+		} catch (TemporaryVoteValidationException | UpdateUsersException | UpdatePagesAndRevisionsException
+				| InterruptedException | ExecutionException e) {
+			processService.closeCurrentProcess(ProcessStatus.EXCEPTION);
+			LOG.error("An error occurred during a scheduled graph update procedure");
+			throw new UpdateGraphException();
+		}
+	}
+	
+	/**
+	 * Build a list of CompletableFuture.
 	 * 
 	 * @return a list of CompletableFuture
 	 */
-	private List<CompletableFuture<Boolean>> buildApplyCourseStructureFuturesList() {
-		List<CompletableFuture<Boolean>> parallelApplyCourseStructureFutures = new ArrayList<>();
+	private List<CompletableFuture<Boolean>> buildInitCourseStructureFuturesList() {
+		List<CompletableFuture<Boolean>> parallelInitCourseStructureFutures = new ArrayList<>();
 		// Add course structure for each domain language
 		for (String lang : langs) {
 			String url = protocol + lang + "." + apiUrl;
-			parallelApplyCourseStructureFutures.add(pageService.applyCourseStructure(url, lang));
+			parallelInitCourseStructureFutures.add(pageService.initCourseStructure(lang, url));
 		}
-		return parallelApplyCourseStructureFutures;
+		return parallelInitCourseStructureFutures;
+	}
+	
+	/**
+	 * Build a list of CompletableFuture.
+	 * 
+	 * @return a list of CompletableFuture
+	 */
+	private List<CompletableFuture<Boolean>> buildUpdateCourseStructureFuturesList() {
+		List<CompletableFuture<Boolean>> parallelUpdateCourseStructureFutures = new ArrayList<>();
+		// Add course structure for each domain language
+		for (String lang : langs) {
+			String url = protocol + lang + "." + apiUrl;
+			parallelUpdateCourseStructureFutures.add(pageService.updateCourseStructure(lang, url));
+		}
+		return parallelUpdateCourseStructureFutures;
+	}
+	
+	/**
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	private List<CompletableFuture<Boolean>> buildUpdatePagesFuturesList(Date start, Date end) {
+		List<CompletableFuture<Boolean>> futures = new ArrayList<>();
+		// Add update pages for each domain language
+		for (String lang : langs) {
+			String url = protocol + lang + "." + apiUrl;
+			futures.add(pageService.updatePages(lang, url, start, end));
+		}
+		return futures;
 	}
 	
 	/**
@@ -127,7 +201,7 @@ public class MaintenanceService {
 	 * 
 	 * @return a list of CompletableFuture
 	 */
-	private List<CompletableFuture<Boolean>> buildUsersAndPagesFutersList() {
+	private List<CompletableFuture<Boolean>> buildUsersAndPagesFuturesList() {
 		List<CompletableFuture<Boolean>> usersAndPagesInsertion = new ArrayList<>();
 		// Add users fetch as fist operation
 		usersAndPagesInsertion.add(userService.initUsers(protocol + langs.get(0) + "." + apiUrl));
@@ -139,95 +213,27 @@ public class MaintenanceService {
 		return usersAndPagesInsertion;
 	}
 	
-	/**
-	 * Entry point for the scheduled graph updated
-	 * @return true if the update succeed
-	 */
-	@Scheduled(cron = "${maintenance.update.cron}")
-	public void updateGraph() {
-		
-		// Get start timestamp of the latest FETCH Process before opening a new process
-		Date startTimestampLatestFetch = processService.getLastProcessStartDateByType(ProcessType.FETCH);
-		if(startTimestampLatestFetch == null){
-			startTimestampLatestFetch = processService.getLastProcessStartDateByType(ProcessType.INIT);
-		}
-		// Create a new FETCH process
-        Process currentFetchProcess = null;
-		try {
-            currentFetchProcess = processService.addProcess(ProcessType.FETCH);
-			metadataService.updateLatestProcess();
-		} catch (PreviousProcessOngoingException e){
-			LOG.error("Cannot start Update process because the previous process is still ONGOING. Waiting next turn.");
-			return;
-		}
-		
-		Date startTimestampCurrentFetch = currentFetchProcess.getStartOfProcess();
-		
-		try {
-			userService.updateUsers(protocol + langs.get(0) + "." + apiUrl, startTimestampLatestFetch,
-					startTimestampCurrentFetch);
-			updatePagesAndRevisions(startTimestampLatestFetch, startTimestampCurrentFetch);
-			/*for (String lang : langs) {
-				String url = protocol + lang + "." + apiUrl;
-				pageService.applyCourseStructure(url, lang);
-			}*/
-			voteService.validateTemporaryVotes(startTimestampCurrentFetch);
-			// Save the result of the process, closing the current one
-			processService.closeCurrentProcess(ProcessStatus.DONE);
-		} catch (TemporaryVoteValidationException | UpdateUsersException | UpdatePagesAndRevisionsException e) {
-			processService.closeCurrentProcess(ProcessStatus.EXCEPTION);
-			LOG.error("An error occurred during a scheduled graph update procedure");
-			throw new UpdateGraphException();
-		}
-	}
+	/*@SuppressWarnings("unchecked")
+	private List<CompletableFuture<Boolean>> buildFuturesList(Object obj, String methodPrefix) {
+		List<CompletableFuture<Boolean>> futures = new ArrayList<>();
+		for (String lang : langs) {
+			String url = protocol + lang + "." + apiUrl;
+			Method[] methods = obj.getClass().getMethods();
+			for (int i = 0; i < methods.length; i++) {
+				try {
+					if (methods[i].getName().startsWith(methodPrefix) && methods[i].getParameterCount() == 1) {
 
-	/**
-	 * Update the pages and the revisions querying the MediaWiki API
-	 * @param start
-	 * @param end
-	 */
-	private void updatePagesAndRevisions(Date start, Date end) throws UpdatePagesAndRevisionsException{
-		try{
-			// First of all, get the RecentChangeEvents from MediaWiki API
-			for (String lang : langs) {
-				String url = protocol + lang + "." + apiUrl;
-				// Fetching pages updates
-				List<UpdateInfo> updates = updateMediaWikiService.getPagesUpdateInfo(url, namespace, start, end);
-				
-				for(UpdateInfo update : updates){
-					switch (update.getType()) {
-					case "new":
-						// Create the new revision
-						Revision newRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
-								update.getOld_revid(), update.getNewlen(), update.getTimestamp());
-						// Then create a new Page and link it with the revision
-						pageService.addPage(update.getPageid(), update.getTitle(), lang, newRev);
-						userService.setAuthorship(newRev);
-						break;
-					case "edit":
-						// Create a new revision
-						Revision updateRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
-								update.getOld_revid(), update.getNewlen(), update.getTimestamp());
-						// Then add it to the page
-						pageService.addRevisionToPage(lang + "_" + update.getPageid(), updateRev);
-						userService.setAuthorship(updateRev);
-						break;
-					case "move":
-						// Move the page to the new title
-						pageService.movePage(update.getTitle(), update.getNewTitle(), lang);
-						break;
-					case "delete":
-						// Delete the page and all its revisions
-						pageService.deletePage(update.getTitle(), lang);
-						break;
-					default:
-						break;
+						futures.add((CompletableFuture<Boolean>) methods[i].invoke(obj, url));
+					} else if (methods[i].getName().startsWith(methodPrefix) && methods[i].getParameterCount() == 2) {
+						futures.add((CompletableFuture<Boolean>) methods[i].invoke(obj, lang, url));
 					}
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+
 			}
-		}catch(GetPagesUpdateInfoException e){
-			LOG.error("An error occurred while updating pages and revisions: {}", e.getMessage());
-			throw new UpdatePagesAndRevisionsException();
 		}
-	}
+		return futures;
+	}*/
 }

@@ -30,11 +30,11 @@ public interface RevisionRepository extends GraphRepository<Revision> {
 
 	/**
 	 * This query returns all the Revisions of a Page.
-	 * The direction -> of the link is important to transverse
+	 * The direction -> of the link is important to traverse
 	 * only the chain of Revisions of the page without reaching other nodes.
 	 * @param langPageId
 	 * @return
 	 */
-	@Query("MATCH (p:Page {langPageId:{0}})-[*]->(r:Revision) RETURN r")
+	@Query("MATCH (p:Page {langPageId:{0}})-[:LAST_REVISION|PREVIOUS_REVISION*]->(r:Revision) RETURN r")
 	Set<Revision> findAllRevisionOfPage(String langPageId);
 }

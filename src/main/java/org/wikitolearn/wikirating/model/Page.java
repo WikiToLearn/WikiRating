@@ -36,9 +36,9 @@ public class Page {
 	private Revision lastRevision;
 	@Relationship(type = "FIRST_REVISION", direction = Relationship.OUTGOING)
 	private Revision fistRevision;
-	@Relationship(type = "LEVEL_TWO", direction = Relationship.UNDIRECTED)
+	@Relationship(type = "LEVEL_TWO", direction = Relationship.OUTGOING)
 	private Set<Page> levelsTwo;
-	@Relationship(type = "LEVEL_THREE", direction = Relationship.UNDIRECTED)
+	@Relationship(type = "LEVEL_THREE", direction = Relationship.OUTGOING)
 	private Set<Page> levelsThree;
 	@Labels
 	private Set<String> labels = new HashSet<>();
@@ -185,6 +185,13 @@ public class Page {
 	public void setLevelsTwo(Set<Page> levelsTwo) {
 		this.levelsTwo = levelsTwo;
 	}
+	
+	/** 
+	 * @param levelTwo the levelTwo to add
+	 */
+	public void addLevelTwo(Page levelTwo){
+		this.levelsTwo.add(levelTwo);
+	}
 
 	/**
 	 * @return the levelsThree
@@ -198,6 +205,13 @@ public class Page {
 	 */
 	public void setLevelsThree(Set<Page> levelsThree) {
 		this.levelsThree = levelsThree;
+	}
+	
+	/** 
+	 * @param levelThree the levelThree to add
+	 */
+	public void addLevelThree(Page levelThree){
+		this.levelsThree.add(levelThree);
 	}
 
 	/**
@@ -219,5 +233,43 @@ public class Page {
 	 */
 	public void addLabel(String label) {
 		this.labels.add(label);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Page [graphId=" + graphId + ", pageId=" + pageId + ", title=" + title + ", lang=" + lang
+				+ ", langPageId=" + langPageId + ", pageRank=" + pageRank + ", lastRevision=" + lastRevision
+				+ ", fistRevision=" + fistRevision + ", levelsTwo=" + levelsTwo + ", levelsThree=" + levelsThree
+				+ ", labels=" + labels + "]";
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Page)) {
+			return false;
+		}
+		
+		Page other = (Page) obj;
+		
+		if (langPageId == null) {
+			if (other.langPageId != null) {
+				return false;
+			}
+		} else if (!langPageId.equals(other.langPageId)) {
+			return false;
+		}
+		return true;
 	}
 }

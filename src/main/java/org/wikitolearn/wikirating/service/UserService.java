@@ -151,7 +151,8 @@ public class UserService {
      * @param end
      * @throws UpdateUsersException
      */
-	public void updateUsers(String apiUrl, Date start, Date end) throws UpdateUsersException{
+    @Async
+	public CompletableFuture<Boolean> updateUsers(String apiUrl, Date start, Date end) throws UpdateUsersException{
 		try{
 			List<UpdateInfo> usersUpdateInfo = updateMediaWikiService.getNewUsers(apiUrl, start, end);
 			List<User> newUsers = new ArrayList<>();
@@ -169,5 +170,6 @@ public class UserService {
 			LOG.error("An error occurred while updating users: {}", e.getMessage());
 			throw new UpdateUsersException();
 		}
+		return CompletableFuture.completedFuture(true);
 	}
 }
