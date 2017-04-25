@@ -66,12 +66,27 @@ public class MediaWikiApiUtils {
 	 */
 
 	public Map<String, String> getListAllPagesParams(String namespace) {
-		Map<String, String> queryParameterMap = new HashMap<String, String>();
+		Map<String, String> queryParameterMap = new HashMap<>();
 		queryParameterMap.put("action", "query");
 		queryParameterMap.put("list", "allpages");
 		queryParameterMap.put("aplimit", "max");
 		queryParameterMap.put("apnamespace", namespace);
 		queryParameterMap.put("apfilterredir", "nonredirects");
+		queryParameterMap.put("format", "json");
+		return queryParameterMap;
+	}
+	
+	/**
+	 * Get a map 
+	 * @param pid	The PageID of the page for which revisions are requested
+	 * @return	Map having parameters
+	 */
+	public Map<String, String> getDiffRevisionParams(int revId) {
+		Map<String, String> queryParameterMap = new HashMap<>();
+		queryParameterMap.put("action", "query");
+		queryParameterMap.put("prop", "revisions");
+		queryParameterMap.put("revids", Integer.toString(revId));
+		queryParameterMap.put("rvdiffto", "prev");
 		queryParameterMap.put("format", "json");
 		return queryParameterMap;
 	}
@@ -100,7 +115,7 @@ public class MediaWikiApiUtils {
 	 * @return	Map having parameters
 	 */
 	public Map<String, String> getUserParams() {
-		Map<String, String> queryParameterMap = new HashMap<String, String>();
+		Map<String, String> queryParameterMap = new HashMap<>();
 		queryParameterMap.put("action", "query");
 		queryParameterMap.put("list", "allusers");
 		queryParameterMap.put("aulimit", "max");

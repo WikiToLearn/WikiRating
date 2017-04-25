@@ -9,6 +9,7 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,5 +123,24 @@ public class RevisionService {
 	public Revision updateRevision(Revision revision){
 		revisionRepository.save(revision);
 		return revision;
+	}
+	
+	/**
+	 * 
+	 * @param revisionId
+	 * @param pageId
+	 * @return
+	 */
+	public double calculateChangeCofficient(String apiUrl, int revisionId, int pageId){
+		String diffText = revisionMediaWikiService.getDiffPreviousRevision(apiUrl, revisionId, pageId);
+		double changeCoefficient = 0.0;
+		
+		int addedLines = StringUtils.countMatches(diffText, "diff-addedline");
+		int deletedLines = StringUtils.countMatches(diffText, "diff-deletedline");
+		int inlineChanges = StringUtils.countMatches(diffText, "diffchange-inline");
+		
+		System.out.println("add: " + addedLines + "\n del:" + deletedLines + "\n inline: " + inlineChanges);
+		
+		return changeCoefficient;
 	}
 }

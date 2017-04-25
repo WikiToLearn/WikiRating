@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
+import org.wikitolearn.wikirating.exception.GetDiffPreviousRevisionExeception;
 import org.wikitolearn.wikirating.model.Revision;
 
 import java.io.IOException;
@@ -21,7 +22,33 @@ import java.util.Map;
  *
  */
 @Service
-public class RevisionMediaWikiService extends MediaWikiService<Revision>{  
+public class RevisionMediaWikiService extends MediaWikiService<Revision>{
+	
+	/**
+	 * Get the revision
+	 * @param apiUrl
+	 * @param revId
+	 * @return the revision with the diff information
+	 * @throws GetDiffPreviousRevisionExeception
+	 */
+	public String getDiffPreviousRevision(String apiUrl, int revId, int pageId)
+			throws GetDiffPreviousRevisionExeception {
+		try {
+			Map<String, String> parameters = mediaWikiApiUtils.getDiffRevisionParams(revId);
+			ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
+			InputStream response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
+			JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
+
+			String diffText = responseJson.getJSONObject("query").getJSONObject("pages")
+					.getJSONObject(Integer.toString(pageId)).getJSONArray("revisions").getJSONObject(0)
+					.getJSONObject("diff").getString("*");
+			return diffText;
+		} catch (JSONException e) {
+			LOG.error("An error occurred getting diff of previous revision of revision with id: {}. {}", revId,
+					e.getMessage());
+			throw new GetDiffPreviousRevisionExeception();
+		}
+	}
 	
     /**
      * Get all the revisions for a specific page querying MediaWiki API

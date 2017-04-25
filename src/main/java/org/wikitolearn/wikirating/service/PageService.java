@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.GetPagesUpdateInfoException;
+import org.wikitolearn.wikirating.exception.PageNotFoundException;
 import org.wikitolearn.wikirating.exception.UpdatePagesAndRevisionsException;
 import org.wikitolearn.wikirating.model.CourseTree;
 import org.wikitolearn.wikirating.model.Page;
@@ -122,6 +123,38 @@ public class PageService {
 		
 		return page;
 	}
+    
+    /**
+     * Get the page with the given pageId and language
+     * @param pageId the id of the page
+     * @param lang the language of the page
+     * @return the requested page
+     * @throws PageNotFoundException
+     */
+    public Page getPage(int pageId, String lang) throws PageNotFoundException{
+    	Page page = pageRepository.findByLangPageId(lang + "_" + pageId);
+    	
+    	if(page == null){
+    		LOG.error("Page with pageId {} and lang {} not found.", pageId, lang);
+    		throw new PageNotFoundException();
+    	}
+    	return page;
+    }
+    
+    /**
+     * Get the page with the given langePageId
+     * @param langPageId the langPageId of the page
+     * @return the requested page
+     * @throws PageNotFoundException
+     */
+    public Page getPage(String langPageId) throws PageNotFoundException{
+    	Page page = pageRepository.findByLangPageId(langPageId);
+    	if(page == null){
+    		LOG.error("Page with langPageId: {} not found.", langPageId);
+    		throw new PageNotFoundException();
+    	}
+    	return page;
+    }
 
     /**
      * This method adds a new Revision to a page. It links the Page to the new revision via

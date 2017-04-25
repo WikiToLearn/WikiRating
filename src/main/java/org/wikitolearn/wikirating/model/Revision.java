@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.annotation.typeconversion.DateLong;
+import org.springframework.data.annotation.Transient;
 
 import java.util.Date;
 import java.util.Set;
@@ -31,6 +32,7 @@ public class Revision {
     private int parentId;
     @DateLong
     private Date timestamp;
+    @JsonProperty("size")
     private long length;
     private double changeCoefficient;
     private double currentMeanVote;
@@ -50,6 +52,8 @@ public class Revision {
 	//and its creator (user). It saves his reliability at the moment of the author.
     @Relationship(type="AUTHOR", direction = Relationship.INCOMING)
 	private Author author;
+    @Transient
+    private String diffText;
     
 	/**
 	 * 
@@ -341,6 +345,20 @@ public class Revision {
 	 */
 	public void addVote(Vote vote){
 		this.votes.add(vote);
+	}
+
+	/**
+	 * @return the diffText
+	 */
+	public String getDiffText() {
+		return diffText;
+	}
+
+	/**
+	 * @param diffText the diffText to set
+	 */
+	public void setDiffText(String diffText) {
+		this.diffText = diffText;
 	}
 
 	/* (non-Javadoc)
