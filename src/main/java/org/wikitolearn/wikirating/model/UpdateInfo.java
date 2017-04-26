@@ -23,6 +23,7 @@ public class UpdateInfo {
     private int userid;
     private int oldlen;
     private int newlen;
+    private String ns;
     private Date timestamp;
 
     public UpdateInfo(){}
@@ -114,4 +115,18 @@ public class UpdateInfo {
     public void setNewTitle(String newTitle) {
         this.newTitle = newTitle;
     }
+
+	/**
+	 * @return the ns
+	 */
+	public String getNs() {
+		return ns;
+	}
+
+	/**
+	 * @param ns the ns to set
+	 */
+	public void setNs(String ns) {
+		this.ns = ns;
+	}
 }

@@ -64,14 +64,24 @@ public class PageService {
         return CompletableFuture.completedFuture(true);
     }
     
+    /**
+     * 
+     * @param lang
+     * @param apiUrl
+     * @param start
+     * @param end
+     * @return
+     * @throws UpdatePagesAndRevisionsException
+     */
     @Async
-    public CompletableFuture<Boolean> updatePages(String lang, String apiUrl, Date start, Date end){
+    public CompletableFuture<Boolean> updatePages(String lang, String apiUrl, Date start, Date end) throws UpdatePagesAndRevisionsException{
     	try{
     		List<UpdateInfo> updates = updateMediaWikiService.getPagesUpdateInfo(apiUrl, namespace, start, end);
     		for(UpdateInfo update : updates){
+    			if(!namespace.equals(update.getNs())) continue;
     			switch (update.getType()) {
-    			case "new":
-    				// Create the new revision
+    			case "new":	
+    				// Create the new page
     				Revision newRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
     						update.getOld_revid(), update.getNewlen(), update.getTimestamp());
     				// Then create a new Page and link it with the revision
@@ -98,7 +108,7 @@ public class PageService {
     				break;
     			}
     		}
-    	}catch(GetPagesUpdateInfoException e){
+    	}catch(GetPagesUpdateInfoException | PageNotFoundException e){
 			LOG.error("An error occurred while updating pages and revisions: {}", e.getMessage());
 			throw new UpdatePagesAndRevisionsException();
 		}
@@ -106,13 +116,13 @@ public class PageService {
 	}
 
     /**
-     * This method creates a new Page. It requires the firstRevision of the Page in order
+     * Create a new Page. It requires the firstRevision of the Page in order
      * to create the LAST_REVISION and FIRST_REVISION relationships.
      * @param pageid
      * @param title
      * @param lang
      * @param firstRevision
-     * @return
+     * @return the added page
      */
     public Page addPage(int pageid, String title, String lang, Revision firstRevision){
 		Page page = new Page(pageid, title, lang, lang + "_" + pageid);
@@ -157,31 +167,36 @@ public class PageService {
     }
 
     /**
-     * This method adds a new Revision to a page. It links the Page to the new revision via
+     * Add a new revision to a page. It links the Page to the new revision via
      * LAST_REVISION link. Moreover it create the PREVIOUS_REVISION link.
      * @param langPageId
      * @param rev
-     * @return
      */
-	public Page addRevisionToPage(String langPageId, Revision rev){
+	public void addRevisionToPage(String langPageId, Revision rev) throws PageNotFoundException{
         Page page = pageRepository.findByLangPageId(langPageId);
+        if(page == null){
+        	throw new PageNotFoundException();
+        }
         // Add PREVIOUS_REVISION relationship
         rev.setPreviousRevision(page.getLastRevision());
         page.setLastRevision(rev);
         // The changes on the revision will be automatically persisted
         pageRepository.save(page);
-        return page;
     }
 
     /**
-     * This method changes only the title of a given Page.
-     * @param oldTitle
-     * @param newTitle
-     * @param lang
-     * @return
+     * Change title of a page. The method is prefixed by move to follow MediaWiki naming.
+     * @param oldTitle the old title of the page
+     * @param newTitle the new title to set
+     * @param lang the language of the page
+     * @return the updated page
+     * @throws PageNotFoundException
      */
-    public Page movePage(String oldTitle, String newTitle, String lang){
+    public Page movePage(String oldTitle, String newTitle, String lang) throws PageNotFoundException{
         Page page = pageRepository.findByTitleAndLang(oldTitle, lang);
+        if(page == null){
+        	throw new PageNotFoundException();
+        }
         page.setTitle(newTitle);
         pageRepository.save(page);
         return page;
@@ -189,38 +204,41 @@ public class PageService {
     
     /**
      * Delete a page from the graph given its title and domain language.
-     * @param title
-     * @param lang
+     * @param title the title of the page
+     * @param lang the language of the page
+     * @throws PageNotFoundException
      */
-    public void deletePage(String title, String lang){
+    public void deletePage(String title, String lang) throws PageNotFoundException{
         Page page = pageRepository.findByTitleAndLang(title, lang);
+        if(page == null){
+        	throw new PageNotFoundException();
+        }
         // Delete the revisions of the page
         revisionService.deleteRevisionsOfPage(page.getLangPageId());
         // Delete finally the page itself
         pageRepository.delete(page);
-        //TODO throw specific exceptions
     }
     
     /**
-     * 
-     * @return
+     * Get the pages labeled by :CourseRoot label
+     * @return the list of course root pages
      */
     public List<Page> getCourseRootPages(String lang){
     	return pageRepository.findAllCourseRootPages(lang);
     }
     
     /**
-     * 
-     * @return
+     * Get the page labeled only by :Page label
+     * @return the list of the uncategorized pages
      */
     public List<Page> getUncategorizedPages(String lang){
     	return pageRepository.findAllUncategorizedPages(lang);
     }
     
     /**
-     * Apply the course structure using labels and relationships to the graph
-     * @param lang
-     * @param apiUrl
+     * Initialize for the first time the course structure using labels and relationships
+     * @param lang the language of the domain
+     * @param apiUrl the MediaWiki API url
      */
     @Async
     public CompletableFuture<Boolean> initCourseStructure(String lang, String apiUrl){
@@ -273,6 +291,12 @@ public class PageService {
     	return CompletableFuture.completedFuture(true);
     }
     
+    /**
+     * 
+     * @param lang the language of the domain
+     * @param apiUrl the MediaWiki API url
+     * @return
+     */
 	public CompletableFuture<Boolean> updateCourseStructure(String lang, String apiUrl) {
 		List<Page> courseRootPages = getCourseRootPages(lang);
 		List<Page> uncategorizedPages = getUncategorizedPages(lang);
@@ -289,8 +313,8 @@ public class PageService {
 	}
 
 	/**
-	 * @param lang
-	 * @param apiUrl
+     * @param lang the language of the domain
+     * @param apiUrl the MediaWiki API url
 	 * @param courseRootPages
 	 */
 	private void applyCourseStructure(String lang, String apiUrl, List<Page> courseRootPages) {
