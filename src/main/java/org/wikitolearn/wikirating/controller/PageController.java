@@ -3,8 +3,8 @@
  */
 package org.wikitolearn.wikirating.controller;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +17,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.wikitolearn.wikirating.exception.GenericException;
 import org.wikitolearn.wikirating.exception.PageNotFoundException;
+import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
 import org.wikitolearn.wikirating.model.Page;
 import org.wikitolearn.wikirating.model.Revision;
+import org.wikitolearn.wikirating.model.TemporaryVote;
 import org.wikitolearn.wikirating.model.Vote;
 import org.wikitolearn.wikirating.service.PageService;
+import org.wikitolearn.wikirating.service.RevisionService;
+import org.wikitolearn.wikirating.service.VoteService;
 
 /**
  * @author aletundo RESTController for pages resources. It handles all the
@@ -32,6 +36,10 @@ public class PageController {
 	private static final Logger LOG = LoggerFactory.getLogger(PageController.class);
 	@Autowired
 	private PageService pageService;
+	@Autowired
+	private RevisionService revisionService;
+	@Autowired
+	private VoteService voteService;
 	
 	/**
 	 * Handle GET requests on {lang}/pages/{pageId} URI. The last revision of the page is returned.
@@ -61,9 +69,15 @@ public class PageController {
 	 */
 	@RequestMapping(value = "{pageId}/revisions", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<Revision> getAllPageRevisions(@PathVariable("lang") String lang, @PathVariable("pageId") int pageId) {
-		// TODO Get the requested revision
-		return new ArrayList<Revision>();
+	public Set<Revision> getAllPageRevisions(@PathVariable("lang") String lang, @PathVariable("pageId") int pageId) {
+		String langPageId = lang + "_" + pageId;
+		try{
+			Set<Revision> revisions = revisionService.getRevisionsOfPage(langPageId);
+			return revisions;
+		}catch(RevisionNotFoundException e){
+			LOG.error("Impossible to get revisions of page {}", langPageId);
+			throw new GenericException(e.getMessage());
+		}
 	}
 
 	/**
@@ -78,8 +92,15 @@ public class PageController {
 	@RequestMapping(value = "{pageId}/revisions/{revId}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public Revision getRevisionById(@PathVariable("lang") String lang, @PathVariable("pageId") int pageId, @PathVariable("revId") int revId) {
-		// TODO Get the requested revision
-		return new Revision();
+		String langRevId = lang + "_" + revId;
+		try{
+			Revision revision = revisionService.getRevision(langRevId);
+			return revision;
+		}catch(RevisionNotFoundException e){
+			String langPageId = lang + "_" + pageId;
+			LOG.error("Impossible to get revision {} of page {}", langRevId, langPageId);
+			throw new GenericException(e.getMessage());
+		}
 	}
 	
 	/**
@@ -95,9 +116,9 @@ public class PageController {
 	@RequestMapping(value = "{pageId}/revisions/{revId}/votes", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public List<Vote> showVotes(@PathVariable("lang") String lang, @PathVariable("pageId") int pageId, @PathVariable("revId") int revId) {
-
-		// TODO Get votes from PageService/PageDAO
-		return new ArrayList<Vote>();
+		// TODO: Work in progress
+		String langRevId = lang + "_" + revId;
+		return voteService.getAllVotesOfRevision(langRevId);
 	}
 
 	/**
@@ -116,9 +137,9 @@ public class PageController {
 	 */
 	@RequestMapping(value = "{pageId}/revisions/{revId}/votes", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public Vote addVote(@PathVariable("lang") String lang, @PathVariable("pageId") int pageId, @PathVariable("revId") int revId,
+	public TemporaryVote addVote(@PathVariable("lang") String lang, @PathVariable("pageId") int pageId, @PathVariable("revId") int revId,
 			@RequestParam("vote") double vote, @RequestParam("userId") int userId) {
-		// TODO Insert the vote into the graph
-		return new Vote();
+		//TODO
+		return null;
 	}
 }
