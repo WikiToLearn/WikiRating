@@ -34,9 +34,6 @@ public class PageServiceTest {
 	@Mock
 	private PageRepository pageRepository;
 	
-	@Mock
-	private RevisionService revisionService;
-	
 	@InjectMocks
 	private PageService pageService;
 	
