@@ -58,10 +58,16 @@ public class MaintenanceService {
 		metadataService.addFirstProcess(initProcess);
 		
 		CompletableFuture<Boolean> initFuture = CompletableFuture
+                // Users and pages
 				.allOf(buildUsersAndPagesFuturesList().toArray(new CompletableFuture[langs.size() + 1]))
 				.thenCompose(result -> CompletableFuture
+                // Revisions
 						.allOf(buildRevisionsFuturesList().toArray(new CompletableFuture[langs.size()])))
+                .thenCompose(result -> CompletableFuture
+                // Change Coefficients
+                        .allOf(buildChangeCoefficientFuturesList().toArray(new CompletableFuture[langs.size()])))
 				.thenCompose(result -> CompletableFuture
+                // CourseStructure
 						.allOf(buildInitCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
 				.thenCompose(result -> userService.initAuthorship());
 
@@ -191,6 +197,16 @@ public class MaintenanceService {
 			parallelRevisionsFutures.add(revisionService.initRevisions(lang, url));
 		}
 		return parallelRevisionsFutures;
+	}
+
+	private List<CompletableFuture<Boolean>> buildChangeCoefficientFuturesList(){
+		List<CompletableFuture<Boolean>> parallelCCFutures = new ArrayList<>();
+		// Add revisions fetch for each domain language
+		for (String lang : langs) {
+			String url = protocol + lang + "." + apiUrl;
+			parallelCCFutures.add(revisionService.calculateChangeCoefficientAllRevisions(lang, url));
+		}
+		return parallelCCFutures;
 	}
 
 	/**

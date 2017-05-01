@@ -22,6 +22,8 @@ import org.wikitolearn.wikirating.repository.PageRepository;
 import org.wikitolearn.wikirating.repository.RevisionRepository;
 import org.wikitolearn.wikirating.service.mediawiki.RevisionMediaWikiService;
 
+import static java.lang.Math.exp;
+
 /**
  * 
  * @author aletundo, valsdav
@@ -58,8 +60,8 @@ public class RevisionService {
                 Revision rev = it.next();
                 rev.setLangRevId(lang + "_" + rev.getRevId());
                 rev.setLang(lang);
-                if (it.previousIndex() != 0){
-                    rev.setPreviousRevision(revisions.get(it.previousIndex()-1));
+                if (it.previousIndex() != 0) {
+                    rev.setPreviousRevision(revisions.get(it.previousIndex() - 1));
                 }
             }
 			// Saving all the revisions node and the page node
@@ -70,6 +72,19 @@ public class RevisionService {
 
 		return CompletableFuture.completedFuture(true);
 	}
+
+	@Async
+    public CompletableFuture<Boolean> calculateChangeCoefficientAllRevisions(String lang, String apiUrl){
+	    LOG.info("Calculating changeCoefficient for all the revisions...");
+        Set<Revision> revisions = revisionRepository.findByLang(lang);
+        for (Revision rev : revisions){
+            double changeCoefficient = calculateChangeCoefficient(apiUrl, rev);
+            rev.setChangeCoefficient(changeCoefficient);
+        }
+        revisionRepository.save(revisions);
+        LOG.info("ChangeCoefficient calculated for all revisions.");
+        return CompletableFuture.completedFuture(true);
+    }
 
     /**
      * Add a new Revision to the graph
@@ -133,23 +148,50 @@ public class RevisionService {
 		revisionRepository.save(revision);
 		return revision;
 	}
-	
-	/**
-	 * 
-	 * @param revisionId
-	 * @param pageId
+
+    	/**
+	 * Calculate the changeCoefficient for a given Revision querying mediawiki
+     * and returns the number. It doesn't store it in the Revision.
+	 * @param revision
 	 * @return
 	 */
-	public double calculateChangeCofficient(String apiUrl, int revisionId, int pageId){
-		String diffText = revisionMediaWikiService.getDiffPreviousRevision(apiUrl, revisionId, pageId);
-		double changeCoefficient = 0.0;
-		
-		int addedLines = StringUtils.countMatches(diffText, "diff-addedline");
-		int deletedLines = StringUtils.countMatches(diffText, "diff-deletedline");
-		int inlineChanges = StringUtils.countMatches(diffText, "diffchange-inline");
-		
-		System.out.println("add: " + addedLines + "\n del:" + deletedLines + "\n inline: " + inlineChanges);
-		
+	public double calculateChangeCoefficient(String apiUrl, Revision revision){
+        double previousLength = 0;
+        double changeCoefficient = 0;
+        // Get the previous Revision
+        Revision previousRevision = revision.getPreviousRevision();
+        if (previousRevision == null){
+            previousLength = 1;
+            changeCoefficient = 0;
+            LOG.info("Change coefficient of revision {} (first-rev): {}", revision.getLangRevId(), changeCoefficient);
+        } else{
+            double prevL = (double) previousRevision.getLength();
+            // Suppose the mean line length of 120 characters and that the length is in bytes.
+            // We want a "lenght" in n° of lines
+            if (prevL == 0){
+                previousLength = 1;
+            }else {
+                previousLength =  (prevL < 120) ? 1 : prevL / 120;
+            }
+
+            // Query mediawiki for diff text
+            String diffText = revisionMediaWikiService.getDiffPreviousRevision(apiUrl,
+                    previousRevision.getRevId(), revision.getRevId());
+
+            int addedLines = StringUtils.countMatches(diffText, "diff-addedline");
+            int deletedLines = StringUtils.countMatches(diffText, "diff-deletedline");
+            int inlineChanges = StringUtils.countMatches(diffText, "diffchange-inline");
+
+            // Finally calculation of change Coefficient
+            double t = ((1.2 * deletedLines +  addedLines) ) / previousLength;
+            changeCoefficient = 1 / exp(0.7 * t);
+
+            LOG.info("Change coefficient of revision {} (+{}-{}/{}): {}", revision.getLangRevId(), addedLines,
+                    deletedLines, previousLength, changeCoefficient);
+        }
+
 		return changeCoefficient;
 	}
+
+
 }

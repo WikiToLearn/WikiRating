@@ -81,12 +81,11 @@ public class MediaWikiApiUtils {
 	 * @param pid	The PageID of the page for which revisions are requested
 	 * @return	Map having parameters
 	 */
-	public Map<String, String> getDiffRevisionParams(int revId) {
+	public Map<String, String> getDiffRevisionParams(int oldRevId, int newRevId) {
 		Map<String, String> queryParameterMap = new HashMap<>();
-		queryParameterMap.put("action", "query");
-		queryParameterMap.put("prop", "revisions");
-		queryParameterMap.put("revids", Integer.toString(revId));
-		queryParameterMap.put("rvdiffto", "prev");
+		queryParameterMap.put("action", "compare");
+		queryParameterMap.put("fromrev", Integer.toString(oldRevId));
+		queryParameterMap.put("torev", Integer.toString(newRevId));
 		queryParameterMap.put("format", "json");
 		return queryParameterMap;
 	}
