@@ -62,7 +62,7 @@ public class RevisionServiceTest {
 	}
 	
 	@Test
-	public void testAddPage(){
+	public void testAddRevision(){
 		Date now = new Date();
 		Revision revision =  new Revision(2, "en", 1, 1, 123456, now);
 		when(revisionRepository.save(revision)).thenReturn(revision);

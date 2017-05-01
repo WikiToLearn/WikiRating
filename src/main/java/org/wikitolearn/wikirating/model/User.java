@@ -31,7 +31,7 @@ public class User {
 	private double contributesReliability;
 	private double totalReliability;
 	@Relationship( type="AUTHOR", direction = Relationship.OUTGOING)
-	private Set<Author> authors;
+	private Set<Author> authorship;
 	@Relationship( type="VOTE", direction = Relationship.OUTGOING)
 	private Set<Vote> votes;
 	
@@ -39,7 +39,7 @@ public class User {
 	 * 
 	 */
 	public User() {
-	    this.authors = new HashSet<>();
+	    this.authorship = new HashSet<>();
 	    this.votes = new HashSet<>();
     }
 	
@@ -57,7 +57,7 @@ public class User {
 		this.votesReliability = votesReliability;
 		this.contributesReliability = contributesReliability;
 		this.totalReliability = totalReliability;
-        this.authors = new HashSet<>();
+        this.authorship = new HashSet<>();
         this.votes = new HashSet<>();
 	}
 
@@ -135,20 +135,20 @@ public class User {
 	 *
 	 * @return
 	 */
-	public Set<Author> getAuthors() {
-		return authors;
+	public Set<Author> getAuthorship() {
+		return authorship;
 	}
 
 	/**
 	 *
-	 * @param authors
+	 * @param authorship
 	 */
-	public void setAuthors(Set<Author> authors) {
-		this.authors = authors;
+	public void setAuthors(Set<Author> authorship) {
+		this.authorship = authorship;
 	}
 
-	public void addAuthor(Author author){
-	    this.authors.add(author);
+	public void addAuthorship(Author author){
+	    this.authorship.add(author);
     }
 
 	/**

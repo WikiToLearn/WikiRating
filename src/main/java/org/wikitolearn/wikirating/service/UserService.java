@@ -87,7 +87,6 @@ public class UserService {
     	userRepository.save(users);
     	LOG.info("Inserted users: {}", users);
     	return users;
-    	//TODO handle exceptions
     }
 
     /**
@@ -100,7 +99,7 @@ public class UserService {
             Author author = new Author(user.getTotalReliability());
             author.setRevision(rev);
             author.setUser(user);
-            user.addAuthor(author);
+            user.addAuthorship(author);
         }
         userRepository.save(user);
     }
@@ -115,7 +114,7 @@ public class UserService {
 		Author author = new Author(user.getTotalReliability());
 		author.setRevision(revision);
 		author.setUser(user);
-    	user.addAuthor(author);
+    	user.addAuthorship(author);
     	userRepository.save(user);
     }
     
@@ -123,11 +122,11 @@ public class UserService {
      * Set the authorship for a list of revisions
      * @param revisions the list of revisions
      */
-    public void setAuthorship(Collection<Revision> revisions){
+    /*public void setAuthorship(Collection<Revision> revisions){
     	for(Revision revision : revisions){
     		setAuthorship(revision);
     	}
-    }
+    }*/
     
     /**
      * Get the requested user.
