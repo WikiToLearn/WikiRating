@@ -27,8 +27,7 @@ public interface RevisionRepository extends GraphRepository<Revision> {
      * @param lang
      * @return
      */
-	@Query("MATCH (r:Revision {lang:{0}}) RETURN r")
-    Set<Revision> findAllByLang(String lang);
+    Set<Revision> findByLang(String lang);
 
 	/**
 	 * 

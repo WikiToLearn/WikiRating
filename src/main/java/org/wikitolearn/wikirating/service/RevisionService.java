@@ -76,7 +76,7 @@ public class RevisionService {
 	@Async
     public CompletableFuture<Boolean> calculateChangeCoefficientAllRevisions(String lang, String apiUrl){
 	    LOG.info("Calculating changeCoefficient for all the revisions...");
-        Set<Revision> revisions = revisionRepository.findAllByLang(lang);
+        Set<Revision> revisions = revisionRepository.findByLang(lang);
         for (Revision rev : revisions){
             double changeCoefficient = calculateChangeCoefficient(apiUrl, rev);
             rev.setChangeCoefficient(changeCoefficient);
@@ -171,7 +171,7 @@ public class RevisionService {
             if (prevL == 0){
                 previousLength = 1;
             }else {
-                previousLength =  (prevL < 240) ? 1 : prevL / 240;
+                previousLength =  (prevL < 120) ? 1 : prevL / 120;
             }
 
             // Query mediawiki for diff text
@@ -183,8 +183,8 @@ public class RevisionService {
             int inlineChanges = StringUtils.countMatches(diffText, "diffchange-inline");
 
             // Finally calculation of change Coefficient
-            double t = ((0.6 * deletedLines + 0.4 * addedLines) ) / previousLength;
-            changeCoefficient = 1 / exp(t);
+            double t = ((1.2 * deletedLines +  addedLines) ) / previousLength;
+            changeCoefficient = 1 / exp(0.7 * t);
 
             LOG.info("Change coefficient of revision {} (+{}-{}/{}): {}", revision.getLangRevId(), addedLines,
                     deletedLines, previousLength, changeCoefficient);
