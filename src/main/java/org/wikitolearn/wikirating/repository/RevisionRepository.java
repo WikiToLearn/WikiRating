@@ -37,4 +37,13 @@ public interface RevisionRepository extends GraphRepository<Revision> {
 	 */
 	@Query("MATCH (p:Page {langPageId:{0}})-[:LAST_REVISION|PREVIOUS_REVISION*]->(r:Revision) RETURN r")
 	Set<Revision> findAllRevisionOfPage(String langPageId);
+
+	/**
+	 * This query return the previous revision of a Revision identified
+	 * by langRevId.
+	 * @param langRevId langRevId of the requested revision
+	 * @return the previous revision
+	 */
+	@Query("MATCH (r:Revision {langRevId:{0}})-[:PREVIOUS_REVISION]->(a:Revision) RETURN a")
+	Revision findPreviousRevision(String langRevId);
 }

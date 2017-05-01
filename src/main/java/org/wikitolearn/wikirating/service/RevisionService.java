@@ -22,6 +22,8 @@ import org.wikitolearn.wikirating.repository.PageRepository;
 import org.wikitolearn.wikirating.repository.RevisionRepository;
 import org.wikitolearn.wikirating.service.mediawiki.RevisionMediaWikiService;
 
+import static java.lang.Math.exp;
+
 /**
  * 
  * @author aletundo, valsdav
@@ -140,16 +142,29 @@ public class RevisionService {
 	 * @param pageId
 	 * @return
 	 */
-	public double calculateChangeCofficient(String apiUrl, int revisionId, int pageId){
+	public double calculateChangeCofficient(String apiUrl, int revisionId, int pageId, String langRevId){
 		String diffText = revisionMediaWikiService.getDiffPreviousRevision(apiUrl, revisionId, pageId);
-		double changeCoefficient = 0.0;
 		
 		int addedLines = StringUtils.countMatches(diffText, "diff-addedline");
 		int deletedLines = StringUtils.countMatches(diffText, "diff-deletedline");
 		int inlineChanges = StringUtils.countMatches(diffText, "diffchange-inline");
-		
+
+		// Get the previous Revision for the previous size parameter
+        long previousLength = 0;
+        Revision previousRevision = revisionRepository.findPreviousRevision(langRevId);
+        if (previousRevision == null){
+            previousLength = 1;
+        } else{
+            // Suppose the mean line length of 120 characters and that the length is in bytes.
+            // We want a "lenght" in n° of lines
+            previousLength = previousRevision.getLength() / 240;
+        }
+
 		System.out.println("add: " + addedLines + "\n del:" + deletedLines + "\n inline: " + inlineChanges);
-		
-		return changeCoefficient;
+
+        double t = ((0.6 * deletedLines + 0.4 * addedLines) ) / previousLength;
+		return 1 / (1 + exp(-t));
 	}
+
+
 }
