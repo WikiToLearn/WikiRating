@@ -27,24 +27,21 @@ public class RevisionMediaWikiService extends MediaWikiService<Revision>{
 	/**
 	 * Get the revision
 	 * @param apiUrl
-	 * @param revId
 	 * @return the revision with the diff information
 	 * @throws GetDiffPreviousRevisionExeception
 	 */
-	public String getDiffPreviousRevision(String apiUrl, int revId, int pageId)
+	public String getDiffPreviousRevision(String apiUrl, int oldRevId, int newRevId)
 			throws GetDiffPreviousRevisionExeception {
 		try {
-			Map<String, String> parameters = mediaWikiApiUtils.getDiffRevisionParams(revId);
+			Map<String, String> parameters = mediaWikiApiUtils.getDiffRevisionParams(oldRevId, newRevId);
 			ApiConnection connection = mediaWikiApiUtils.getApiConnection(apiUrl);
 			InputStream response = mediaWikiApiUtils.sendRequest(connection, "GET", parameters);
 			JSONObject responseJson = mediaWikiApiUtils.streamToJson(response);
 
-			String diffText = responseJson.getJSONObject("query").getJSONObject("pages")
-					.getJSONObject(Integer.toString(pageId)).getJSONArray("revisions").getJSONObject(0)
-					.getJSONObject("diff").getString("*");
+			String diffText = responseJson.getJSONObject("compare").getString("*");
 			return diffText;
 		} catch (JSONException e) {
-			LOG.error("An error occurred getting diff of previous revision of revision with id: {}. {}", revId,
+			LOG.error("An error occurred getting diff of previous revision of revision with id: {}. {}", newRevId,
 					e.getMessage());
 			throw new GetDiffPreviousRevisionExeception();
 		}

@@ -3,6 +3,7 @@
  */
 package org.wikitolearn.wikirating.repository;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.neo4j.annotation.Query;
@@ -20,7 +21,15 @@ public interface RevisionRepository extends GraphRepository<Revision> {
 	 * @return
 	 */
 	Revision findByLangRevId(String langRevId);
-	
+
+    /**
+     *
+     * @param lang
+     * @return
+     */
+	@Query("MATCH (r:Revision {lang:{0}}) RETURN r")
+    Set<Revision> findAllByLang(String lang);
+
 	/**
 	 * 
 	 * @param userId
