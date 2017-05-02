@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import org.wikitolearn.wikirating.exception.GenericException;
 import org.wikitolearn.wikirating.model.CourseTree;
-import org.wikitolearn.wikirating.model.Page;
+import org.wikitolearn.wikirating.model.graph.Page;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

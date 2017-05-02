@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.AddProcessException;
 import org.wikitolearn.wikirating.exception.PreviousProcessOngoingException;
-import org.wikitolearn.wikirating.model.Process;
+import org.wikitolearn.wikirating.model.graph.Process;
 import org.wikitolearn.wikirating.repository.ProcessRepository;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
 import org.wikitolearn.wikirating.util.enums.ProcessType;

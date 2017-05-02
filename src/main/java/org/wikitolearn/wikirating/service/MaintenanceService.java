@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.*;
-import org.wikitolearn.wikirating.model.Process;
+import org.wikitolearn.wikirating.model.graph.Process;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
 

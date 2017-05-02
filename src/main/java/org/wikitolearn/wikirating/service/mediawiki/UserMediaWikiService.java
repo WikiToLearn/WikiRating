@@ -6,7 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
-import org.wikitolearn.wikirating.model.User;
+import org.wikitolearn.wikirating.model.graph.User;
 
 import java.io.IOException;
 import java.io.InputStream;

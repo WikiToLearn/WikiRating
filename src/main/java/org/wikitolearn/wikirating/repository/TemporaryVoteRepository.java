@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;
-import org.wikitolearn.wikirating.model.TemporaryVote;
+import org.wikitolearn.wikirating.model.graph.TemporaryVote;
 
 /**
  * Created by valsdav on 24/03/17.

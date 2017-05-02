@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
 import org.wikitolearn.wikirating.exception.TemporaryVoteValidationException;
 import org.wikitolearn.wikirating.exception.UserNotFoundException;
-import org.wikitolearn.wikirating.model.Revision;
-import org.wikitolearn.wikirating.model.TemporaryVote;
-import org.wikitolearn.wikirating.model.User;
-import org.wikitolearn.wikirating.model.Vote;
+import org.wikitolearn.wikirating.model.graph.Revision;
+import org.wikitolearn.wikirating.model.graph.TemporaryVote;
+import org.wikitolearn.wikirating.model.graph.User;
+import org.wikitolearn.wikirating.model.graph.Vote;
 import org.wikitolearn.wikirating.repository.TemporaryVoteRepository;
 import org.wikitolearn.wikirating.repository.VoteRepository;
 

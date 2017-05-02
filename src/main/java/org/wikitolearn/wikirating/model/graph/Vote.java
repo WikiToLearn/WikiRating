@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.wikitolearn.wikirating.model;
+package org.wikitolearn.wikirating.model.graph;
 
 import org.neo4j.ogm.annotation.*;
 import org.neo4j.ogm.annotation.typeconversion.DateLong;

@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.GraphRepository;
-import org.wikitolearn.wikirating.model.Revision;
+import org.wikitolearn.wikirating.model.graph.Revision;
 
 /**
  * @author aletundo

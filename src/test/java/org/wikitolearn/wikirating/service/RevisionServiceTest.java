@@ -20,7 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
-import org.wikitolearn.wikirating.model.Revision;
+import org.wikitolearn.wikirating.model.graph.Revision;
 import org.wikitolearn.wikirating.repository.RevisionRepository;
 
 /**

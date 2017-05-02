@@ -2,7 +2,7 @@ package org.wikitolearn.wikirating.repository;
 
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.GraphRepository;
-import org.wikitolearn.wikirating.model.Metadata;
+import org.wikitolearn.wikirating.model.graph.Metadata;
 import org.wikitolearn.wikirating.util.enums.MetadataType;
 
 /**

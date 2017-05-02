@@ -4,7 +4,7 @@
 package org.wikitolearn.wikirating.repository;
 
 import org.springframework.data.neo4j.repository.GraphRepository;
-import org.wikitolearn.wikirating.model.User;
+import org.wikitolearn.wikirating.model.graph.User;
 
 /**
  * @author aletundo

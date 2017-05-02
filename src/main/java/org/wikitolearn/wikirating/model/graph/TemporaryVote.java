@@ -1,4 +1,4 @@
-package org.wikitolearn.wikirating.model;
+package org.wikitolearn.wikirating.model.graph;
 
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;

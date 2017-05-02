@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import org.wikitolearn.wikirating.exception.GetDiffPreviousRevisionExeception;
-import org.wikitolearn.wikirating.model.Revision;
+import org.wikitolearn.wikirating.model.graph.Revision;
 
 import java.io.IOException;
 import java.io.InputStream;

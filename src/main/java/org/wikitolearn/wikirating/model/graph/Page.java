@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.wikitolearn.wikirating.model;
+package org.wikitolearn.wikirating.model.graph;
 
 import java.util.HashSet;
 import java.util.Set;

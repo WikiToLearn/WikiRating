@@ -6,7 +6,7 @@ package org.wikitolearn.wikirating.repository;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;
-import org.wikitolearn.wikirating.model.Process;
+import org.wikitolearn.wikirating.model.graph.Process;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
 
 /**

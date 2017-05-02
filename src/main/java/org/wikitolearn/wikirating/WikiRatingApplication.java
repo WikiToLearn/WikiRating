@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
-@EntityScan("org.wikitolearn.wikirating.model")
+@EntityScan("org.wikitolearn.wikirating.model.graph")
 @EnableNeo4jRepositories(basePackages = "org.wikitolearn.wikirating.repository")
 @EnableTransactionManagement
 public class WikiRatingApplication extends AsyncConfigurerSupport{
