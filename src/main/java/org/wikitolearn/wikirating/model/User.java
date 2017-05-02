@@ -7,6 +7,7 @@ import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.Index;
 import org.neo4j.ogm.annotation.NodeEntity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.neo4j.ogm.annotation.Relationship;
@@ -21,7 +22,9 @@ import java.util.Set;
 @NodeEntity( label = "User")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
-    @GraphId private Long graphId;
+    @GraphId
+    @JsonIgnore
+    private Long graphId;
     @JsonProperty("name")
 	private String username;
     @Index(unique=true,primary = true)

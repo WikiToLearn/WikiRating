@@ -4,6 +4,7 @@ import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.Index;
 import org.neo4j.ogm.annotation.NodeEntity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -22,7 +23,9 @@ import java.util.Set;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NodeEntity( label = "Revision" )
 public class Revision {
-	@GraphId private Long graphId;
+	@GraphId 
+	@JsonIgnore
+	private Long graphId;
 	@JsonProperty("revid")
     private int revId;
     private String lang;

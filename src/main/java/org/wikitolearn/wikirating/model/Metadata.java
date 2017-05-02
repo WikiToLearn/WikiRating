@@ -5,6 +5,8 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 import org.wikitolearn.wikirating.util.enums.MetadataType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * This entity represents the root of the chain of processes.
  * It is used also to store some global stats.
@@ -13,6 +15,7 @@ import org.wikitolearn.wikirating.util.enums.MetadataType;
 @NodeEntity(label="Metadata")
 public class Metadata {
     @GraphId
+    @JsonIgnore
     private Long id;
     @Relationship(type = "LATEST_PROCESS", direction = Relationship.OUTGOING)
     private Process latestProcess;

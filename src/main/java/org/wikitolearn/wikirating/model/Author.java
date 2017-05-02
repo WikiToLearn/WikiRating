@@ -5,6 +5,8 @@ import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.RelationshipEntity;
 import org.neo4j.ogm.annotation.StartNode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * This entity represent the edit of a user on a Page.
  * It stores the the reliability of the user at the moment
@@ -13,6 +15,7 @@ import org.neo4j.ogm.annotation.StartNode;
 @RelationshipEntity(type="Author")
 public class Author {
     @GraphId
+    @JsonIgnore
     private Long graphId;
     private double reliability;
     @StartNode

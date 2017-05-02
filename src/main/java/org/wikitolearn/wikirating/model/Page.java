@@ -12,6 +12,7 @@ import org.neo4j.ogm.annotation.Labels;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Page {
 
 	@GraphId
+	@JsonIgnore
 	private Long graphId;
 	@JsonProperty("pageId")
 	private int pageId;

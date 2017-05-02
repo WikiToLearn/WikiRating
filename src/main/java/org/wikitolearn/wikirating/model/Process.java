@@ -8,6 +8,8 @@ import org.neo4j.ogm.annotation.typeconversion.DateLong;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -20,7 +22,9 @@ import java.util.UUID;
  */
 @NodeEntity( label = "Process")
 public class Process {
-	@GraphId private Long graphId;
+	@JsonIgnore
+	@GraphId 
+	private Long graphId;
 	@Index(unique = true, primary = true)
 	private String processId;
     private ProcessType processType;
