@@ -4,8 +4,10 @@ import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.Index;
 import org.neo4j.ogm.annotation.NodeEntity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.annotation.typeconversion.DateLong;
@@ -22,18 +24,23 @@ import java.util.Set;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NodeEntity( label = "Revision" )
 public class Revision {
-	@GraphId private Long graphId;
+	@GraphId 
+	@JsonIgnore
+	private Long graphId;
 	@JsonProperty("revid")
     private int revId;
+	@JsonProperty(access = Access.WRITE_ONLY)
     private String lang;
-    @JsonProperty("userid")
+    @JsonProperty(value = "userid", access = Access.WRITE_ONLY)
     private int userId;
-    @JsonProperty("parentid")
+    @JsonProperty(value = "parentid", access = Access.WRITE_ONLY)
     private int parentId;
     @DateLong
+    @JsonProperty(access = Access.WRITE_ONLY)
     private Date timestamp;
-    @JsonProperty("size")
+    @JsonProperty(value = "size", access = Access.WRITE_ONLY)
     private long length;
+    @JsonProperty(access = Access.WRITE_ONLY)
     private double changeCoefficient;
     private double currentMeanVote;
     private double currentVotesReliability;
@@ -41,8 +48,10 @@ public class Revision {
     private double totalMeanVote;
     private double totalVotesReliability;
     private double totalNormalisesVotesReliability;
+    @JsonProperty(access = Access.WRITE_ONLY)
     private boolean validated;
     @Index(unique = true, primary=true)
+    @JsonProperty(access = Access.WRITE_ONLY)
     private String langRevId;
     @Relationship(type="PREVIOUS_REVISION", direction = Relationship.OUTGOING)
 	private Revision previousRevision;

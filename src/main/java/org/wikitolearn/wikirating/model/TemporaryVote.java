@@ -4,6 +4,7 @@ import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.typeconversion.DateLong;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
@@ -15,7 +16,9 @@ import java.util.Date;
  * @author aletundo
  */
 public class TemporaryVote {
-    @GraphId private Long graphId;
+    @GraphId
+    @JsonIgnore
+    private Long graphId;
     private double value;
     private double reliability;
     @JsonProperty("userid")

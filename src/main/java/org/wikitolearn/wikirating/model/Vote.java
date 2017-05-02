@@ -6,6 +6,8 @@ package org.wikitolearn.wikirating.model;
 import org.neo4j.ogm.annotation.*;
 import org.neo4j.ogm.annotation.typeconversion.DateLong;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 /**
@@ -14,7 +16,9 @@ import java.util.Date;
  */
 @RelationshipEntity( type = "VOTE")
 public class Vote {
-	@GraphId private Long graphId;
+	@GraphId
+	@JsonIgnore
+	private Long graphId;
 	private double value;
 	private double reliability;
 	@DateLong
