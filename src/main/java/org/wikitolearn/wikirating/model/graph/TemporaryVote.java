@@ -12,9 +12,10 @@ import java.util.Date;
 /**
  * This entity represents a Vote that has to be validating,
  * connecting the user and the Revision after a fetch of the mediawiki api.
- * @author valsadav
+ * @author valsdav
  * @author aletundo
  */
+@NodeEntity
 public class TemporaryVote {
     @GraphId
     @JsonIgnore

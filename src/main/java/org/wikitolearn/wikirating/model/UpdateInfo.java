@@ -1,7 +1,7 @@
 package org.wikitolearn.wikirating.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.wikitolearn.wikirating.util.enums.UpdateType;
+//import org.wikitolearn.wikirating.util.enums.UpdateType;
 
 import java.util.Date;
 

@@ -192,7 +192,7 @@ public class RevisionService {
 
             int addedLines = StringUtils.countMatches(diffText, "diff-addedline");
             int deletedLines = StringUtils.countMatches(diffText, "diff-deletedline");
-            int inlineChanges = StringUtils.countMatches(diffText, "diffchange-inline");
+            //int inlineChanges = StringUtils.countMatches(diffText, "diffchange-inline");
 
             // Finally calculation of change Coefficient
             double t = ((1.2 * deletedLines +  addedLines) ) / previousLength;
