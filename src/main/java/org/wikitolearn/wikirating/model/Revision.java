@@ -75,6 +75,7 @@ public class Revision {
 		this.lang = lang;
         this.timestamp = timestamp;
         this.validated = false;
+        this.changeCoefficient = 0.0;
     }
 
 	/**

@@ -81,7 +81,7 @@ public class PageService {
     			if(!namespace.equals(update.getNs())) continue;
     			switch (update.getType()) {
     			case "new":	
-    				// Create the new page
+    				// Create the new page. The change coefficient for the new revision is set to 0 by default.
     				Revision newRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
     						update.getOld_revid(), update.getNewlen(), update.getTimestamp());
     				// Then create a new Page and link it with the revision
@@ -94,6 +94,9 @@ public class PageService {
     						update.getOld_revid(), update.getNewlen(), update.getTimestamp());
     				// Then add it to the page
     				addRevisionToPage(lang + "_" + update.getPageid(), updateRev);
+    				// Then calculate the changeCoefficient
+					revisionService.setChangeCoefficient(apiUrl, updateRev);
+					// Finally set the authorship
     				userService.setAuthorship(updateRev);
     				break;
     			case "move":
