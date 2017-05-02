@@ -14,6 +14,7 @@ import org.neo4j.ogm.annotation.Relationship;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 /**
  * @author aletundo
@@ -32,6 +33,7 @@ public class Page {
 	@Index
 	private String lang;
 	@Index(unique = true, primary = true)
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private String langPageId;
 	private double pageRank;
 	@Relationship(type = "LAST_REVISION", direction = Relationship.OUTGOING)
