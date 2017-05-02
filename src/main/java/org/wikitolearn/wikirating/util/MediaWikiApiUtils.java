@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -131,7 +132,6 @@ public class MediaWikiApiUtils {
 	 * @return the map with the parameters
 	 */
 	public Map<String, String> getRecentChangesParams(String namespace, Date begin, Date end){
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		Map<String, String> queryParameterMap = new HashMap<>();
 		queryParameterMap.put("action", "query");
 		queryParameterMap.put("list", "recentchanges");
@@ -141,8 +141,8 @@ public class MediaWikiApiUtils {
 		queryParameterMap.put("rcshow", "!bot|!redirect");
 		queryParameterMap.put("rcprop", "title|userid|timestamp|ids|sizes|flags");
 		queryParameterMap.put("rctype", "new|edit");
-		queryParameterMap.put("rcstart", dateFormat.format(begin));
-		queryParameterMap.put("rcend", dateFormat.format(end));
+		queryParameterMap.put("rcstart", formatDate(begin));
+		queryParameterMap.put("rcend", formatDate(end));
 		queryParameterMap.put("rcdir", "newer");
 		return queryParameterMap;
 	}
@@ -156,13 +156,12 @@ public class MediaWikiApiUtils {
 	 * @return the map with the parameters
 	 */
 	public Map<String, String> getLogEventsParams(String logtype, Date begin, Date end){
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		Map<String, String> queryParameterMap = new HashMap<>();
 		queryParameterMap.put("action", "query");
 		queryParameterMap.put("list", "logevents");
 		queryParameterMap.put("lelimit", "max");
-		queryParameterMap.put("lestart", dateFormat.format(begin));
-		queryParameterMap.put("leend", dateFormat.format(end));
+		queryParameterMap.put("lestart", formatDate(begin));
+		queryParameterMap.put("leend", formatDate(end));
 		queryParameterMap.put("ledir", "newer");
 		queryParameterMap.put("letype", logtype);
 		queryParameterMap.put("format", "json");
@@ -242,5 +241,16 @@ public class MediaWikiApiUtils {
 		}
 
 		return response;
+	}
+
+	/**
+	 * Format the Date object in a h24 UTC string for mediawiki API.
+	 * @param date
+	 * @return
+	 */
+	public String formatDate(Date date){
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return dateFormat.format(date);
 	}
 }

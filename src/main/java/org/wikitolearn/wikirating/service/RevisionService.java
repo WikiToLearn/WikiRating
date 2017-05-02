@@ -149,27 +149,39 @@ public class RevisionService {
 		return revision;
 	}
 
-    	/**
+    /**
+     * Calculate and set the changeCoefficient of a Revision.
+     * This method also persist the Revision changes.
+     * @param apiUrl
+     * @param revision
+     */
+	public void setChangeCoefficient(String apiUrl, Revision revision){
+		double cc = calculateChangeCoefficient(apiUrl, revision);
+		revision.setChangeCoefficient(cc);
+		revisionRepository.save(revision);
+	}
+
+    /**
 	 * Calculate the changeCoefficient for a given Revision querying mediawiki
      * and returns the number. It doesn't store it in the Revision.
 	 * @param revision
 	 * @return
 	 */
 	public double calculateChangeCoefficient(String apiUrl, Revision revision){
-        double previousLength = 0;
-        double changeCoefficient = 0;
+        double previousLength = 0.0;
+        double changeCoefficient = 0.0;
         // Get the previous Revision
         Revision previousRevision = revision.getPreviousRevision();
         if (previousRevision == null){
-            previousLength = 1;
-            changeCoefficient = 0;
+            previousLength = 1.0;
+            changeCoefficient = 0.0;
             LOG.info("Change coefficient of revision {} (first-rev): {}", revision.getLangRevId(), changeCoefficient);
         } else{
             double prevL = (double) previousRevision.getLength();
             // Suppose the mean line length of 120 characters and that the length is in bytes.
             // We want a "lenght" in n° of lines
             if (prevL == 0){
-                previousLength = 1;
+                previousLength = 1.0;
             }else {
                 previousLength =  (prevL < 120) ? 1 : prevL / 120;
             }
