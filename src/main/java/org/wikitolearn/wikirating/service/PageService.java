@@ -250,45 +250,6 @@ public class PageService {
     	// Remove all pages that are not course root pages
         Predicate<Page> pagePredicate = page -> page.getTitle().contains("/");
     	pages.removeIf(pagePredicate);
-    	
-    	/*for(Page p : pages){
-    		// Get course tree and prepare relationship sets
-    		CourseTree tree = pageMediaWikiService.getCourseTree(apiUrl, p.getTitle());
-    		Set<Page> levelsTwo = new HashSet<>();
-    		
-    		int index = 0;
-     		for(String levelTwo : tree.getLevelsTwo()){
-     			Set<Page> levelsThree = new HashSet<>();
-     			// Add CourseLEvelTwo label and add levels two to the set to be saved
-    			String levelTwoTitle = (tree.getRoot() + "/" + levelTwo).trim();
-    			Page levelTwoPage = pageRepository.findByTitleAndLang(levelTwoTitle, lang);
-    			// Skip malformed page
-    			if(levelTwoPage == null) continue;
-    			
-    			levelTwoPage.addLabel("CourseLevelTwo");
-    			levelsTwo.add(levelTwoPage);
-    			
-    			// Add CourseLevelThree labels and add levels three to the set to be saved
-    			for(String levelThree : tree.getLevelsTree().get(index)){
-    				String levelThreeTitle = (levelTwoTitle + "/" + levelThree).trim();
-    				Page levelThreePage = pageRepository.findByTitleAndLang(levelThreeTitle, lang);
-    				// Skip malformed page
-        			if(levelThreePage == null) continue;
-        			
-        			levelThreePage.addLabel("CourseLevelThree");
-        			levelsThree.add(levelThreePage);
-    			}
-    			// Set LEVEL_THREE relationships
-         		levelTwoPage.setLevelsThree(levelsThree);
-         		pageRepository.save(levelsThree);
-    			index++;
-    		}
-     		// Set LEVEL_TWO relationships and CourseRoot label
-     		p.addLabel("CourseRoot");
-     		p.setLevelsTwo(levelsTwo);
-     		pageRepository.save(levelsTwo);
-     		pageRepository.save(p);
-    	}*/
     	applyCourseStructure(lang, apiUrl, pages);
     	
     	return CompletableFuture.completedFuture(true);

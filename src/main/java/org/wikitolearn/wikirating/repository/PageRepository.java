@@ -14,7 +14,7 @@ import org.wikitolearn.wikirating.model.graph.Page;
  * @author aletundo
  *
  */
-public interface PageRepository extends GraphRepository<Page> {
+public interface PageRepository<T extends Page> extends GraphRepository<T> {
 	/**
 	 * 
 	 * @param title
