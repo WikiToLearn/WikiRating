@@ -1,6 +1,8 @@
 package org.wikitolearn.wikirating.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.wikitolearn.wikirating.service.PageService;
+import org.wikitolearn.wikirating.util.enums.CourseLevel;
 //import org.wikitolearn.wikirating.util.enums.UpdateType;
 
 import java.util.Date;
@@ -129,4 +131,10 @@ public class UpdateInfo {
 	public void setNs(String ns) {
 		this.ns = ns;
 	}
+
+	public CourseLevel getPageLevelFromTitle(){  return PageService.getPageLevelFromTitle(title);}
+
+    public CourseLevel getPageLevelFromNewTitle(){  return PageService.getPageLevelFromTitle(title);}
+
 }
+

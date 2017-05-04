@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Predicate;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +21,14 @@ import org.wikitolearn.wikirating.exception.PageNotFoundException;
 import org.wikitolearn.wikirating.exception.UpdatePagesAndRevisionsException;
 import org.wikitolearn.wikirating.model.CourseTree;
 import org.wikitolearn.wikirating.model.UpdateInfo;
-import org.wikitolearn.wikirating.model.graph.Page;
-import org.wikitolearn.wikirating.model.graph.Revision;
+import org.wikitolearn.wikirating.model.graph.*;
+import org.wikitolearn.wikirating.repository.CourseLevelThreeRepository;
+import org.wikitolearn.wikirating.repository.CourseLevelTwoRepository;
+import org.wikitolearn.wikirating.repository.CourseRootRepository;
 import org.wikitolearn.wikirating.repository.PageRepository;
 import org.wikitolearn.wikirating.service.mediawiki.PageMediaWikiService;
 import org.wikitolearn.wikirating.service.mediawiki.UpdateMediaWikiService;
+import org.wikitolearn.wikirating.util.enums.CourseLevel;
 
 /**
  * 
@@ -38,9 +41,14 @@ public class PageService {
 
 	@Autowired private PageMediaWikiService  pageMediaWikiService;
 	@Autowired private RevisionService revisionService;
-	@Autowired private PageRepository pageRepository;
 	@Autowired private UpdateMediaWikiService updateMediaWikiService;
 	@Autowired private UserService userService;
+
+	@Autowired private PageRepository<Page> pageRepository;
+	@Autowired private CourseRootRepository courseRootRepository;
+	@Autowired private CourseLevelTwoRepository courseLevelTwoRepository;
+	@Autowired private CourseLevelThreeRepository courseLevelThreeRepository;
+
 	@Value("${mediawiki.namespace}")
 	private String namespace;
 
@@ -57,13 +65,20 @@ public class PageService {
     	pages.forEach(page -> {
     		page.setLang(lang);
     		page.setLangPageId(lang + "_" +page.getPageId());
+    		//Now we check the level of the page to set the right
+            // additional laber for the Course Structure.
+            CourseLevel levelLabel = getPageLevelFromTitle(page.getTitle());
+            if (levelLabel != CourseLevel.UNCATEGORIZED){
+                page.addLabel(levelLabel.name());
+            }
     	});
     	
     	pageRepository.save(pages);
     	LOG.info("Inserted all {} pages", lang);
         return CompletableFuture.completedFuture(true);
     }
-    
+
+
     /**
      * 
      * @param lang
@@ -80,27 +95,35 @@ public class PageService {
     		for(UpdateInfo update : updates){
     			if(!namespace.equals(update.getNs())) continue;
     			switch (update.getType()) {
-    			case "new":	
-    				// Create the new page. The change coefficient for the new revision is set to 0 by default.
-    				Revision newRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
-    						update.getOld_revid(), update.getNewlen(), update.getTimestamp());
-    				// Then create a new Page and link it with the revision
-    				addPage(update.getPageid(), update.getTitle(), lang, newRev);
-    				userService.setAuthorship(newRev);
+    			case "new":
+                    // Add the new page with the right Course level
+    			    Page newPage = addCoursePage(update.getPageLevelFromTitle(),update.getPageid(), update.getTitle(), lang);
+    			    if (update.getPageLevelFromTitle() == CourseLevel.CourseLevelThree) {
+                        // Create the new revision. The change coefficient for the new revision is set to 0 by default.
+                        Revision newRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
+                                update.getOld_revid(), update.getNewlen(), update.getTimestamp());
+                        // Add the first revision to the page
+                        ((CourseLevelThree) newPage).initFirstRevision(newRev);
+                        userService.setAuthorship(newRev);
+                    }
     				break;
     			case "edit":
-    				// Create a new revision
-    				Revision updateRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
-    						update.getOld_revid(), update.getNewlen(), update.getTimestamp());
-    				// Then add it to the page
-    				addRevisionToPage(lang + "_" + update.getPageid(), updateRev);
-    				// Then calculate the changeCoefficient
-					revisionService.setChangeCoefficient(apiUrl, updateRev);
-					// Finally set the authorship
-    				userService.setAuthorship(updateRev);
+    			    // Act only on CourseLevelThree pages
+                    if (update.getPageLevelFromTitle() == CourseLevel.CourseLevelThree){
+                        // Create a new revision
+                        Revision updateRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
+                                update.getOld_revid(), update.getNewlen(), update.getTimestamp());
+                        // Then add it to the page
+                        addRevisionToPage(lang + "_" + update.getPageid(), updateRev);
+                        // Then calculate the changeCoefficient
+                        revisionService.setChangeCoefficient(apiUrl, updateRev);
+                        // Finally set the authorship
+                        userService.setAuthorship(updateRev);
+    			    }
     				break;
     			case "move":
-    				// Move the page to the new title
+    			    // We have to change the label in case the Course level is changed
+                    // Move the page to the new title
     				movePage(update.getTitle(), update.getNewTitle(), lang);
     				break;
     			case "delete":
@@ -118,22 +141,59 @@ public class PageService {
 		return CompletableFuture.completedFuture(true);
 	}
 
+
     /**
-     * Create a new Page. It requires the firstRevision of the Page in order
-     * to create the LAST_REVISION and FIRST_REVISION relationships.
+     * Create a new generic Page entity.
+     * @param pageid
+     * @param title
+     * @param lang
+     * @return the added page
+     */
+    public Page addPage(int pageid, String title, String lang){
+        Page page = new Page(pageid, title, lang, lang + "_" + pageid);
+        pageRepository.save(page);
+        return page;
+    }
+
+    /**
+     * Add a page entity distinguishing between the different Course levels.
+     * @param level
+     * @param pageid
+     * @param title
+     * @param lang
+     * @return
+     */
+    public Page addCoursePage(CourseLevel level, int pageid, String title, String lang){
+        switch(level){
+            case CourseRoot:
+                CourseRoot pageRoot = new CourseRoot(pageid, title, lang, lang + "_" + pageid);
+                courseRootRepository.save(pageRoot);
+                return pageRoot;
+            case CourseLevelTwo:
+                CourseLevelTwo pageTwo = new CourseLevelTwo(pageid, title, lang, lang + "_" + pageid);
+                courseLevelTwoRepository.save(pageTwo);
+                return pageTwo;
+            case CourseLevelThree:
+                CourseLevelThree pageThree = new CourseLevelThree(pageid, title, lang, lang + "_" + pageid);
+                courseLevelThreeRepository.save(pageThree);
+                return pageThree;
+            default:
+                return addPage(pageid, title, lang);
+        }
+    }
+
+    /**
+     * Create a new CourseLevelThree page. It requires the firstRevision of the Page in order
+     * to create the initial relationships.
      * @param pageid
      * @param title
      * @param lang
      * @param firstRevision
      * @return the added page
      */
-    public Page addPage(int pageid, String title, String lang, Revision firstRevision){
-		Page page = new Page(pageid, title, lang, lang + "_" + pageid);
-		// Add the links from the page to the first and last revision
-		page.setFistRevision(firstRevision);
-		page.setLastRevision(firstRevision);
-		pageRepository.save(page);
-		
+    public CourseLevelThree addCourseLevelThreePage(int pageid, String title, String lang, Revision firstRevision){
+		CourseLevelThree page = new CourseLevelThree(pageid, title, lang, lang + "_" + pageid, firstRevision);
+		courseLevelThreeRepository.save(page);
 		return page;
 	}
     
@@ -170,13 +230,13 @@ public class PageService {
     }
 
     /**
-     * Add a new revision to a page. It links the Page to the new revision via
+     * Add a new revision to a CourseLevelThree page. It links the page to the new revision via
      * LAST_REVISION link. Moreover it create the PREVIOUS_REVISION link.
      * @param langPageId
      * @param rev
      */
 	public void addRevisionToPage(String langPageId, Revision rev) throws PageNotFoundException{
-        Page page = pageRepository.findByLangPageId(langPageId);
+        CourseLevelThree page = courseLevelThreeRepository.findByLangPageId(langPageId);
         if(page == null){
         	throw new PageNotFoundException();
         }
@@ -184,11 +244,13 @@ public class PageService {
         rev.setPreviousRevision(page.getLastRevision());
         page.setLastRevision(rev);
         // The changes on the revision will be automatically persisted
-        pageRepository.save(page);
+        courseLevelThreeRepository.save(page);
     }
 
     /**
      * Change title of a page. The method is prefixed by move to follow MediaWiki naming.
+     * The method checks also the new page title to set the right Course level label
+     * in case of changes.
      * @param oldTitle the old title of the page
      * @param newTitle the new title to set
      * @param lang the language of the page
@@ -201,10 +263,15 @@ public class PageService {
         	throw new PageNotFoundException();
         }
         page.setTitle(newTitle);
+        // Check if the Course level has changed
+        if (getPageLevelFromTitle(oldTitle) != getPageLevelFromTitle(newTitle)){
+            page.removeLabel(getPageLevelFromTitle(oldTitle).name());
+            page.addLabel(getPageLevelFromTitle(newTitle).name());
+        }
         pageRepository.save(page);
         return page;
     }
-    
+
     /**
      * Delete a page from the graph given its title and domain language.
      * @param title the title of the page
@@ -216,18 +283,41 @@ public class PageService {
         if(page == null){
         	throw new PageNotFoundException();
         }
-        // Delete the revisions of the page
-        revisionService.deleteRevisionsOfPage(page.getLangPageId());
+        // Delete the revisions of the page if it's CourseLevelThree
+        if (page.hasLabel("CourseLevelThree")){
+            revisionService.deleteRevisionsOfPage(page.getLangPageId());
+        }
         // Delete finally the page itself
         pageRepository.delete(page);
+    }
+
+    /***
+     * Get the level of a Page in the Course Structure
+     * anaylizing the number of slashes in the title.
+     * @param title
+     * @return null if the page has more that 2 slashes.
+     */
+    public static CourseLevel getPageLevelFromTitle(String title){
+        int nslash = StringUtils.countMatches(title, "/");
+        switch (nslash){
+            case 0:
+                return CourseLevel.CourseRoot;
+            case 1:
+                return CourseLevel.CourseLevelTwo;
+            case 2:
+                return CourseLevel.CourseLevelThree;
+            default:
+                //The page remains generic.
+                return CourseLevel.UNCATEGORIZED;
+        }
     }
     
     /**
      * Get the pages labeled by :CourseRoot label
      * @return the list of course root pages
      */
-    public List<Page> getCourseRootPages(String lang){
-    	return pageRepository.findAllCourseRootPages(lang);
+    public List<CourseRoot> getCourseRootPages(String lang){
+    	return courseRootRepository.findByLang(lang);
     }
     
     /**
@@ -238,23 +328,7 @@ public class PageService {
     	return pageRepository.findAllUncategorizedPages(lang);
     }
     
-    /**
-     * Initialize for the first time the course structure using labels and relationships
-     * @param lang the language of the domain
-     * @param apiUrl the MediaWiki API url
-     */
-    @Async
-    public CompletableFuture<Boolean> initCourseStructure(String lang, String apiUrl){
-    	List<Page> pages = pageRepository.findAllByLang(lang);
-    	
-    	// Remove all pages that are not course root pages
-        Predicate<Page> pagePredicate = page -> page.getTitle().contains("/");
-    	pages.removeIf(pagePredicate);
-    	applyCourseStructure(lang, apiUrl, pages);
-    	
-    	return CompletableFuture.completedFuture(true);
-    }
-    
+
     /**
      * 
      * @param lang the language of the domain
@@ -262,16 +336,8 @@ public class PageService {
      * @return
      */
 	public CompletableFuture<Boolean> updateCourseStructure(String lang, String apiUrl) {
-		List<Page> courseRootPages = getCourseRootPages(lang);
-		List<Page> uncategorizedPages = getUncategorizedPages(lang);
-
-		// Remove all uncategorized pages that are not course root pages
-		Predicate<Page> pagePredicate = page -> page.getTitle().contains("/");
-		uncategorizedPages.removeIf(pagePredicate);
-
-		courseRootPages.addAll(uncategorizedPages);
-
-		applyCourseStructure(lang, apiUrl, courseRootPages);
+		List<CourseRoot> courseRootPages = getCourseRootPages(lang);
+        applyCourseStructure(lang, apiUrl, courseRootPages);
 
 		return CompletableFuture.completedFuture(true);
 	}
@@ -281,52 +347,50 @@ public class PageService {
      * @param apiUrl the MediaWiki API url
 	 * @param courseRootPages
 	 */
-	private void applyCourseStructure(String lang, String apiUrl, List<Page> courseRootPages) {
-		for (Page p : courseRootPages) {
+	private void applyCourseStructure(String lang, String apiUrl, List<CourseRoot> courseRootPages) {
+		for (CourseRoot pageRoot : courseRootPages) {
 			// Get course tree and prepare relationship set
-			CourseTree tree = pageMediaWikiService.getCourseTree(apiUrl, p.getTitle());
-			Set<Page> levelsTwo = (p.getLevelsTwo() == null) ? new HashSet<>() : p.getLevelsTwo();
+			CourseTree tree = pageMediaWikiService.getCourseTree(apiUrl, pageRoot.getTitle());
+			Set<CourseLevelTwo> levelsTwo = (pageRoot.getLevelsTwo() == null) ? new HashSet<>() :
+                    pageRoot.getLevelsTwo();
 
 			int index = 0;
 			for (String levelTwo : tree.getLevelsTwo()) {
 				String levelTwoTitle = (tree.getRoot() + "/" + levelTwo).trim();
-				Page levelTwoPage = pageRepository.findByTitleAndLang(levelTwoTitle, lang);
+				CourseLevelTwo levelTwoPage = courseLevelTwoRepository.findByTitleAndLang(levelTwoTitle, lang);
 
 				// Skip malformed page
 				if (levelTwoPage == null)
 					continue;
 
-				// Add CourseLevelTwo label and add levels two to the set to be saved
+				// Add levelstwo to the set to be saved
 				if(!levelsTwo.contains(levelTwoPage)){
-					levelTwoPage.addLabel("CourseLevelTwo");
 					levelsTwo.add(levelTwoPage);
 				}
 				
-				Set<Page> levelsThree = (levelTwoPage.getLevelsThree() == null) ? new HashSet<>()
+				Set<CourseLevelThree> levelsThree = (levelTwoPage.getLevelsThree() == null) ? new HashSet<>()
 						: levelTwoPage.getLevelsThree();
-				// Add CourseLevelThree labels and add levels three to the set to be saved
+				// Add levels three to the set to be saved
 				for (String levelThree : tree.getLevelsTree().get(index)) {
 					String levelThreeTitle = (levelTwoTitle + "/" + levelThree).trim();
-					Page levelThreePage = pageRepository.findByTitleAndLang(levelThreeTitle, lang);
+					CourseLevelThree levelThreePage = courseLevelThreeRepository.findByTitleAndLang(levelThreeTitle, lang);
 					// Skip malformed page
 					if (levelThreePage == null)
 						continue;
 					
 					if(!levelsThree.contains(levelThreePage)){
-						levelThreePage.addLabel("CourseLevelThree");
 						levelsThree.add(levelThreePage);
 					}
 				}
 				// Set LEVEL_THREE relationships
 				levelTwoPage.setLevelsThree(levelsThree);
-				pageRepository.save(levelsThree);
+				courseLevelThreeRepository.save(levelsThree);
 				index++;
 			}
 			// Set LEVEL_TWO relationships and CourseRoot label
-			p.addLabel("CourseRoot");
-			p.setLevelsTwo(levelsTwo);
-			pageRepository.save(levelsTwo);
-			pageRepository.save(p);
+			pageRoot.setLevelsTwo(levelsTwo);
+			courseLevelTwoRepository.save(levelsTwo);
+			courseRootRepository.save(pageRoot);
 		}
 	}
 

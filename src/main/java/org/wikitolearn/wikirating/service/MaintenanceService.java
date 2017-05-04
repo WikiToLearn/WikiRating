@@ -60,15 +60,16 @@ public class MaintenanceService {
 		CompletableFuture<Boolean> initFuture = CompletableFuture
                 // Users and pages
 				.allOf(buildUsersAndPagesFuturesList().toArray(new CompletableFuture[langs.size() + 1]))
+				// CourseStructure
 				.thenCompose(result -> CompletableFuture
-                // Revisions
-						.allOf(buildRevisionsFuturesList().toArray(new CompletableFuture[langs.size()])))
-                .thenCompose(result -> CompletableFuture
-                // Change Coefficients
-                        .allOf(buildChangeCoefficientFuturesList().toArray(new CompletableFuture[langs.size()])))
-				.thenCompose(result -> CompletableFuture
-                // CourseStructure
 						.allOf(buildInitCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
+				// Revisions
+				.thenCompose(result -> CompletableFuture
+						.allOf(buildRevisionsFuturesList().toArray(new CompletableFuture[langs.size()])))
+				// Change Coefficients
+				.thenCompose(result -> CompletableFuture
+                        .allOf(buildChangeCoefficientFuturesList().toArray(new CompletableFuture[langs.size()])))
+				// Users authorship
 				.thenCompose(result -> userService.initAuthorship());
 
 		try {
@@ -147,7 +148,7 @@ public class MaintenanceService {
 		// Add course structure for each domain language
 		for (String lang : langs) {
 			String url = protocol + lang + "." + apiUrl;
-			parallelInitCourseStructureFutures.add(pageService.initCourseStructure(lang, url));
+			parallelInitCourseStructureFutures.add(pageService.updateCourseStructure(lang, url));
 		}
 		return parallelInitCourseStructureFutures;
 	}

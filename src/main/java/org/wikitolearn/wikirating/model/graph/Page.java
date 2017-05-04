@@ -34,7 +34,6 @@ public class Page {
 	@Index(unique = true, primary = true)
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private String langPageId;
-	private double pageRank;
 	@Labels
 	private Set<String> labels = new HashSet<>();
 	
@@ -126,20 +125,6 @@ public class Page {
 	}
 
 	/**
-	 * @return the pageRank
-	 */
-	public double getPageRank() {
-		return pageRank;
-	}
-
-	/**
-	 * @param pageRank the pageRank to set
-	 */
-	public void setPageRank(double pageRank) {
-		this.pageRank = pageRank;
-	}
-
-	/**
 	 * @return the labels
 	 */
 	public Set<String> getLabels() {
@@ -152,6 +137,10 @@ public class Page {
 	public void setLabels(Set<String> labels) {
 		this.labels = labels;
 	}
+
+	public boolean hasLabel(String label){
+		return labels.contains(label);
+	}
 	
 	/**
 	 * @param label the label to set
@@ -160,13 +149,17 @@ public class Page {
 		this.labels.add(label);
 	}
 
+	public void removeLabel(String label){
+		this.labels.remove(label);
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "Page [graphId=" + graphId + ", pageId=" + pageId + ", title=" + title + ", lang=" + lang
-				+ ", langPageId=" + langPageId + ", pageRank=" + pageRank + ", labels=" + labels + "]";
+				+ ", langPageId=" + langPageId + ", labels=" + labels + "]";
 	}
 
 	/* (non-Javadoc)

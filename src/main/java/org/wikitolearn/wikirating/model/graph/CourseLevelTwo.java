@@ -21,7 +21,14 @@ public class CourseLevelTwo extends Page {
 	private History firstCalculation;
 	@Relationship(type = "LAST_CALCULATION", direction = Relationship.OUTGOING)
 	private History lastCalculation;
-	
+
+	public CourseLevelTwo() {}
+
+	public CourseLevelTwo(int pageId, String title, String lang, String langPageId){
+		super(pageId, title, lang, langPageId);
+	}
+
+
 	/**
 	 * @return the levelsThree
 	 */

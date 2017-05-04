@@ -36,13 +36,13 @@ public interface RevisionRepository extends GraphRepository<Revision> {
 	Set<Revision> findByUserId(int userId);
 
 	/**
-	 * This query returns all the Revisions of a Page.
+	 * This query returns all the Revisions of a Page (CourseLevelThree).
 	 * The direction -> of the link is important to traverse
 	 * only the chain of Revisions of the page without reaching other nodes.
 	 * @param langPageId
 	 * @return
 	 */
-	@Query("MATCH (p:Page {langPageId:{0}})-[:LAST_REVISION|PREVIOUS_REVISION*]->(r:Revision) RETURN r")
+	@Query("MATCH (p:CourseLevelThree {langPageId:{0}})-[:LAST_REVISION|PREVIOUS_REVISION*]->(r:Revision) RETURN r")
 	Set<Revision> findAllRevisionOfPage(String langPageId);
 
 	/**

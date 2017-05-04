@@ -19,7 +19,30 @@ public class CourseLevelThree extends Page {
 	private Revision firstRevision;
 	@Relationship(type = "LAST_VALIDATED_REVISION", direction = Relationship.OUTGOING)
 	private Revision lastValidatedRevision;
-	
+
+	public CourseLevelThree(){}
+
+    public CourseLevelThree(int pageId, String title, String lang, String langPageId){
+        super(pageId, title, lang, langPageId);
+    }
+
+	public CourseLevelThree(int pageId, String title, String lang, String langPageId, Revision firstRevision){
+		super(pageId, title, lang, langPageId);
+		setFirstRevision(firstRevision);
+		setLastRevision(firstRevision);
+		setLastValidatedRevision(firstRevision);
+	}
+
+    /**
+     * Add the first revision the the Page setting the right links.
+     * @param firstRevision
+     */
+	public void initFirstRevision(Revision firstRevision){
+        setFirstRevision(firstRevision);
+        setLastRevision(firstRevision);
+        setLastValidatedRevision(firstRevision);
+    }
+
 	/**
 	 * @return the lastRevision
 	 */

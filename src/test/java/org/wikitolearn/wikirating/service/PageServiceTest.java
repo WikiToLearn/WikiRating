@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.wikitolearn.wikirating.exception.PageNotFoundException;
+import org.wikitolearn.wikirating.model.graph.CourseRoot;
 import org.wikitolearn.wikirating.model.graph.Page;
 import org.wikitolearn.wikirating.model.graph.Revision;
 import org.wikitolearn.wikirating.repository.PageRepository;
@@ -32,7 +33,7 @@ import org.wikitolearn.wikirating.repository.PageRepository;
 public class PageServiceTest {
 	
 	@Mock
-	private PageRepository pageRepository;
+	private PageRepository<Page> pageRepository;
 	
 	@InjectMocks
 	private PageService pageService;
@@ -108,7 +109,7 @@ public class PageServiceTest {
 	public void testAddPage(){
 		Page page = new Page(1, "Title", "en", "en_1");
 		when(pageRepository.save(page)).thenReturn(page);
-		Page result = pageService.addPage(1, "Title", "en", new Revision());
+		Page result = pageService.addPage(1, "Title", "en");
 		assertEquals(1, result.getPageId());
 		assertEquals("Title", result.getTitle());
 		assertEquals("en", result.getLang());
@@ -126,21 +127,5 @@ public class PageServiceTest {
 		assertEquals(3, result.size());
 	}
 	
-	@Test
-	public void testGetCourseRootPages(){
-		List<Page> uncategorizedPages = new ArrayList<Page>();
-		Page p1 = new Page(1, "Title", "en", "en_1");
-		p1.addLabel("CourseRoot");
-		Page p2 = new Page(2, "Title2", "en", "en_2");
-		p2.addLabel("CourseRoot");
-		Page p3 = new Page(3, "Title3", "en", "en_3");
-		p3.addLabel("CourseRoot");
-		uncategorizedPages.add(p1);
-		uncategorizedPages.add(p2);
-		uncategorizedPages.add(p3);
-		when(pageRepository.findAllCourseRootPages("en")).thenReturn(uncategorizedPages);
-		List<Page> result = pageService.getCourseRootPages("en");
-		assertEquals(3, result.size());
-	}
 
 }

@@ -21,6 +21,12 @@ public class CourseRoot extends Page {
 	private History firstCalculation;
 	@Relationship(type = "LAST_CALCULATION", direction = Relationship.OUTGOING)
 	private History lastCalculation;
+
+	public CourseRoot(){}
+
+	public CourseRoot(int pageId, String title, String lang, String langPageId){
+		super(pageId, title, lang, langPageId);
+	}
 	
 	/**
 	 * @return the levelsTwo
