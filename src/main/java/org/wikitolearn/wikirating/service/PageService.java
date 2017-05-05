@@ -340,6 +340,7 @@ public class PageService {
      * @param apiUrl the MediaWiki API url
      * @return
      */
+    @Async
 	public CompletableFuture<Boolean> updateCourseStructure(String lang, String apiUrl) {
 		List<CourseRoot> courseRootPages = getCourseRootPages(lang);
         applyCourseStructure(lang, apiUrl, courseRootPages);
