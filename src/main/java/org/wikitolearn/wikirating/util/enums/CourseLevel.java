@@ -1,9 +1,10 @@
 package org.wikitolearn.wikirating.util.enums;
 
 /**
- * Possible levels for Course pages.
- * Created by valsdav on 05/05/17.
+ * Possible levels for Course pages
+ * @author valsdav
+ * @author aletundo
  */
 public enum CourseLevel {
-    CourseRoot, CourseLevelTwo, CourseLevelThree, UNCATEGORIZED;
+    COURSE_ROOT, COURSE_LEVEL_TWO, COURSE_LEVEL_THREE, UNCATEGORIZED;
 }

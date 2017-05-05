@@ -62,7 +62,7 @@ public class MaintenanceService {
 				.allOf(buildUsersAndPagesFuturesList().toArray(new CompletableFuture[langs.size() + 1]))
 				// CourseStructure
 				.thenCompose(result -> CompletableFuture
-						.allOf(buildInitCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
+						.allOf(buildApplyCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
 				// Revisions
 				.thenCompose(result -> CompletableFuture
 						.allOf(buildRevisionsFuturesList().toArray(new CompletableFuture[langs.size()])))
@@ -120,7 +120,7 @@ public class MaintenanceService {
 							.allOf(buildUpdatePagesFuturesList(startTimestampLatestFetch, startTimestampCurrentFetch)
 									.toArray(new CompletableFuture[langs.size()])))
 					.thenCompose(result -> CompletableFuture
-							.allOf(buildUpdateCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
+							.allOf(buildApplyCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
 					.thenCompose(result -> voteService.validateTemporaryVotes(startTimestampCurrentFetch));
 
 			boolean result = updateFuture.get();
@@ -143,27 +143,12 @@ public class MaintenanceService {
 	 * 
 	 * @return a list of CompletableFuture
 	 */
-	private List<CompletableFuture<Boolean>> buildInitCourseStructureFuturesList() {
-		List<CompletableFuture<Boolean>> parallelInitCourseStructureFutures = new ArrayList<>();
-		// Add course structure for each domain language
-		for (String lang : langs) {
-			String url = protocol + lang + "." + apiUrl;
-			parallelInitCourseStructureFutures.add(pageService.updateCourseStructure(lang, url));
-		}
-		return parallelInitCourseStructureFutures;
-	}
-	
-	/**
-	 * Build a list of CompletableFuture.
-	 * 
-	 * @return a list of CompletableFuture
-	 */
-	private List<CompletableFuture<Boolean>> buildUpdateCourseStructureFuturesList() {
+	private List<CompletableFuture<Boolean>> buildApplyCourseStructureFuturesList() {
 		List<CompletableFuture<Boolean>> parallelUpdateCourseStructureFutures = new ArrayList<>();
 		// Add course structure for each domain language
 		for (String lang : langs) {
 			String url = protocol + lang + "." + apiUrl;
-			parallelUpdateCourseStructureFutures.add(pageService.updateCourseStructure(lang, url));
+			parallelUpdateCourseStructureFutures.add(pageService.applyCourseStructure(lang, url));
 		}
 		return parallelUpdateCourseStructureFutures;
 	}

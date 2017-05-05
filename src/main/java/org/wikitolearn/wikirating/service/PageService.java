@@ -30,6 +30,8 @@ import org.wikitolearn.wikirating.service.mediawiki.PageMediaWikiService;
 import org.wikitolearn.wikirating.service.mediawiki.UpdateMediaWikiService;
 import org.wikitolearn.wikirating.util.enums.CourseLevel;
 
+import com.google.common.base.CaseFormat;
+
 /**
  * 
  * @author aletundo, valsdav
@@ -69,7 +71,8 @@ public class PageService {
             // additional laber for the Course Structure.
             CourseLevel levelLabel = getPageLevelFromTitle(page.getTitle());
             if (levelLabel != CourseLevel.UNCATEGORIZED){
-                page.addLabel(levelLabel.name());
+            	String label = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, levelLabel.name());
+                page.addLabel(label);
             }
     	});
     	
@@ -98,7 +101,7 @@ public class PageService {
     			case "new":
                     // Add the new page with the right Course level
     			    Page newPage = addCoursePage(update.getPageLevelFromTitle(),update.getPageid(), update.getTitle(), lang);
-    			    if (update.getPageLevelFromTitle() == CourseLevel.CourseLevelThree) {
+    			    if (update.getPageLevelFromTitle() == CourseLevel.COURSE_LEVEL_THREE) {
                         // Create the new revision. The change coefficient for the new revision is set to 0 by default.
                         Revision newRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
                                 update.getOld_revid(), update.getNewlen(), update.getTimestamp());
@@ -111,7 +114,7 @@ public class PageService {
     				break;
     			case "edit":
     			    // Act only on CourseLevelThree pages
-                    if (update.getPageLevelFromTitle() == CourseLevel.CourseLevelThree){
+                    if (update.getPageLevelFromTitle() == CourseLevel.COURSE_LEVEL_THREE){
                         // Create a new revision
                         Revision updateRev = revisionService.addRevision(update.getRevid(), lang, update.getUserid(),
                                 update.getOld_revid(), update.getNewlen(), update.getTimestamp());
@@ -167,15 +170,15 @@ public class PageService {
      */
     public Page addCoursePage(CourseLevel level, int pageid, String title, String lang){
         switch(level){
-            case CourseRoot:
+            case COURSE_ROOT:
                 CourseRoot pageRoot = new CourseRoot(pageid, title, lang, lang + "_" + pageid);
                 courseRootRepository.save(pageRoot);
                 return pageRoot;
-            case CourseLevelTwo:
+            case COURSE_LEVEL_TWO:
                 CourseLevelTwo pageTwo = new CourseLevelTwo(pageid, title, lang, lang + "_" + pageid);
                 courseLevelTwoRepository.save(pageTwo);
                 return pageTwo;
-            case CourseLevelThree:
+            case COURSE_LEVEL_THREE:
                 CourseLevelThree pageThree = new CourseLevelThree(pageid, title, lang, lang + "_" + pageid);
                 courseLevelThreeRepository.save(pageThree);
                 return pageThree;
@@ -183,21 +186,6 @@ public class PageService {
                 return addPage(pageid, title, lang);
         }
     }
-
-    /**
-     * Create a new CourseLevelThree page. It requires the firstRevision of the Page in order
-     * to create the initial relationships.
-     * @param pageid
-     * @param title
-     * @param lang
-     * @param firstRevision
-     * @return the added page
-     */
-    public CourseLevelThree addCourseLevelThreePage(int pageid, String title, String lang, Revision firstRevision){
-		CourseLevelThree page = new CourseLevelThree(pageid, title, lang, lang + "_" + pageid, firstRevision);
-		courseLevelThreeRepository.save(page);
-		return page;
-	}
     
     /**
      * Get the page with the given pageId and language
@@ -255,7 +243,7 @@ public class PageService {
     /**
      * Change title of a page. The method is prefixed by move to follow MediaWiki naming.
      * The method checks also the new page title to set the right Course level label
-     * in case of changes.
+     * in case of changes
      * @param oldTitle the old title of the page
      * @param newTitle the new title to set
      * @param lang the language of the page
@@ -278,7 +266,7 @@ public class PageService {
     }
 
     /**
-     * Delete a page from the graph given its title and domain language.
+     * Delete a page from the graph given its title and domain language
      * @param title the title of the page
      * @param lang the language of the page
      * @throws PageNotFoundException
@@ -296,21 +284,21 @@ public class PageService {
         pageRepository.delete(page);
     }
 
-    /***
+    /**
      * Get the level of a Page in the Course Structure
-     * anaylizing the number of slashes in the title.
-     * @param title
-     * @return null if the page has more that 2 slashes.
+     * analyzing the number of slashes in the title
+     * @param title the title of the page
+     * @return the course level
      */
     public static CourseLevel getPageLevelFromTitle(String title){
-        int nslash = StringUtils.countMatches(title, "/");
-        switch (nslash){
+        int slashesNumber = StringUtils.countMatches(title, "/");
+        switch (slashesNumber){
             case 0:
-                return CourseLevel.CourseRoot;
+                return CourseLevel.COURSE_ROOT;
             case 1:
-                return CourseLevel.CourseLevelTwo;
+                return CourseLevel.COURSE_LEVEL_TWO;
             case 2:
-                return CourseLevel.CourseLevelThree;
+                return CourseLevel.COURSE_LEVEL_THREE;
             default:
                 //The page remains generic.
                 return CourseLevel.UNCATEGORIZED;
@@ -333,26 +321,14 @@ public class PageService {
     	return pageRepository.findAllUncategorizedPages(lang);
     }
     
-
-    /**
-     * 
-     * @param lang the language of the domain
-     * @param apiUrl the MediaWiki API url
-     * @return
-     */
-	public CompletableFuture<Boolean> updateCourseStructure(String lang, String apiUrl) {
-		List<CourseRoot> courseRootPages = getCourseRootPages(lang);
-        applyCourseStructure(lang, apiUrl, courseRootPages);
-
-		return CompletableFuture.completedFuture(true);
-	}
-
 	/**
      * @param lang the language of the domain
      * @param apiUrl the MediaWiki API url
 	 * @param courseRootPages
 	 */
-	private void applyCourseStructure(String lang, String apiUrl, List<CourseRoot> courseRootPages) {
+	@Async
+	public CompletableFuture<Boolean> applyCourseStructure(String lang, String apiUrl) {
+		List<CourseRoot> courseRootPages = getCourseRootPages(lang);
 		for (CourseRoot pageRoot : courseRootPages) {
 			// Get course tree and prepare relationship set
 			CourseTree tree = pageMediaWikiService.getCourseTree(apiUrl, pageRoot.getTitle());
@@ -368,7 +344,7 @@ public class PageService {
 				if (levelTwoPage == null)
 					continue;
 
-				// Add levelstwo to the set to be saved
+				// Add levels two to the set to be saved
 				if(!levelsTwo.contains(levelTwoPage)){
 					levelsTwo.add(levelTwoPage);
 				}
@@ -392,11 +368,13 @@ public class PageService {
 				courseLevelThreeRepository.save(levelsThree);
 				index++;
 			}
-			// Set LEVEL_TWO relationships and CourseRoot label
+			// Set LEVEL_TWO relationships
 			pageRoot.setLevelsTwo(levelsTwo);
 			courseLevelTwoRepository.save(levelsTwo);
 			courseRootRepository.save(pageRoot);
 		}
+		
+		return CompletableFuture.completedFuture(true);
 	}
 
 }
