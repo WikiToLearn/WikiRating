@@ -58,6 +58,7 @@ public class RevisionService {
 			page.setLastRevision(revisions.get(revisions.size() - 1));
             // Set the last validated revision to the first one.
             page.setLastValidatedRevision(revisions.get(0));
+            // Create the PreviousRevision links
             ListIterator<Revision> it = revisions.listIterator();
             while(it.hasNext()){
                 Revision rev = it.next();
@@ -90,7 +91,8 @@ public class RevisionService {
     }
 
     /**
-     * Add a new Revision to the graph
+     * Add a new Revision to the graph. This method DOESN'T link the
+     * revision to a Page.
      * @param revid
      * @param lang
      * @param userid
@@ -199,7 +201,7 @@ public class RevisionService {
 
             // Finally calculation of change Coefficient
             double t = ((1.2 * deletedLines +  addedLines) ) / previousLength;
-            changeCoefficient = 1 / exp(0.7 * t);
+            changeCoefficient = 1 / exp(0.5 * t);
 
             LOG.info("Change coefficient of revision {} (+{}-{}/{}): {}", revision.getLangRevId(), addedLines,
                     deletedLines, previousLength, changeCoefficient);

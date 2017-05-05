@@ -104,6 +104,8 @@ public class PageService {
                                 update.getOld_revid(), update.getNewlen(), update.getTimestamp());
                         // Add the first revision to the page
                         ((CourseLevelThree) newPage).initFirstRevision(newRev);
+                        // It's necessary to save the page again
+                        courseLevelThreeRepository.save((CourseLevelThree) newPage);
                         userService.setAuthorship(newRev);
                     }
     				break;
@@ -240,11 +242,14 @@ public class PageService {
         if(page == null){
         	throw new PageNotFoundException();
         }
+        //TODO Check if the page has no previous revisions
         // Add PREVIOUS_REVISION relationship
         rev.setPreviousRevision(page.getLastRevision());
-        page.setLastRevision(rev);
+        //page.setLastRevision(rev);  //Maybe this is not necessary
         // The changes on the revision will be automatically persisted
         courseLevelThreeRepository.save(page);
+        //Update the LAST_REVISION edge with a query
+        courseLevelThreeRepository.updateLastRevision(page.getLangPageId());
     }
 
     /**

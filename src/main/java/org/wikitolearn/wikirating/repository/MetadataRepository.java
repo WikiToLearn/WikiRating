@@ -19,7 +19,7 @@ public interface MetadataRepository extends GraphRepository<Metadata> {
 	Metadata getMetadataByType(MetadataType type);
 
 	/**
-	 * Update the LAST_PROCESS relationship deleting the existing edge and
+	 * Update the LATEST_PROCESS relationship deleting the existing edge and
 	 * creating a new one.
 	 */
 	@Query("MATCH (m:Metadata)-[lp:LATEST_PROCESS]->(p1:Process)<-[pp:PREVIOUS_PROCESS]-(p2:Process) DELETE lp CREATE (m)-[:LATEST_PROCESS]->(p2)")
