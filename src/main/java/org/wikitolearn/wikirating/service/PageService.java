@@ -98,7 +98,7 @@ public class PageService {
     		for(UpdateInfo update : updates){
     			if(!namespace.equals(update.getNs())) continue;
     			switch (update.getType()) {
-    			case "new":
+    			case NEW:
                     // Add the new page with the right Course level
     			    Page newPage = addCoursePage(update.getPageLevelFromTitle(),update.getPageid(), update.getTitle(), lang);
     			    if (update.getPageLevelFromTitle() == CourseLevel.COURSE_LEVEL_THREE) {
@@ -112,7 +112,7 @@ public class PageService {
                         userService.setAuthorship(newRev);
                     }
     				break;
-    			case "edit":
+    			case EDIT:
     			    // Act only on CourseLevelThree pages
                     if (update.getPageLevelFromTitle() == CourseLevel.COURSE_LEVEL_THREE){
                         // Create a new revision
@@ -126,12 +126,12 @@ public class PageService {
                         userService.setAuthorship(updateRev);
     			    }
     				break;
-    			case "move":
+    			case MOVE:
     			    // We have to change the label in case the Course level is changed
                     // Move the page to the new title
     				movePage(update.getTitle(), update.getNewTitle(), lang);
     				break;
-    			case "delete":
+    			case DELETE:
     				// Delete the page and all its revisions
     				deletePage(update.getTitle(), lang);
     				break;
@@ -230,12 +230,10 @@ public class PageService {
         if(page == null){
         	throw new PageNotFoundException();
         }
-        //TODO Check if the page has no previous revisions
-        // Add PREVIOUS_REVISION relationship
+    	// Add PREVIOUS_REVISION relationship
         rev.setPreviousRevision(page.getLastRevision());
-        //page.setLastRevision(rev);  //Maybe this is not necessary
-        // The changes on the revision will be automatically persisted
-        courseLevelThreeRepository.save(page);
+        revisionService.updateRevision(rev);
+        
         //Update the LAST_REVISION edge with a query
         courseLevelThreeRepository.updateLastRevision(page.getLangPageId());
     }

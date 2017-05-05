@@ -1,9 +1,11 @@
 package org.wikitolearn.wikirating.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.common.base.CaseFormat;
+
 import org.wikitolearn.wikirating.service.PageService;
 import org.wikitolearn.wikirating.util.enums.CourseLevel;
-//import org.wikitolearn.wikirating.util.enums.UpdateType;
+import org.wikitolearn.wikirating.util.enums.UpdateType;
 
 import java.util.Date;
 
@@ -15,7 +17,7 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateInfo {
 
-    private String type;
+    private UpdateType type;
     private String title;
     private String newTitle;
     private int pageid;
@@ -30,12 +32,13 @@ public class UpdateInfo {
 
     public UpdateInfo(){}
 
-    public String getType() {
+    public UpdateType getType() {
         return type;
     }
 
     public void setType(String type) {
-        this.type = type;
+    	UpdateType _type = UpdateType.valueOf(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, type));
+        this.type = _type;
     }
 
     public int getPageid() {
