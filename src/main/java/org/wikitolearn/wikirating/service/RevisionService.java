@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
-import org.wikitolearn.wikirating.model.graph.Page;
+import org.wikitolearn.wikirating.model.graph.CourseLevelThree;
 import org.wikitolearn.wikirating.model.graph.Revision;
-import org.wikitolearn.wikirating.repository.PageRepository;
+import org.wikitolearn.wikirating.repository.CourseLevelThreeRepository;
 import org.wikitolearn.wikirating.repository.RevisionRepository;
 import org.wikitolearn.wikirating.service.mediawiki.RevisionMediaWikiService;
 
@@ -37,24 +37,28 @@ public class RevisionService {
 	@Autowired
 	private RevisionRepository revisionRepository;
 	@Autowired
-	private PageRepository pageRepository;
+	private CourseLevelThreeRepository courseLevelThreeRepository;
 
 	/**
 	 * Initialize the revisions for the first time querying the MediaWiki API.
 	 * This method adds the revisions and sets the FIRST_REVISION,
 	 * LAST_REVISION and PREVIOUS_REVISION relationships.
+	 * Only the revisions of CourseLevelThree pages are fetched.
 	 * @param lang the domain language
 	 * @param apiUrl the MediaWiki API url
 	 * @return CompletableFuture
 	 */
 	@Async
 	public CompletableFuture<Boolean> initRevisions(String lang, String apiUrl) {
-		List<Page> pages = pageRepository.findAllByLang(lang);
-		for(Page page : pages){
+		List<CourseLevelThree> pages = courseLevelThreeRepository.findByLang(lang);
+		for(CourseLevelThree page : pages){
 			List<Revision> revisions = revisionMediaWikiService.getAllRevisionByPageId(apiUrl, page.getPageId());
 			// Set the first and the last revisions for the current page
-			page.setFistRevision(revisions.get(0));
+			page.setFirstRevision(revisions.get(0));
 			page.setLastRevision(revisions.get(revisions.size() - 1));
+            // Set the last validated revision to the first one.
+            page.setLastValidatedRevision(revisions.get(0));
+            // Create the PreviousRevision links
             ListIterator<Revision> it = revisions.listIterator();
             while(it.hasNext()){
                 Revision rev = it.next();
@@ -66,7 +70,7 @@ public class RevisionService {
             }
 			// Saving all the revisions node and the page node
 			revisionRepository.save(revisions);
-			pageRepository.save(page);
+			courseLevelThreeRepository.save(page);
 			LOG.info("Inserted revisions for page {}", page.getLangPageId());
 		}
 
@@ -87,7 +91,8 @@ public class RevisionService {
     }
 
     /**
-     * Add a new Revision to the graph
+     * Add a new Revision to the graph. This method DOESN'T link the
+     * revision to a Page.
      * @param revid
      * @param lang
      * @param userid
@@ -196,7 +201,7 @@ public class RevisionService {
 
             // Finally calculation of change Coefficient
             double t = ((1.2 * deletedLines +  addedLines) ) / previousLength;
-            changeCoefficient = 1 / exp(0.7 * t);
+            changeCoefficient = 1 / exp(0.5 * t);
 
             LOG.info("Change coefficient of revision {} (+{}-{}/{}): {}", revision.getLangRevId(), addedLines,
                     deletedLines, previousLength, changeCoefficient);

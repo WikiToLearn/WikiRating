@@ -60,15 +60,16 @@ public class MaintenanceService {
 		CompletableFuture<Boolean> initFuture = CompletableFuture
                 // Users and pages
 				.allOf(buildUsersAndPagesFuturesList().toArray(new CompletableFuture[langs.size() + 1]))
+				// CourseStructure
 				.thenCompose(result -> CompletableFuture
-                // Revisions
+						.allOf(buildApplyCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
+				// Revisions
+				.thenCompose(result -> CompletableFuture
 						.allOf(buildRevisionsFuturesList().toArray(new CompletableFuture[langs.size()])))
-                .thenCompose(result -> CompletableFuture
-                // Change Coefficients
-                        .allOf(buildChangeCoefficientFuturesList().toArray(new CompletableFuture[langs.size()])))
+				// Change Coefficients
 				.thenCompose(result -> CompletableFuture
-                // CourseStructure
-						.allOf(buildInitCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
+                        .allOf(buildChangeCoefficientFuturesList().toArray(new CompletableFuture[langs.size()])))
+				// Users authorship
 				.thenCompose(result -> userService.initAuthorship());
 
 		try {
@@ -91,7 +92,7 @@ public class MaintenanceService {
 	 * @return true if the update succeed
 	 */
 	@Scheduled(cron = "${maintenance.update.cron}")
-	public void updateGraph() {
+	public boolean updateGraph() throws UpdateGraphException{
 		Process currentFetchProcess;
 		Date startTimestampCurrentFetch, startTimestampLatestFetch;
 		// Get start timestamp of the latest FETCH Process before opening a new process
@@ -108,7 +109,7 @@ public class MaintenanceService {
 		} catch (PreviousProcessOngoingException e){
 			LOG.error("Cannot start Update process because the previous process is still ONGOING."
 					+ "The update will be aborted.");
-			return;
+			return false;
 		}
 		
 		try {
@@ -119,7 +120,7 @@ public class MaintenanceService {
 							.allOf(buildUpdatePagesFuturesList(startTimestampLatestFetch, startTimestampCurrentFetch)
 									.toArray(new CompletableFuture[langs.size()])))
 					.thenCompose(result -> CompletableFuture
-							.allOf(buildUpdateCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
+							.allOf(buildApplyCourseStructureFuturesList().toArray(new CompletableFuture[langs.size()])))
 					.thenCompose(result -> voteService.validateTemporaryVotes(startTimestampCurrentFetch));
 
 			boolean result = updateFuture.get();
@@ -129,6 +130,7 @@ public class MaintenanceService {
 			} else {
 				processService.closeCurrentProcess(ProcessStatus.ERROR);
 			}
+			return result;
 		} catch (TemporaryVoteValidationException | UpdateUsersException | UpdatePagesAndRevisionsException
 				| InterruptedException | ExecutionException e) {
 			processService.closeCurrentProcess(ProcessStatus.EXCEPTION);
@@ -142,27 +144,12 @@ public class MaintenanceService {
 	 * 
 	 * @return a list of CompletableFuture
 	 */
-	private List<CompletableFuture<Boolean>> buildInitCourseStructureFuturesList() {
-		List<CompletableFuture<Boolean>> parallelInitCourseStructureFutures = new ArrayList<>();
-		// Add course structure for each domain language
-		for (String lang : langs) {
-			String url = protocol + lang + "." + apiUrl;
-			parallelInitCourseStructureFutures.add(pageService.initCourseStructure(lang, url));
-		}
-		return parallelInitCourseStructureFutures;
-	}
-	
-	/**
-	 * Build a list of CompletableFuture.
-	 * 
-	 * @return a list of CompletableFuture
-	 */
-	private List<CompletableFuture<Boolean>> buildUpdateCourseStructureFuturesList() {
+	private List<CompletableFuture<Boolean>> buildApplyCourseStructureFuturesList() {
 		List<CompletableFuture<Boolean>> parallelUpdateCourseStructureFutures = new ArrayList<>();
 		// Add course structure for each domain language
 		for (String lang : langs) {
 			String url = protocol + lang + "." + apiUrl;
-			parallelUpdateCourseStructureFutures.add(pageService.updateCourseStructure(lang, url));
+			parallelUpdateCourseStructureFutures.add(pageService.applyCourseStructure(lang, url));
 		}
 		return parallelUpdateCourseStructureFutures;
 	}

@@ -14,51 +14,35 @@ import org.wikitolearn.wikirating.model.graph.Page;
  * @author aletundo
  *
  */
-public interface PageRepository extends GraphRepository<Page> {
+public interface PageRepository<T extends Page> extends GraphRepository<T> {
 	/**
 	 * 
 	 * @param title
      * @param lang
 	 * @return
 	 */
-	Page findByTitleAndLang(String title, String lang);
+	T findByTitleAndLang(String title, String lang);
 
 	/**
 	 * 
 	 * @param langPageId
 	 * @return
 	 */
-	Page findByLangPageId(String langPageId);
+	T findByLangPageId(String langPageId);
 	
 	/**
 	 * 
 	 * @param lang
 	 * @return
 	 */
-	@Query("MATCH (p:Page {lang:{0}}) RETURN p")
-	List<Page> findAllByLang(String lang);
+	List<T> findByLang(String lang);
 	
-	/**
-	 * 
-	 * @return
-	 */
-	@Query("MATCH (p:CourseRoot) RETURN p")
-	List<Page> findAllCourseRootPages();
-	
-	/**
-	 * 
-	 * @param lang
-	 * @return
-	 */
-	@Query("MATCH (p:CourseRoot) WHERE p.lang = {lang} RETURN p")
-	List<Page> findAllCourseRootPages(@Param("lang") String lang);
-	
-	/**
+		/**
 	 * 
 	 * @return
 	 */
 	@Query("MATCH (p:Page) WHERE NOT p:CourseRoot AND NOT p:CourseLevelTwo AND NOT p:CourseLevelThree RETURN p")
-	List<Page> findAllUncategorizedPages();
+	List<T> findAllUncategorizedPages();
 	
 	/**
 	 * 
@@ -66,5 +50,5 @@ public interface PageRepository extends GraphRepository<Page> {
 	 * @return
 	 */
 	@Query("MATCH (p:Page) WHERE p.lang = {lang} AND NOT p:CourseRoot AND NOT p:CourseLevelTwo AND NOT p:CourseLevelThree RETURN p")
-	List<Page> findAllUncategorizedPages(@Param("lang") String lang);
+	List<T> findAllUncategorizedPages(@Param("lang") String lang);
 }

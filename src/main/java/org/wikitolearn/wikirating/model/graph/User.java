@@ -37,6 +37,10 @@ public class User {
 	private Set<Author> authorship;
 	@Relationship( type="VOTE", direction = Relationship.OUTGOING)
 	private Set<Vote> votes;
+	@Relationship(type = "FIRST_CALCULATION", direction = Relationship.OUTGOING)
+	private History firstCalculation;
+	@Relationship(type = "LAST_CALCULATION", direction = Relationship.OUTGOING)
+	private History lastCalculation;
 	
 	/**
 	 * 

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.wikitolearn.wikirating.exception.UpdateGraphException;
 import org.wikitolearn.wikirating.model.api.ApiResponse;
 import org.wikitolearn.wikirating.model.api.ApiResponseError;
 import org.wikitolearn.wikirating.model.api.ApiResponseFail;
@@ -107,6 +108,16 @@ public class MaintenanceController {
 	@RequestMapping(value = "${maintenance.init.uri}", method = RequestMethod.POST, produces = "application/json")
 	public boolean initialize() {
 	    return maintenanceService.initializeGraph();
+	}
+
+	@RequestMapping(value = "${maintenance.fetch.uri}", method = RequestMethod.POST, produces = "application/json")
+	public boolean fetch() {
+	    try {
+            return maintenanceService.updateGraph();
+        }catch (UpdateGraphException e){
+	        return false;
+        }
+
 	}
 
 	/**

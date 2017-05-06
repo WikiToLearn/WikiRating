@@ -4,13 +4,15 @@
 package org.wikitolearn.wikirating.service;
 
 import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +23,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.wikitolearn.wikirating.exception.PageNotFoundException;
 import org.wikitolearn.wikirating.model.graph.Page;
-import org.wikitolearn.wikirating.model.graph.Revision;
 import org.wikitolearn.wikirating.repository.PageRepository;
+import org.wikitolearn.wikirating.service.mediawiki.PageMediaWikiService;
 
 /**
  * @author aletundo
@@ -32,7 +34,10 @@ import org.wikitolearn.wikirating.repository.PageRepository;
 public class PageServiceTest {
 	
 	@Mock
-	private PageRepository pageRepository;
+	private PageRepository<Page> pageRepository;
+	
+	@Mock
+	private PageMediaWikiService pageMediaWikiService;
 	
 	@InjectMocks
 	private PageService pageService;
@@ -40,6 +45,19 @@ public class PageServiceTest {
 	@Before
 	public void setup(){
 		MockitoAnnotations.initMocks(this);
+	}
+	
+	@Test
+	public void testInitPages() throws InterruptedException, ExecutionException{
+		List<Page> pages = new ArrayList<Page>();
+		pages.add(new Page(1, "Title", "en", "en_1"));
+		pages.add(new Page(2, "Title2/Subtitle2", "en", "en_2"));
+		pages.add(new Page(3, "Title3/Subtitle3/Subsubtitle3", "en", "en_4"));
+		when(pageMediaWikiService.getAll("https://en.domain.org/api.php")).thenReturn(pages);
+		CompletableFuture<Boolean> result = pageService.initPages("en", "https://en.domain.org/api.php");
+		assertTrue(result.get());
+		verify(pageRepository, times(1)).save(pages);
+		
 	}
 	
 	@Test
@@ -108,7 +126,7 @@ public class PageServiceTest {
 	public void testAddPage(){
 		Page page = new Page(1, "Title", "en", "en_1");
 		when(pageRepository.save(page)).thenReturn(page);
-		Page result = pageService.addPage(1, "Title", "en", new Revision());
+		Page result = pageService.addPage(1, "Title", "en");
 		assertEquals(1, result.getPageId());
 		assertEquals("Title", result.getTitle());
 		assertEquals("en", result.getLang());
@@ -126,21 +144,5 @@ public class PageServiceTest {
 		assertEquals(3, result.size());
 	}
 	
-	@Test
-	public void testGetCourseRootPages(){
-		List<Page> uncategorizedPages = new ArrayList<Page>();
-		Page p1 = new Page(1, "Title", "en", "en_1");
-		p1.addLabel("CourseRoot");
-		Page p2 = new Page(2, "Title2", "en", "en_2");
-		p2.addLabel("CourseRoot");
-		Page p3 = new Page(3, "Title3", "en", "en_3");
-		p3.addLabel("CourseRoot");
-		uncategorizedPages.add(p1);
-		uncategorizedPages.add(p2);
-		uncategorizedPages.add(p3);
-		when(pageRepository.findAllCourseRootPages("en")).thenReturn(uncategorizedPages);
-		List<Page> result = pageService.getCourseRootPages("en");
-		assertEquals(3, result.size());
-	}
 
 }

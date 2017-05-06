@@ -10,7 +10,6 @@ import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.Index;
 import org.neo4j.ogm.annotation.Labels;
 import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,15 +34,6 @@ public class Page {
 	@Index(unique = true, primary = true)
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private String langPageId;
-	private double pageRank;
-	@Relationship(type = "LAST_REVISION", direction = Relationship.OUTGOING)
-	private Revision lastRevision;
-	@Relationship(type = "FIRST_REVISION", direction = Relationship.OUTGOING)
-	private Revision fistRevision;
-	@Relationship(type = "LEVEL_TWO", direction = Relationship.OUTGOING)
-	private Set<Page> levelsTwo;
-	@Relationship(type = "LEVEL_THREE", direction = Relationship.OUTGOING)
-	private Set<Page> levelsThree;
 	@Labels
 	private Set<String> labels = new HashSet<>();
 	
@@ -135,90 +125,6 @@ public class Page {
 	}
 
 	/**
-	 * @return the pageRank
-	 */
-	public double getPageRank() {
-		return pageRank;
-	}
-
-	/**
-	 * @param pageRank the pageRank to set
-	 */
-	public void setPageRank(double pageRank) {
-		this.pageRank = pageRank;
-	}
-
-	/**
-	 * @return the lastRevision
-	 */
-	public Revision getLastRevision() {
-		return lastRevision;
-	}
-
-	/**
-	 * @param lastRevision the lastRevision to set
-	 */
-	public void setLastRevision(Revision lastRevision) {
-		this.lastRevision = lastRevision;
-	}
-
-	/**
-	 * @return the fistRevision
-	 */
-	public Revision getFistRevision() {
-		return fistRevision;
-	}
-
-	/**
-	 * @param fistRevision the fistRevision to set
-	 */
-	public void setFistRevision(Revision fistRevision) {
-		this.fistRevision = fistRevision;
-	}
-
-	/**
-	 * @return the levelsTwo
-	 */
-	public Set<Page> getLevelsTwo() {
-		return levelsTwo;
-	}
-
-	/**
-	 * @param levelsTwo the levelsTwo to set
-	 */
-	public void setLevelsTwo(Set<Page> levelsTwo) {
-		this.levelsTwo = levelsTwo;
-	}
-	
-	/** 
-	 * @param levelTwo the levelTwo to add
-	 */
-	public void addLevelTwo(Page levelTwo){
-		this.levelsTwo.add(levelTwo);
-	}
-
-	/**
-	 * @return the levelsThree
-	 */
-	public Set<Page> getLevelsThree() {
-		return levelsThree;
-	}
-
-	/**
-	 * @param levelsThree the levelsThree to set
-	 */
-	public void setLevelsThree(Set<Page> levelsThree) {
-		this.levelsThree = levelsThree;
-	}
-	
-	/** 
-	 * @param levelThree the levelThree to add
-	 */
-	public void addLevelThree(Page levelThree){
-		this.levelsThree.add(levelThree);
-	}
-
-	/**
 	 * @return the labels
 	 */
 	public Set<String> getLabels() {
@@ -231,6 +137,10 @@ public class Page {
 	public void setLabels(Set<String> labels) {
 		this.labels = labels;
 	}
+
+	public boolean hasLabel(String label){
+		return labels.contains(label);
+	}
 	
 	/**
 	 * @param label the label to set
@@ -239,15 +149,17 @@ public class Page {
 		this.labels.add(label);
 	}
 
+	public void removeLabel(String label){
+		this.labels.remove(label);
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "Page [graphId=" + graphId + ", pageId=" + pageId + ", title=" + title + ", lang=" + lang
-				+ ", langPageId=" + langPageId + ", pageRank=" + pageRank + ", lastRevision=" + lastRevision
-				+ ", fistRevision=" + fistRevision + ", levelsTwo=" + levelsTwo + ", levelsThree=" + levelsThree
-				+ ", labels=" + labels + "]";
+				+ ", langPageId=" + langPageId + ", labels=" + labels + "]";
 	}
 
 	/* (non-Javadoc)

@@ -21,10 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wikitolearn.wikirating.exception.PageNotFoundException;
 import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
 import org.wikitolearn.wikirating.model.api.ApiResponseSuccess;
-import org.wikitolearn.wikirating.model.graph.Page;
-import org.wikitolearn.wikirating.model.graph.Revision;
-import org.wikitolearn.wikirating.model.graph.TemporaryVote;
-import org.wikitolearn.wikirating.model.graph.Vote;
+import org.wikitolearn.wikirating.model.graph.*;
 import org.wikitolearn.wikirating.service.PageService;
 import org.wikitolearn.wikirating.service.RevisionService;
 import org.wikitolearn.wikirating.service.VoteService;
@@ -57,7 +54,8 @@ public class PageController {
 	@ResponseBody
 	public ApiResponseSuccess getLastRevisionByPageId(@PathVariable("lang") String lang, @PathVariable("pageId") int pageId) throws PageNotFoundException{
 		try{
-			Page page = pageService.getPage(pageId, lang);
+			//TODO Add check for page label and send exception in case of Course structure pages
+			CourseLevelThree page = (CourseLevelThree) pageService.getPage(pageId, lang);
 			ApiResponseSuccess body = new ApiResponseSuccess(page.getLastRevision(), Instant.now().toEpochMilli());
 			return body;
 		}catch(PageNotFoundException e){
