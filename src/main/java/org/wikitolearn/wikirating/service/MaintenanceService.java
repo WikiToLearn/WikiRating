@@ -92,7 +92,7 @@ public class MaintenanceService {
 	 * @return true if the update succeed
 	 */
 	@Scheduled(cron = "${maintenance.update.cron}")
-	public void updateGraph() {
+	public boolean updateGraph() throws UpdateGraphException{
 		Process currentFetchProcess;
 		Date startTimestampCurrentFetch, startTimestampLatestFetch;
 		// Get start timestamp of the latest FETCH Process before opening a new process
@@ -109,7 +109,7 @@ public class MaintenanceService {
 		} catch (PreviousProcessOngoingException e){
 			LOG.error("Cannot start Update process because the previous process is still ONGOING."
 					+ "The update will be aborted.");
-			return;
+			return false;
 		}
 		
 		try {
@@ -130,6 +130,7 @@ public class MaintenanceService {
 			} else {
 				processService.closeCurrentProcess(ProcessStatus.ERROR);
 			}
+			return result;
 		} catch (TemporaryVoteValidationException | UpdateUsersException | UpdatePagesAndRevisionsException
 				| InterruptedException | ExecutionException e) {
 			processService.closeCurrentProcess(ProcessStatus.EXCEPTION);
