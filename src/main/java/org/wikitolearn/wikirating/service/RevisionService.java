@@ -128,7 +128,16 @@ public class RevisionService {
 		}
         return revisions;
 	}
-	
+
+	public Set<Revision> getRevisionsOfPageOrdered(String langPageId) throws RevisionNotFoundException{
+		Set<Revision> revisions = revisionRepository.findAllRevisionOfPageOrdered(langPageId);
+		if (revisions.size() == 0){
+			LOG.error("Revisions of page {} not found", langPageId);
+			throw new RevisionNotFoundException("Revisions of page "+langPageId+" not found");
+		}
+		return revisions;
+	}
+
 	/**
 	 * Get the requested revision
 	 * @param langRevId the langRevId of the revision

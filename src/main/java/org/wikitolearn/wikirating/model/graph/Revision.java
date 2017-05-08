@@ -27,6 +27,9 @@ public class Revision {
 	@GraphId 
 	@JsonIgnore
 	private Long graphId;
+	@Index(unique = true, primary=true)
+	@JsonProperty(access = Access.WRITE_ONLY)
+	private String langRevId;
 	@JsonProperty("revid")
     private int revId;
 	@JsonProperty(access = Access.WRITE_ONLY)
@@ -44,15 +47,12 @@ public class Revision {
     private double changeCoefficient;
     private double currentMeanVote;
     private double currentVotesReliability;
-    private double currentNormalisesVotesReliability;
     private double totalMeanVote;
     private double totalVotesReliability;
-    private double totalNormalisesVotesReliability;
-    @JsonProperty(access = Access.WRITE_ONLY)
-    private boolean validated;
-    @Index(unique = true, primary=true)
-    @JsonProperty(access = Access.WRITE_ONLY)
-    private String langRevId;
+    private double normalizedNumberOfVotes;
+    private double currentScore;
+    private double totalScore;
+
     @Relationship(type="PREVIOUS_REVISION", direction = Relationship.OUTGOING)
 	private Revision previousRevision;
     @Relationship(type="VOTE", direction = Relationship.INCOMING)
@@ -83,7 +83,6 @@ public class Revision {
 		this.length = length;
 		this.lang = lang;
         this.timestamp = timestamp;
-        this.validated = false;
         this.changeCoefficient = 0.0;
     }
 
@@ -109,7 +108,7 @@ public class Revision {
 	}
 
 	/**
-	 * @param userid the userId to set
+	 * @param userId the userId to set
 	 */
 	public void setUserId(int userId) {
 		this.userId = userId;
@@ -186,20 +185,6 @@ public class Revision {
 	}
 
 	/**
-	 * @return the currentNormalisesVotesReliability
-	 */
-	public double getCurrentNormalisesVotesReliability() {
-		return currentNormalisesVotesReliability;
-	}
-
-	/**
-	 * @param currentNormalisesVotesReliability the currentNormalisesVotesReliability to set
-	 */
-	public void setCurrentNormalisesVotesReliability(double currentNormalisesVotesReliability) {
-		this.currentNormalisesVotesReliability = currentNormalisesVotesReliability;
-	}
-
-	/**
 	 * @return the totalMeanVote
 	 */
 	public double getTotalMeanVote() {
@@ -227,35 +212,23 @@ public class Revision {
 		this.totalVotesReliability = totalVotesReliability;
 	}
 
-	/**
-	 * @return the totalNormalisesVotesReliability
-	 */
-	public double getTotalNormalisesVotesReliability() {
-		return totalNormalisesVotesReliability;
-	}
+    public double getCurrentScore() {
+        return currentScore;
+    }
 
-	/**
-	 * @param totalNormalisesVotesReliability the totalNormalisesVotesReliability to set
-	 */
-	public void setTotalNormalisesVotesReliability(double totalNormalisesVotesReliability) {
-		this.totalNormalisesVotesReliability = totalNormalisesVotesReliability;
-	}
+    public void setCurrentScore(double currentScore) {
+        this.currentScore = currentScore;
+    }
 
-	/**
-	 * @return the validated
-	 */
-	public boolean isValidated() {
-		return validated;
-	}
+    public double getTotalScore() {
+        return totalScore;
+    }
 
-	/**
-	 * @param validated the validated to set
-	 */
-	public void setValidated(boolean validated) {
-		this.validated = validated;
-	}
+    public void setTotalScore(double totalScore) {
+        this.totalScore = totalScore;
+    }
 
-	/**
+    /**
 	 * @return the lang
 	 */
 	public String getLang() {
@@ -347,6 +320,22 @@ public class Revision {
 		this.author = author;
 	}
 
+    public double getNormalizedNumberOfVotes() {
+        return normalizedNumberOfVotes;
+    }
+
+    public void setNormalizedNumberOfVotes(double normalizedNumberOfVotes) {
+        this.normalizedNumberOfVotes = normalizedNumberOfVotes;
+    }
+
+    public int getCurrentNumberOfVotes() {
+	    if (votes != null) {
+            return this.votes.size();
+        }else{
+	        return 0;
+        }
+    }
+
 	/**
 	 * 
 	 * @param vote the vote to set
@@ -361,14 +350,10 @@ public class Revision {
     @Override
     public String toString() {
         return "Revision{" +
-                "revId=" + revId +
-                ", lang='" + lang + '\'' +
+                "langRevId=" + langRevId +
                 ", userId=" + userId +
-                ", parentId=" + parentId +
                 ", timestamp=" + timestamp +
                 ", length=" + length +
-                ", validated=" + validated +
-                ", langRevId='" + langRevId + '\'' +
                 ", author=" + author +
                 '}';
     }
