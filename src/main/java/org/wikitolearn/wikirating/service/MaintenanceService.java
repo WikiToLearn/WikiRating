@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.*;
+import org.wikitolearn.wikirating.model.graph.CourseLevelThree;
 import org.wikitolearn.wikirating.model.graph.Process;
 import org.wikitolearn.wikirating.util.enums.ProcessStatus;
 import org.wikitolearn.wikirating.util.enums.ProcessType;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 /**
  * @author aletundo
@@ -37,6 +39,8 @@ public class MaintenanceService {
 	private ProcessService processService;
 	@Autowired
 	private VoteService voteService;
+	@Autowired
+    private ComputeService computeService;
 	@Value("#{'${mediawiki.langs}'.split(',')}")
 	private List<String> langs;
 	@Value("${mediawiki.protocol}")
@@ -138,7 +142,15 @@ public class MaintenanceService {
 			throw new UpdateGraphException();
 		}
 	}
-	
+
+	public boolean computePageRanking(){
+       List<CourseLevelThree> pages = pageService.getCourseLevelThreePages("es");
+       for (CourseLevelThree page : pages ){
+           computeService.computeRevisionsRating(page.getLangPageId());
+       }
+       return true;
+	}
+
 	/**
 	 * Build a list of CompletableFuture.
 	 * 

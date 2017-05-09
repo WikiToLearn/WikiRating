@@ -55,6 +55,8 @@ public class Revision {
 
     @Relationship(type="PREVIOUS_REVISION", direction = Relationship.OUTGOING)
 	private Revision previousRevision;
+    //@Relationship(type="PREVISOU_REVISION", direction = Relationship.INCOMING)
+	//private Revision nextRevision;
     @Relationship(type="VOTE", direction = Relationship.INCOMING)
 	private Set<Vote> votes;
     //This relationship represents the connection between the revision
@@ -298,6 +300,16 @@ public class Revision {
 		this.previousRevision = previousRevision;
 	}
 
+	/*
+	public Revision getNextRevision() {
+		return nextRevision;
+	}
+
+	public void setNextRevision(Revision nextRevision) {
+		this.nextRevision = nextRevision;
+	}
+*/
+
 	/**
 	 * @return the votes
 	 */
@@ -328,7 +340,7 @@ public class Revision {
         this.normalizedNumberOfVotes = normalizedNumberOfVotes;
     }
 
-    public int getCurrentNumberOfVotes() {
+	public int getCurrentNumberOfVotes() {
 	    if (votes != null) {
             return this.votes.size();
         }else{
@@ -357,4 +369,6 @@ public class Revision {
                 ", author=" + author +
                 '}';
     }
+
+
 }

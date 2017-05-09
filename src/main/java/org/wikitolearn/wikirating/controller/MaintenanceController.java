@@ -120,6 +120,15 @@ public class MaintenanceController {
 
 	}
 
+	@RequestMapping(value = "${maintenance.compute.uri}", method = RequestMethod.POST, produces = "application/json")
+	public boolean compute() {
+		try {
+			return maintenanceService.computePageRanking();
+		}catch (UpdateGraphException e){
+			return false;
+		}
+	}
+
 	/**
 	 * 
 	 */

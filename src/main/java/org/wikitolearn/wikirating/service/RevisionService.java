@@ -3,10 +3,7 @@
  */
 package org.wikitolearn.wikirating.service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.wikitolearn.wikirating.exception.RevisionNotFoundException;
 import org.wikitolearn.wikirating.model.graph.CourseLevelThree;
 import org.wikitolearn.wikirating.model.graph.Revision;
+import org.wikitolearn.wikirating.model.graph.queryresult.RevisionResult;
 import org.wikitolearn.wikirating.repository.CourseLevelThreeRepository;
 import org.wikitolearn.wikirating.repository.RevisionRepository;
 import org.wikitolearn.wikirating.service.mediawiki.RevisionMediaWikiService;
@@ -129,13 +127,45 @@ public class RevisionService {
         return revisions;
 	}
 
-	public Set<Revision> getRevisionsOfPageOrdered(String langPageId) throws RevisionNotFoundException{
-		Set<Revision> revisions = revisionRepository.findAllRevisionOfPageOrdered(langPageId);
+	/**
+	 * Get the revisions of a page ordered by revId from the oldest to the newest.
+	 * @param langPageId
+	 * @return
+	 * @throws RevisionNotFoundException
+	 */
+	public List<Revision> getRevisionsOfPageOrdered(String langPageId) throws RevisionNotFoundException{
+		List<Revision> revisions = revisionRepository.findAllRevisionOfPageOrdered(langPageId);
 		if (revisions.size() == 0){
 			LOG.error("Revisions of page {} not found", langPageId);
 			throw new RevisionNotFoundException("Revisions of page "+langPageId+" not found");
 		}
 		return revisions;
+	}
+
+	/**
+	 * Get all the revisions of a page from the LAST_VALIDATED_REVISION (included) to the
+	 * newest one ordered by revId.
+	 * @param langPageId
+	 * @return
+	 * @throws RevisionNotFoundException
+	 */
+	public List<Revision> getRevisionsFromLastValidated(String langPageId) throws RevisionNotFoundException{
+		//List<RevisionRepository.RevisionResult> revisions = revisionRepository.findAllRevisionNotValidated(langPageId);
+        List<RevisionResult> revisions = new ArrayList<>();
+		// We want also to add the latest validated revision to re-validate it.
+		// We put it at the beginning of the list because they are ordered from the oldest.
+		RevisionResult s = revisionRepository.getRev("es_196");
+        RevisionResult r = revisionRepository.findLastValidatedRevision(langPageId);
+		//revisions.add(0, );
+		/*if (revisions.size() == 0){
+			LOG.error("Revisions of page {} not found", langPageId);
+			throw new RevisionNotFoundException("Revisions of page "+langPageId+" not found");
+		}
+		List<Revision> result = new ArrayList<>();
+		for (RevisionResult rev : revisions){
+			//result.add(rev.revision);
+		}*/
+		return result;
 	}
 
 	/**
@@ -162,6 +192,10 @@ public class RevisionService {
 		revisionRepository.save(revision);
 		return revision;
 	}
+
+	public void updateRevisions(Collection<Revision> revisions){
+	    revisionRepository.save(revisions);
+    }
 
     /**
      * Calculate and set the changeCoefficient of a Revision.

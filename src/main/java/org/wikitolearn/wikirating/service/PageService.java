@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -219,6 +220,10 @@ public class PageService {
     	return page;
     }
 
+    public List<CourseLevelThree> getCourseLevelThreePages(String lang) {
+        return courseLevelThreeRepository.findByLang(lang);
+    }
+
     /**
      * Add a new revision to a CourseLevelThree page. It links the page to the new revision via
      * LAST_REVISION link. Moreover it create the PREVIOUS_REVISION link.
@@ -322,7 +327,6 @@ public class PageService {
 	/**
      * @param lang the language of the domain
      * @param apiUrl the MediaWiki API url
-	 * @param courseRootPages
 	 */
 	@Async
 	public CompletableFuture<Boolean> applyCourseStructure(String lang, String apiUrl) {
