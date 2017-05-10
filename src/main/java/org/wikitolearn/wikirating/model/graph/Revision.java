@@ -14,6 +14,7 @@ import org.neo4j.ogm.annotation.typeconversion.DateLong;
 //import org.springframework.data.annotation.Transient;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -55,8 +56,8 @@ public class Revision {
 
     @Relationship(type="PREVIOUS_REVISION", direction = Relationship.OUTGOING)
 	private Revision previousRevision;
-    //@Relationship(type="PREVISOU_REVISION", direction = Relationship.INCOMING)
-	//private Revision nextRevision;
+    @Relationship(type="PREVIOUS_REVISION", direction = Relationship.INCOMING)
+	private Revision nextRevision;
     @Relationship(type="VOTE", direction = Relationship.INCOMING)
 	private Set<Vote> votes;
     //This relationship represents the connection between the revision
@@ -300,7 +301,10 @@ public class Revision {
 		this.previousRevision = previousRevision;
 	}
 
-	/*
+	public boolean hasPreviousRevision(){
+		return this.nextRevision != null;
+	}
+
 	public Revision getNextRevision() {
 		return nextRevision;
 	}
@@ -308,12 +312,18 @@ public class Revision {
 	public void setNextRevision(Revision nextRevision) {
 		this.nextRevision = nextRevision;
 	}
-*/
+
+	public boolean hasNextRevision(){
+		return this.nextRevision != null;
+	}
 
 	/**
 	 * @return the votes
 	 */
 	public Set<Vote> getVotes() {
+		if (votes == null){
+			return new HashSet<>();
+		}
 		return votes;
 	}
 
@@ -361,13 +371,17 @@ public class Revision {
 	 */
     @Override
     public String toString() {
-        return "Revision{" +
+        String s=  "Revision{" +
                 "langRevId=" + langRevId +
                 ", userId=" + userId +
                 ", timestamp=" + timestamp +
-                ", length=" + length +
-                ", author=" + author +
-                '}';
+                ", length=" + length ;
+        if (author!=null){
+			s+= ", author=" + author.getUser().getUserId() + '}';
+		}else{
+        	s += '}';
+		}
+		return s;
     }
 
 

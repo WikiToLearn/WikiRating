@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * It stores the the reliability of the user at the moment
  * of the creation.
  */
-@RelationshipEntity(type="Author")
+@RelationshipEntity(type="AUTHOR")
 public class Author {
     @GraphId
     @JsonIgnore

@@ -25,8 +25,6 @@ public interface RevisionRepository extends GraphRepository<Revision> {
 	 */
 	Revision findByLangRevId(String langRevId);
 
-	@Query("MATCH (r:Revision {langRevId:{0}}) WITH r MATCH p=(r)-[s*0..1]-() RETURN r as revision, nodes(p), relationships(p)")
-	RevisionResult getRev(String id);
     /**
      *
      * @param lang
@@ -67,17 +65,18 @@ public interface RevisionRepository extends GraphRepository<Revision> {
 	 * @return
 	 */
 	@Query("MATCH (page:Page {langPageId:{0}})-[:LAST_VALIDATED_REVISION]->(rev:Revision) " +
-			"WITH rev MATCH (rev)<-[:PREVIOUS_REVISION*]-(rev:Revision) " +
-			"WITH pr MATCH path=(pr)-[r*0..1]-() " +
-			"RETURN pr as revision , nodes(path), relationships(path) ORDER BY pr.revId")
-	List<RevisionResult> findAllRevisionNotValidated(String langPageId);
+            "WITH rev MATCH (prev:Revision)<-[pr:PREVIOUS_REVISION]-(rev)<-[:PREVIOUS_REVISION*]-(nextr:Revision) " +
+            "WITH rev, prev,pr, nextr " +
+            "MATCH p=(nextr)-[r*0..1]-() " +
+            "RETURN rev as revision,prev,pr, nodes(p) as nodes, relationships(p) as rels ")
+	RevisionResult getNotValidatedRevisionsChain(String langPageId);
 
 	/**
 	 *
 	 */
 	@Query("MATCH (Page {langPageId:{id}})-[:LAST_VALIDATED_REVISION]->(rev:Revision) " +
-            "WITH rev MATCH (rev)-[a:AUTHOR]-(s:User) " +
-            "RETURN rev as revision, a, s as author ")
+            "WITH rev MATCH p=(rev)-[a*0..1]-() " +
+            "RETURN rev as revision, nodes(p), relationships(p) ")
     RevisionResult findLastValidatedRevision(@Param("id") String langPageId);
 
 	/**

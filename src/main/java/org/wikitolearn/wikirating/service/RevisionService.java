@@ -149,23 +149,9 @@ public class RevisionService {
 	 * @return
 	 * @throws RevisionNotFoundException
 	 */
-	public List<Revision> getRevisionsFromLastValidated(String langPageId) throws RevisionNotFoundException{
-		//List<RevisionRepository.RevisionResult> revisions = revisionRepository.findAllRevisionNotValidated(langPageId);
-        List<RevisionResult> revisions = new ArrayList<>();
-		// We want also to add the latest validated revision to re-validate it.
-		// We put it at the beginning of the list because they are ordered from the oldest.
-		RevisionResult s = revisionRepository.getRev("es_196");
-        RevisionResult r = revisionRepository.findLastValidatedRevision(langPageId);
-		//revisions.add(0, );
-		/*if (revisions.size() == 0){
-			LOG.error("Revisions of page {} not found", langPageId);
-			throw new RevisionNotFoundException("Revisions of page "+langPageId+" not found");
-		}
-		List<Revision> result = new ArrayList<>();
-		for (RevisionResult rev : revisions){
-			//result.add(rev.revision);
-		}*/
-		return result;
+	public Revision getRevisionsChainFromLastValidated(String langPageId) throws RevisionNotFoundException {
+		RevisionResult lastValidatedRevision = revisionRepository.getNotValidatedRevisionsChain(langPageId);
+		return lastValidatedRevision.revision;
 	}
 
 	/**
