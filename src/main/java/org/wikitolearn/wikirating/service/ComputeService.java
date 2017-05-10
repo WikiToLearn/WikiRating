@@ -26,16 +26,19 @@ public class ComputeService {
     //@Async
     public CompletableFuture<Boolean> computeRevisionsRating(String langPageId){
         // Get all the revision ordered from the oldest
-        List<Revision> revisions = revisionService.getRevisionsFromLastValidated(langPageId);
+        Revision lastValidated = revisionService.getRevisionsChainFromLastValidated(langPageId);
         // The order of the revision ensures that we have always the values
         // for the previous revision.
-        for (Revision revision : revisions){
-            calculateVotesMean(revision);
-            calculateTotalVotesMean(revision);
-            calculateSigmaAndScore(revision);
-            calculateTotalSigmaAndScore(revision);
+        Revision currentRevision = lastValidated;
+        while( currentRevision.hasNextRevision()){
+            currentRevision = currentRevision.getNextRevision();
+            calculateVotesMean(currentRevision);
+            calculateTotalVotesMean(currentRevision);
+            calculateSigmaAndScore(currentRevision);
+            calculateTotalSigmaAndScore(currentRevision);
         }
-        revisionService.updateRevisions(revisions);
+        // It saves all the chain
+        revisionService.updateRevision(lastValidated);
         return CompletableFuture.completedFuture(true);
     }
 
@@ -70,7 +73,12 @@ public class ComputeService {
             total += currentNVotes * revision.getCurrentMeanVote();
             double weights = previousNVotes * changeCoefficient + currentNVotes;
 
-            revision.setTotalMeanVote(total/weights);
+            if (weights != 0.0){
+                revision.setTotalMeanVote(total/weights);
+            }else{
+                revision.setTotalMeanVote(0.0);
+            }
+
             // Calculate normalized number of votes
             revision.setNormalizedNumberOfVotes(previousNVotes * changeCoefficient + currentNVotes);
         }
