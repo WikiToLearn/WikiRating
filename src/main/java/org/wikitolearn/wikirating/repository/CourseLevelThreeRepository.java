@@ -16,9 +16,11 @@ public interface CourseLevelThreeRepository extends PageRepository<CourseLevelTh
     /**
      * Update the LAST_REVISION relationship deleting the existing edge and
      * creating a new one.
+     * @param langPageId the page langPageId
+     * @return 
      */
-    @Query("MATCH (p:CourseLevelThree {langPageId: {id}})-[lr:LAST_REVISION]->(r1:Revision)<-[pp:PREVIOUS_REVISION]-(r2:Revision) " +
+    @Query("MATCH (p:CourseLevelThree {langPageId: {langPageId}})-[lr:LAST_REVISION]->(r1:Revision)<-[pp:PREVIOUS_REVISION]-(r2:Revision) " +
             "DELETE lr CREATE (p)-[:LAST_REVISION]->(r2)")
-    void updateLastRevision(@Param("id") String langPageId);
+    void updateLastRevision(@Param("langPageId") String langPageId);
 
 }

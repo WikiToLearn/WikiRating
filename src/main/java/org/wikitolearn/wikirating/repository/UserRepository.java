@@ -12,16 +12,16 @@ import org.wikitolearn.wikirating.model.graph.User;
  */
 public interface UserRepository extends GraphRepository<User> {
 	/**
-	 * 
-	 * @param username
-	 * @return
+	 * Get a user by his username
+	 * @param username the user username
+	 * @return the user
 	 */
 	User findByUsername(String username);
 	
 	/**
-	 * 
-	 * @param userId
-	 * @return
+	 * Get a user by his id
+	 * @param userId the user id
+	 * @return the user
 	 */
 	User findByUserId(int userId);
 }

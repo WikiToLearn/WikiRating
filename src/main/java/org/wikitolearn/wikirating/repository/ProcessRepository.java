@@ -23,6 +23,10 @@ public interface ProcessRepository extends GraphRepository<Process> {
     @Query("MATCH (p:Process)<-[LATEST_PROCESS]-(m:Metadata {type:'PROCESSES'}) RETURN p")
     public Process getLatestProcess();
     
+    /**
+     * Get the ongoing process
+     * @return the ongoing process
+     */
     @Query("MATCH (p:Process {processStatus:'ONGOING'}) RETURN p")
     public Process getOnGoingProcess();
 

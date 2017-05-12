@@ -17,7 +17,7 @@ public interface TemporaryVoteRepository extends GraphRepository<TemporaryVote> 
     
     /**
      * Find temporary votes with added before the given timestamp
-     * @param timestamp
+     * @param timestamp the vote timestamp
      * @return the temporary votes list
      */
     @Query("MATCH (n:TemporaryVote) WHERE n.timestamp < {timestamp} RETURN n")
