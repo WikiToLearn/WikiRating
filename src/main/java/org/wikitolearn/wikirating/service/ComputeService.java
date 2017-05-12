@@ -1,20 +1,15 @@
 package org.wikitolearn.wikirating.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.wikitolearn.wikirating.model.graph.Revision;
 import org.wikitolearn.wikirating.model.graph.Vote;
 
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Created by valsdav on 07/05/17.
+ * @author valsdav
  */
-
 @Service
 public class ComputeService {
 
@@ -22,7 +17,13 @@ public class ComputeService {
     @Autowired RevisionService revisionService;
     @Autowired UserService userService;
     @Autowired VoteService voteService;
-
+    
+    /**
+     * Calculate the rating of all starting from last validated revision of the 
+     * requested page
+     * @param langPageId the langPageId of the page
+     * @return a boolean CompletableFuture set to true if the computation succeed
+     */
     //@Async
     public CompletableFuture<Boolean> computeRevisionsRating(String langPageId){
         // Get all the revision ordered from the oldest
@@ -41,7 +42,11 @@ public class ComputeService {
         revisionService.updateRevision(lastValidated);
         return CompletableFuture.completedFuture(true);
     }
-
+    
+    /**
+     * 
+     * @param revision
+     */
     private void calculateVotesMean(Revision revision){
         double total = 0;
         double weights = 0;
@@ -57,7 +62,11 @@ public class ComputeService {
             revision.setCurrentMeanVote(0.0);
         }
     }
-
+    
+    /**
+     * 
+     * @param revision
+     */
     private void calculateTotalVotesMean(Revision revision){
         Revision previousRevision = revision.getPreviousRevision();
         if (previousRevision == null){
@@ -83,7 +92,11 @@ public class ComputeService {
             revision.setNormalizedNumberOfVotes(previousNVotes * changeCoefficient + currentNVotes);
         }
     }
-
+    
+    /**
+     * 
+     * @param revision
+     */
     private void calculateSigmaAndScore(Revision revision){
         double totalMean = revision.getTotalMeanVote();
         double sigmaTotal = 0;
@@ -97,8 +110,11 @@ public class ComputeService {
         revision.setCurrentVotesReliability(sigmaTotal);
         revision.setCurrentScore(score);
     }
-
-
+    
+    /**
+     * 
+     * @param revision
+     */
     private void calculateTotalSigmaAndScore(Revision revision){
         Revision previousRevision = revision.getPreviousRevision();
         if (previousRevision == null){
