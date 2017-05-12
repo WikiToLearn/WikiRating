@@ -40,7 +40,7 @@ public interface RevisionRepository extends GraphRepository<Revision> {
 
 	/**
 	 * Get all the revisions of a Page (CourseLevelThree).
-	 * The direction -> of the link is important to traverse
+	 * The direction of the link is important to traverse
 	 * only the chain of the page revisions without reaching other nodes.
 	 * @param langPageId the page langPageId
 	 * @return a set of revisions

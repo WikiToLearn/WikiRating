@@ -78,9 +78,10 @@ public class MediaWikiApiUtils {
 	}
 	
 	/**
-	 * Get a map 
-	 * @param pid	The PageID of the page for which revisions are requested
-	 * @return	Map having parameters
+	 * Get a parameters map to query the MediaWiki diff API
+	 * @param oldRevId the old revision id
+	 * @param newRevId the new revision id
+	 * @return a map with the requested parameters
 	 */
 	public Map<String, String> getDiffRevisionParams(int oldRevId, int newRevId) {
 		Map<String, String> queryParameterMap = new HashMap<>();
@@ -94,7 +95,7 @@ public class MediaWikiApiUtils {
 	/**
 	 * This method constructs the MAP of parameters to attach with the MediaWiki Query to fetch all the revisions
 	 * of the given page
-	 * @param pid	The PageID of the page for which revisions are requested
+	 * @param pid the page id for which revisions are requested
 	 * @return	Map having parameters
 	 */
 	public Map<String, String> getRevisionParams(int pid) {
@@ -227,7 +228,7 @@ public class MediaWikiApiUtils {
 	 * This method sends a request to MediaWiki API and then gets back an InputStream
 	 * @param connection ApiConnection The ApiConnection object
 	 * @param requestMethod RequestMethod The request method (ex: GET, POST, ...)
-	 * @param queryParametersMap Map<String, String> The HashMap having all the query parameters
+	 * @param queryParametersMap the HashMap having all the query parameters
 	 * @return response InputStream The result data
 	 */
 
@@ -244,9 +245,9 @@ public class MediaWikiApiUtils {
 	}
 
 	/**
-	 * Format the Date object in a h24 UTC string for mediawiki API.
-	 * @param date
-	 * @return
+	 * Format the Date object in a h24 UTC string for MediaWiki API.
+	 * @param date the date to format
+	 * @return the formatted date
 	 */
 	public String formatDate(Date date){
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

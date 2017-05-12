@@ -48,7 +48,7 @@ public class UserService {
      * Initialize the graph for the first time querying the MediaWiki API
      * to get the all the users and then insert them.
      * @param apiUrl the MediaWiki API url
-     * @return CompletableFuture<Boolean>
+     * @return a boolean CompletableFuture set to true if the operation succeed
      */
     @Async
     public CompletableFuture<Boolean> initUsers(String apiUrl){
@@ -59,7 +59,7 @@ public class UserService {
     
 	/**
      * Initialize relationships between users and their created revisions for the first time
-     * @return CompletableFuture<Boolean>
+     * @return a boolean CompletableFuture set to true if the operation succeed
      */
     @Async
     public CompletableFuture<Boolean> initAuthorship(){

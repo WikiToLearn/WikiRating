@@ -58,7 +58,7 @@ public class PageService {
      * This methods inserts all the pages inside the DB querying the MediaWiki API.
      * @param lang String 
      * @param apiUrl String The MediaWiki API url
-     * @return CompletableFuture<Boolean>
+     * @return a boolean CompletableFuture set to true if the operation succeed
      */
     @Async
     public CompletableFuture<Boolean> initPages( String lang, String apiUrl ){

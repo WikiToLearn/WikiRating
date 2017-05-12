@@ -35,7 +35,6 @@ public class MetadataService {
     
     /**
      * Update the LATEST_PROCESS relationship
-     * @return
      */
     public void updateLatestProcess() throws LatestProcessUpdateException{
     	try{

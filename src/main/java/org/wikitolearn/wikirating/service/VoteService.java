@@ -42,6 +42,7 @@ public class VoteService {
 	/**
 	 * Validate temporary votes added before the given timestamp
 	 * @param timestamp the timestamp used for comparison
+	 * @return a boolean CompletableFuture set to true if the operation succeed
 	 * @throws TemporaryVoteValidationException
 	 */
 	@Async
