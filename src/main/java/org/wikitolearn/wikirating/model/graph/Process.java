@@ -53,46 +53,90 @@ public class Process {
         this.processStatus = ProcessStatus.ONGOING;
         this.startOfProcess = new Date();
     }
+    
+	/**
+	 * @return the processId
+	 */
+	public String getProcessId() {
+		return processId;
+	}
 
-    public ProcessType getProcessType() {
-        return processType;
-    }
+	/**
+	 * @param processId the processId to set
+	 */
+	public void setProcessId(String processId) {
+		this.processId = processId;
+	}
 
-    public void setProcessType(ProcessType processType) {
-        this.processType = processType;
-    }
+	/**
+	 * @return the processType
+	 */
+	public ProcessType getProcessType() {
+		return processType;
+	}
 
-    public ProcessStatus getProcessStatus() {
-        return processStatus;
-    }
+	/**
+	 * @param processType the processType to set
+	 */
+	public void setProcessType(ProcessType processType) {
+		this.processType = processType;
+	}
 
-    public void setProcessStatus(ProcessStatus processStatus) {
-        this.processStatus = processStatus;
-    }
+	/**
+	 * @return the processStatus
+	 */
+	public ProcessStatus getProcessStatus() {
+		return processStatus;
+	}
 
-    public Process getPreviousProcess() {
-        return previousProcess;
-    }
+	/**
+	 * @param processStatus the processStatus to set
+	 */
+	public void setProcessStatus(ProcessStatus processStatus) {
+		this.processStatus = processStatus;
+	}
 
-    public void setPreviousProcess(Process previousProcess) {
-        this.previousProcess = previousProcess;
-    }
+	/**
+	 * @return the previousProcess
+	 */
+	public Process getPreviousProcess() {
+		return previousProcess;
+	}
 
-    public Date getStartOfProcess() {
-        return startOfProcess;
-    }
+	/**
+	 * @param previousProcess the previousProcess to set
+	 */
+	public void setPreviousProcess(Process previousProcess) {
+		this.previousProcess = previousProcess;
+	}
 
-    public void setStartOfProcess(Date startOfProcess) {
-        this.startOfProcess = startOfProcess;
-    }
+	/**
+	 * @return the startOfProcess
+	 */
+	public Date getStartOfProcess() {
+		return startOfProcess;
+	}
 
-    public Date getEndOfProcess() {
-        return endOfProcess;
-    }
+	/**
+	 * @param startOfProcess the startOfProcess to set
+	 */
+	public void setStartOfProcess(Date startOfProcess) {
+		this.startOfProcess = startOfProcess;
+	}
 
-    public void setEndOfProcess(Date endOfProcess) {
-        this.endOfProcess = endOfProcess;
-    }
+	/**
+	 * @return the endOfProcess
+	 */
+	public Date getEndOfProcess() {
+		return endOfProcess;
+	}
+
+	/**
+	 * @param endOfProcess the endOfProcess to set
+	 */
+	public void setEndOfProcess(Date endOfProcess) {
+		this.endOfProcess = endOfProcess;
+	}
 
     @Override
     public String toString() {
@@ -104,4 +148,45 @@ public class Process {
                 ", endOfProcess=" + endOfProcess +
                 ']';
     }
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((endOfProcess == null) ? 0 : endOfProcess.hashCode());
+		result = prime * result + ((previousProcess == null) ? 0 : previousProcess.hashCode());
+		result = prime * result + ((processId == null) ? 0 : processId.hashCode());
+		result = prime * result + ((processStatus == null) ? 0 : processStatus.hashCode());
+		result = prime * result + ((processType == null) ? 0 : processType.hashCode());
+		result = prime * result + ((startOfProcess == null) ? 0 : startOfProcess.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Process)) {
+			return false;
+		}
+		Process other = (Process) obj;
+		if (processId == null) {
+			if (other.processId != null) {
+				return false;
+			}
+		} else if (!processId.equals(other.processId)) {
+			return false;
+		}
+		return true;
+	}
 }

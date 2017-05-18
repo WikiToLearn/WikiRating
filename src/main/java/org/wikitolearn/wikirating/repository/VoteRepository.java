@@ -21,6 +21,6 @@ public interface VoteRepository extends GraphRepository<Vote> {
 	 * @param langRevId the langRevId of the revision
 	 * @return the list of the votes
 	 */
-	@Query("MATCH (:User)-[v:Vote]->(:Revision {langRevId: {langRevId}}) RETURN v")
+	@Query("MATCH (:User)-[v:VOTE]->(:Revision {langRevId: {langRevId}}) RETURN v")
 	List<Vote> getAllVotesOfRevision(@Param("langRevId") String langRevId);
 }
