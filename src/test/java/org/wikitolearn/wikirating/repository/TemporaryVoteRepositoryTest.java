@@ -59,7 +59,21 @@ public class TemporaryVoteRepositoryTest {
 	
 	@Test
 	public void testFindByTimestamp(){
-		List<TemporaryVote> temporaryVotes = temporaryVoteRepository.findByTimestamp(new GregorianCalendar(2017, Calendar.JUNE, 2).getTime());
+		
+		List<TemporaryVote> temporaryVotes = temporaryVoteRepository.findByTimestamp(new GregorianCalendar(2017, Calendar.MAY, 31).getTime());
+		assertEquals(0, temporaryVotes.size());
+		
+		temporaryVotes = temporaryVoteRepository.findByTimestamp(new GregorianCalendar(2017, Calendar.JUNE, 1).getTime());
+		assertEquals(0, temporaryVotes.size());
+		
+		temporaryVotes = temporaryVoteRepository.findByTimestamp(new GregorianCalendar(2017, Calendar.JUNE, 2).getTime());
 		assertEquals(3, temporaryVotes.size());
+		
+		temporaryVotes = temporaryVoteRepository.findByTimestamp(new GregorianCalendar(2017, Calendar.JUNE, 3).getTime());
+		assertEquals(3, temporaryVotes.size());
+		
+		temporaryVotes = temporaryVoteRepository.findByTimestamp(new GregorianCalendar(2017, Calendar.JUNE, 4).getTime());
+		assertEquals(5, temporaryVotes.size());
+		
 	}
 }
