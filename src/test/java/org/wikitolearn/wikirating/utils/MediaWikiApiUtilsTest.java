@@ -4,7 +4,6 @@
 package org.wikitolearn.wikirating.utils;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -15,10 +14,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import org.wikitolearn.wikirating.util.MediaWikiApiUtils;
 
@@ -27,10 +34,19 @@ import org.wikitolearn.wikirating.util.MediaWikiApiUtils;
  *
  */
 @RunWith(SpringRunner.class)
+@TestPropertySource("classpath:application.properties")
 public class MediaWikiApiUtilsTest {
 	
 	@InjectMocks
 	private MediaWikiApiUtils mediaWikiApiUtils;
+	@Autowired
+	private Config config;
+	
+	@Before
+	public void setup(){
+		ReflectionTestUtils.setField(mediaWikiApiUtils, "apiUser", this.config.apiUser);
+		ReflectionTestUtils.setField(mediaWikiApiUtils, "apiPassword", this.config.apiPassword);
+	}
 	
 	@Test
 	public void testGetListAllPagesParamsMap(){
@@ -90,21 +106,18 @@ public class MediaWikiApiUtilsTest {
 	@Test
 	public void testGetApiConnection(){
 		ApiConnection connection = mediaWikiApiUtils.getApiConnection("https://en.wikitolearn.org/api.php");
-		assertTrue(connection instanceof ApiConnection);
-		assertFalse(connection.isLoggedIn());
+		assertTrue(connection.isLoggedIn());
 	}
 	
 	@Test
 	public void testSendRequest(){
-		ApiConnection connection = mediaWikiApiUtils.getApiConnection("https://fake.api");
-		ApiConnection connection2 = mediaWikiApiUtils.getApiConnection("https://en.wikitolearn.org/api.php");
+		ApiConnection connection = mediaWikiApiUtils.getApiConnection("https://en.wikitolearn.org/api.php");
 		Map<String, String> queryParameterMap = new HashMap<String, String>();
 		queryParameterMap.put("action", "query");
 		queryParameterMap.put("list", "allusers");
 		queryParameterMap.put("aulimit", "max");
 		queryParameterMap.put("format", "json");
-		assertNull(mediaWikiApiUtils.sendRequest(connection, "GET", queryParameterMap));
-		assertNotNull(mediaWikiApiUtils.sendRequest(connection2, "GET", queryParameterMap));
+		assertNotNull(mediaWikiApiUtils.sendRequest(connection, "GET", queryParameterMap));
 	}
 	
 	@Test
@@ -117,5 +130,20 @@ public class MediaWikiApiUtilsTest {
 		JSONObject result2 = mediaWikiApiUtils.streamToJson(inputStream2);
 		assertNotNull(result);
 		assertNull(result2);
+	}
+	
+	@Configuration
+	static class Config {
+
+		@Value("${mediawiki.api.user}")
+		private String apiUser;
+		@Value("${mediawiki.api.password}")
+		private String apiPassword;
+
+		@Bean
+		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
+			return new PropertySourcesPlaceholderConfigurer();
+		}
+
 	}
 }
