@@ -384,5 +384,39 @@ public class Revision {
 		return s;
     }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((langRevId == null) ? 0 : langRevId.hashCode());
+		return result;
+	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Revision)) {
+			return false;
+		}
+		Revision other = (Revision) obj;
+		if (langRevId == null) {
+			if (other.langRevId != null) {
+				return false;
+			}
+		} else if (!langRevId.equals(other.langRevId)) {
+			return false;
+		}
+		return true;
+	}
 }

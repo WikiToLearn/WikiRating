@@ -84,7 +84,7 @@ public interface RevisionRepository extends GraphRepository<Revision> {
 	 * @param langRevId the revision langRevId
 	 * @return the previous revision
 	 */
-	@Query("MATCH (r:Revision {langRevId:{langRevId})-[:PREVIOUS_REVISION]->(a:Revision) RETURN a")
+	@Query("MATCH (r:Revision {langRevId:{langRevId}})-[:PREVIOUS_REVISION]->(a:Revision) RETURN a")
 	Revision findPreviousRevision(@Param("langRevId") String langRevId);
 
 }
