@@ -20,7 +20,7 @@ public interface ProcessRepository extends GraphRepository<Process> {
      * Metadata node of PROCESSES type.
      * @return the last Process
      */
-    @Query("MATCH (p:Process)<-[LATEST_PROCESS]-(m:Metadata {type:'PROCESSES'}) RETURN p")
+    @Query("MATCH (p:Process)<-[:LATEST_PROCESS]-(m:Metadata {type:'PROCESSES'}) RETURN p")
     public Process getLatestProcess();
     
     /**
